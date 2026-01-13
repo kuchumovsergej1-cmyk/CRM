@@ -1,0 +1,2275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор отбора пациентов_v2.2</title>
+    <style>
+        :root {
+            --color-primary: #208081;
+            --color-success: #22c55e;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            --color-bg: #f9fafb;
+            --color-text: #1f2937;
+            --color-journal: #7c3aed;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+            color: #1f2937;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            color: #1f2937;
+            transition: border-color 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #208081;
+            box-shadow: 0 0 0 3px rgba(32, 128, 129, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #208081;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(32, 128, 129, 0.3);
+        }
+
+        .btn-reset {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-reset:hover {
+            background: #d1d5db;
+        }
+
+        .btn-generate-id {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-generate-id:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+        }
+
+        .btn-upload {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .btn-upload:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .result-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-box.very-low {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+        }
+
+        .result-box.low {
+            background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+            color: white;
+        }
+
+        .result-box.moderate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .result-box.high {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .result-box.very-high {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            color: white;
+        }
+
+        .result-percentage {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-category {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-interpretation {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .interpretation-list {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border-left: 4px solid #208081;
+        }
+
+        .interpretation-list h4 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #1f2937;
+        }
+
+        .interpretation-list ul {
+            margin-left: 20px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+
+        .interpretation-list li {
+            margin-bottom: 8px;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            color: #1e40af;
+            margin-top: 15px;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .risk-factors-display {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .risk-factors-display strong {
+            color: #1f2937;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            border: 1px solid #86efac;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .btn-export-all {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-export-all:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .analysis-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #166534;
+        }
+
+        .analysis-box h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #15803d;
+        }
+
+        .analysis-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #10b981;
+        }
+
+        .analysis-item strong {
+            color: #047857;
+        }
+
+        .detailed-recommendations {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #78350f;
+        }
+
+        .detailed-recommendations h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .detailed-recommendations ul {
+            margin-left: 20px;
+        }
+
+        .detailed-recommendations li {
+            margin-bottom: 8px;
+        }
+
+        .eligibility-result {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-top: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .eligibility-good {
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+        }
+
+        .eligibility-bad {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+
+        .criteria-check {
+            transition: all 0.3s ease;
+        }
+
+        .criteria-met {
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+        }
+
+        .criteria-not-met {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+
+        .patient-id-display {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+            color: #208081;
+        }
+
+        .id-history {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        /* Стили для журнала пациентов */
+        .journal-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .journal-section.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .journal-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .journal-stats {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        .journal-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .journal-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .journal-table th {
+            background-color: var(--color-journal);
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .journal-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eaeaea;
+            vertical-align: top;
+        }
+
+        .journal-table tr:hover {
+            background-color: #f5f9fd;
+        }
+
+        .journal-table .actions-cell {
+            white-space: nowrap;
+        }
+
+        .journal-table .actions-cell button {
+            margin-right: 5px;
+        }
+
+        .empty-journal {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .patient-id {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .patient-summary-cell {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .patient-summary-cell p {
+            margin: 3px 0;
+            font-size: 14px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .risk-very-low-badge {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .risk-low-badge {
+            background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+        }
+
+        .risk-moderate-badge {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .risk-high-badge {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .risk-very-high-badge {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+        }
+
+        .btn-journal {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-journal-toggle {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-journal-export {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+
+        .btn-journal-import {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-journal-clear {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .btn-journal-save {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+        }
+
+        .btn-journal:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary-sm {
+            background: var(--color-info);
+            color: white;
+        }
+
+        .btn-warning-sm {
+            background: var(--color-warning);
+            color: white;
+        }
+
+        .btn-danger-sm {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Новые стили для кнопки загрузки JSON */
+        .json-upload-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .json-upload-section h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #374151;
+        }
+
+        .json-upload-section p {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 15px;
+        }
+
+        .btn-json-upload {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-json-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Калькулятор отбора пациентов_v2.2</h1>
+            <p>На основе Risk Factor-weighted Clinical Likelihood Model (2024) с критериями отбора исследования и журналом пациентов</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <div class="main-content">
+            <!-- ЛЕВАЯ КОЛОНКА -->
+            <div>
+                <div class="section">
+                    <h2>1️⃣ Демографические данные</h2>
+                    
+                    <div class="form-group">
+                        <label for="patientName">ФИО пациента</label>
+                        <input type="text" id="patientName" placeholder="Введите Фамилию Имя Отчество">
+                    </div>
+
+                    <div class="patient-id-display">
+                        ID пациента: <span id="patientID">Не сгенерирован</span>
+                    </div>
+
+                    <button class="btn btn-generate-id" onclick="generatePatientID()">🎲 СГЕНЕРИРОВАТЬ ID</button>
+
+                    <div class="form-group">
+                        <label for="sex">Пол *</label>
+                        <select id="sex" required>
+                            <option value="">-- Выберите пол --</option>
+                            <option value="woman">Женщина</option>
+                            <option value="man">Мужчина</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Возраст (лет) *</label>
+                        <input type="number" id="age" min="18" max="120" placeholder="Введите возраст" required>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 20px;">
+                    <h2>2️⃣ Факторы риска ИБС</h2>
+                    <p class="helper-text">Выберите все применимые факторы:</p>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="familyHistory" value="familyHistory">
+                            <label for="familyHistory">Семейная история ИБС (родственники до 55 лет у мужчин, до 65 лет у женщин)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="smoking" value="smoking">
+                            <label for="smoking">Курение (текущее или в прошлом)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dyslipidemia" value="dyslipidemia">
+                            <label for="dyslipidemia">Дислипидемия (повышенный холестерин)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hypertension" value="hypertension">
+                            <label for="hypertension">Гипертензия (повышенное АД)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="diabetes" value="diabetes">
+                            <label for="diabetes">Сахарный диабет</label>
+                        </div>
+                    </div>
+
+                    <div class="risk-factors-display" id="riskFactorsCount">
+                        Количество факторов риска: <strong>0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ КОЛОНКА -->
+            <div>
+                <div class="section">
+                    <h2>3️⃣ Характеристики боли в груди</h2>
+                    <p class="helper-text">Выберите один вариант:</p>
+
+                    <div class="form-group">
+                        <label for="chestPainType">Тип боли/дискомфорта *</label>
+                        <select id="chestPainType" required>
+                            <option value="">-- Выберите характер боли --</option>
+                            <option value="0">Не подходит ни один вариант (0 баллов)</option>
+                            <option value="1">Атипичная боль - 1 из 3 признаков типичной стенокардии (1 балл)</option>
+                            <option value="2">Атипичная боль - 2 из 3 признаков типичной стенокардии (2 балла)</option>
+                            <option value="3">Типичная стенокардия - сжимающий дискомфорт ретростернально, усиливается при нагрузке/стрессе, облегчается отдыхом/нитратами (3 балла)</option>
+                        </select>
+                        <div class="info-box">
+                            <strong>Справка:</strong><br>
+                            • Типичная стенокардия: ретростернальное сжатие, провоцируется нагрузкой/стрессом, облегчается отдыхом/нитратами в течение 5 мин
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dyspneaType">Одышка при физической нагрузке *</label>
+                        <select id="dyspneaType" required>
+                            <option value="">-- Выберите статус --</option>
+                            <option value="0">Отсутствует (0 баллов)</option>
+                            <option value="2">Да, затруднение дыхания при нагрузке (2 балла)</option>
+                        </select>
+                        <div class="info-box">
+                            <strong>Справка:</strong><br>
+                            • Одышка при нагрузке, обычно проходящая после отдыха
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 20px;">
+                    <h2>🔬 КРИТЕРИИ ИССЛЕДОВАНИЯ PASS-Echo-PILOT</h2>
+                    <div class="info-box" style="margin-bottom: 15px;">
+                        <strong>Критерии включения для исследования:</strong><br>
+                        1. Возраст ≥ 18 лет<br>
+                        2. Показания для стресс-ЭхоКГ (средний/высокий риск)<br>
+                        3. Средний/высокий риск ИБС или СД/ХБП<br>
+                        4. Информированное согласие
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item criteria-check" id="criteria1">
+                            <input type="checkbox" id="hasIndication" disabled>
+                            <label for="hasIndication" id="criteria1Label">Показания для стресс-ЭхоКГ (рассчитанный риск)</label>
+                        </div>
+                        <div class="checkbox-item criteria-check" id="criteria2">
+                            <input type="checkbox" id="hasRiskFactors" disabled>
+                            <label for="hasRiskFactors" id="criteria2Label">Средний/высокий риск или СД/ХБП</label>
+                        </div>
+                        <div class="checkbox-item criteria-check" id="criteria3">
+                            <input type="checkbox" id="ageOk" disabled>
+                            <label for="ageOk" id="criteria3Label">Возраст ≥ 18 лет</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasCKD">Наличие ХБП 3-5 ст.</label>
+                        <select id="hasCKD">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да</option>
+                        </select>
+                    </div>
+                    
+                    <div class="info-box" style="background: #fef3c7; border-color: #f59e0b;">
+                        <strong>Критерии невключения (автопроверка):</strong><br>
+                        • Острый коронарный синдром (<7 дней)<br>
+                        • Гемодинамическая нестабильность<br>
+                        • Противопоказания к стресс-тестам<br>
+                        • Невозможность проведения ЭхоКГ
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasACS">Острый коронарный синдром (<7 дней)</label>
+                        <select id="hasACS">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasContraindications">Противопоказания к стресс-тестам</label>
+                        <select id="hasContraindications">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да (тяжелый аортальный стеноз и др.)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="eligibility-result" id="eligibilityResult">
+                        <strong>Результат отбора: </strong><span id="eligibilityText">-</span>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-calculate" onclick="calculateRisk()">РАССЧИТАТЬ РИСК И ОТБОР</button>
+                        <button class="btn btn-reset" onclick="resetForm()">ОЧИСТИТЬ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Новая секция для загрузки JSON -->
+        <div class="json-upload-section">
+            <h3><i class="fas fa-file-import"></i> Загрузка данных пациента из файла JSON</h3>
+            <p>Загрузите ранее сохраненные данные пациента из файла JSON, экспортированного из калькулятора</p>
+            <button class="btn-json-upload" onclick="openJsonFilePicker()">
+                <i class="fas fa-file-upload"></i> ЗАГРУЗИТЬ ДАННЫЕ ИЗ JSON
+            </button>
+            <p style="font-size: 12px; color: #6b7280; margin-top: 10px;">
+                Поддерживаемые файлы: JSON экспортированные из калькулятора отбора пациентов
+            </p>
+            <input type="file" id="jsonFileInput" class="hidden" accept=".json">
+        </div>
+
+        <!-- РЕЗУЛЬТАТЫ -->
+        <div class="result-section" id="resultSection">
+            <h2 style="text-align: center; margin-bottom: 25px;">📈 РЕЗУЛЬТАТЫ РАСЧЕТА И ОТБОРА</h2>
+            
+            <div class="patient-id-display" style="margin-bottom: 20px;">
+                ID пациента: <span id="resultPatientID">Не сгенерирован</span>
+            </div>
+            
+            <div class="result-box" id="resultBox">
+                <div class="result-percentage" id="resultPercentage">-</div>
+                <div class="result-category" id="resultCategory">-</div>
+                <div class="result-interpretation" id="resultInterpretation">-</div>
+            </div>
+
+            <div class="eligibility-result" id="finalEligibilityResult" style="margin-top: 20px;">
+                <h4 style="margin-bottom: 10px;">🔍 РЕЗУЛЬТАТ ОТБОРА ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT:</h4>
+                <div id="finalEligibilityText" style="font-size: 16px; font-weight: bold;"></div>
+                <div id="eligibilityDetails" style="margin-top: 10px; font-size: 13px;"></div>
+            </div>
+
+            <div class="interpretation-list">
+                <h4>🔍 Интерпретация результата риска:</h4>
+                <div id="categoryDetails"></div>
+            </div>
+
+            <div class="detailed-recommendations" id="detailedRecommendations" style="display: none;">
+                <h5>📋 КЛИНИЧЕСКИЕ РЕКОМЕНДАЦИИ (ESC 2024)</h5>
+                <div id="recommendationsContent"></div>
+            </div>
+
+            <div class="info-box">
+                <strong>⚠️ ВАЖНО:</strong> Этот калькулятор предоставляет предварительную оценку. Окончательный диагноз должен быть установлен врачом-кардиологом на основе полного клинического обследования, ЭКГ, анализов и при необходимости - дополнительных методов визуализации.
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f3f4f6; border-radius: 6px; border-left: 4px solid #208081;">
+                <strong>📋 Краткие данные пациента:</strong>
+                <div id="detailedResults" style="margin-top: 10px;"></div>
+            </div>
+
+            <div class="analysis-box" id="analysisBox" style="display: none;">
+                <h5>📊 АНАЛИЗ ВЛИЯНИЯ ПАРАМЕТРОВ НА РИСК:</h5>
+                <div id="analysisContent"></div>
+            </div>
+
+            <div class="export-buttons" id="exportButtons" style="display: none;">
+                <button class="btn-export btn-export-all" onclick="exportAllToJSON()">📋 ЭКСПОРТ ВСЕХ ДАННЫХ В JSON</button>
+                <button class="btn-export" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);" onclick="saveToJournal()">
+                    <i class="fas fa-save"></i> СОХРАНИТЬ В ЖУРНАЛ
+                </button>
+            </div>
+        </div>
+
+        <!-- Кнопка для переключения журнала -->
+        <div style="margin-top: 20px; text-align: center;">
+            <button class="btn-journal btn-journal-toggle" onclick="toggleJournal()" style="margin: 0 auto;">
+                <i class="fas fa-book-medical"></i> ПОКАЗАТЬ ЖУРНАЛ ПАЦИЕНТОВ
+            </button>
+        </div>
+
+        <!-- Журнал пациентов -->
+        <div class="journal-section" id="journalSection">
+            <div class="journal-header">
+                <h2><i class="fas fa-book-medical"></i> Журнал пациентов</h2>
+                <div class="journal-controls">
+                    <button class="btn-journal btn-journal-save" onclick="saveCurrentToJournal()">
+                        <i class="fas fa-save"></i> Сохранить текущего
+                    </button>
+                    <button class="btn-journal btn-journal-export" onclick="exportJournalToJson()">
+                        <i class="fas fa-file-export"></i> Экспорт журнала
+                    </button>
+                    <button class="btn-journal btn-journal-import" onclick="importJournal()">
+                        <i class="fas fa-file-import"></i> Импорт журнала
+                    </button>
+                    <button class="btn-journal btn-journal-clear" onclick="clearJournal()">
+                        <i class="fas fa-trash-alt"></i> Очистить журнал
+                    </button>
+                </div>
+            </div>
+            
+            <div class="journal-stats" id="journalStats">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Всего пациентов</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-today">0</div>
+                    <div class="stat-label">Добавлено сегодня</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-eligible">0</div>
+                    <div class="stat-label">Подходят для исследования</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-not-eligible">0</div>
+                    <div class="stat-label">Не подходят</div>
+                </div>
+            </div>
+            
+            <div class="journal-table-container">
+                <table class="journal-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th width="20%">ФИО пациента</th>
+                            <th width="30%">Информация</th>
+                            <th width="10%">Риск</th>
+                            <th width="15%">Дата расчета</th>
+                            <th width="20%">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journalTableBody">
+                        <tr>
+                            <td colspan="6" class="empty-journal">
+                                <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #bdc3c7;"></i>
+                                <p>Журнал пациентов пуст</p>
+                                <p>Сохраните первого пациента, чтобы он появился здесь</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрытые элементы для скачивания -->
+    <a id="download-link" class="hidden"></a>
+
+    <script>
+        // Глобальные переменные
+        let usedIDs = new Set();
+        let currentPatientID = null;
+        let patientJournal = JSON.parse(localStorage.getItem('patientRiskJournal')) || [];
+        let isJournalVisible = false;
+
+        const categoryDescriptions = {
+            'very-low': {
+                name: 'ОЧЕНЬ НИЗКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС менее 5%',
+                shortRecommendations: [
+                    'Дальнейшее диагностическое тестирование обычно не требуется',
+                    'Рекомендуется немедикаментозное лечение (диета, физическая активность, отказ от курения)',
+                    'Контроль факторов риска',
+                    'Рассмотрение профилактической терапии'
+                ],
+                detailedRecommendations: [
+                    '<strong>Диагностическая стратегия:</strong> Тестирование рекомендуется отложить',
+                    '<strong>Лечение:</strong> Первичная профилактика и контроль факторов риска',
+                    '<strong>Прогноз:</strong> Благоприятный, годовой риск сердечно-сосудистых событий менее 0.5%',
+                    '<strong>Ведение пациента:</strong> Образование по здоровому образу жизни, коррекция модифицируемых факторов риска',
+                    '<strong>Наблюдение:</strong> Периодический осмотр и переоценция рисков'
+                ]
+            },
+            'low': {
+                name: 'НИЗКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 5-15%',
+                shortRecommendations: [
+                    'Диагностическое тестирование может быть рассмотрено при наличии симптомов',
+                    'Если симптомы ограничивают физическую активность, рекомендуется дополнительное обследование',
+                    'Коронарная кальцификация (CACS) может помочь в переклассификации риска',
+                    'Активное управление факторами риска'
+                ],
+                detailedRecommendations: [
+                    '<strong>Диагностическая стратегия:</strong> Может быть рассмотрена при наличии ограничивающих симптомов',
+                    '<strong>Визуализация:</strong> CCTA (коронарная КТ-ангиография) при наличии показаний',
+                    '<strong>Коронарный кальций (CACS):</strong> Рекомендуется для переклассификации и риск-стратификации',
+                    '<strong>Лечение:</strong> Медикаментозная профилактика в зависимости от профиля риска',
+                    '<strong>Прогноз:</strong> Годовой риск сердечно-сосудистых событий около 1.1%',
+                    '<strong>Активное ведение:</strong> Коррекция всех модифицируемых факторов риска, контроль АД и холестерина'
+                ]
+            },
+            'moderate': {
+                name: 'СРЕДНИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 15-50%',
+                shortRecommendations: [
+                    'Рекомендуется неинвазивное диагностическое тестирование',
+                    'CCTA (коронарная КТ-ангиография) предпочтительна как первый тест',
+                    'Функциональные тесты (стресс-ЭХО, перфузионная сцинтиграфия) - альтернативы',
+                    'Агрессивное управление факторами риска',
+                    'Медикаментозное лечение для снижения симптомов'
+                ],
+                detailedRecommendations: [
+                    '<strong>Диагностическая стратегия:</strong> Неинвазивное тестирование рекомендовано',
+                    '<strong>Первый тест:</strong> CCTA (коронарная КТ-ангиография) предпочтительна',
+                    '<strong>Альтернативы:</strong> Стресс-эхокардиография, перфузионная сцинтиграфия при противопоказаниях к CCTA',
+                    '<strong>Лечение:</strong> Антиангинальная и антиишемическая терапия, статины, ингибиторы АПФ',
+                    '<strong>Прогноз:</strong> Годовой риск сердечно-сосудистых событий около 2.1%',
+                    '<strong>Интенсивное управление факторами риска:</strong> Отказ от курения, диета, физическая активность, целевые уровни АД и холестерина'
+                ]
+            },
+            'high': {
+                name: 'ВЫСОКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 50-85%',
+                shortRecommendations: [
+                    'CCTA или функциональное тестирование настоятельно рекомендуется',
+                    'Возможна инвазивная коронарная ангиография',
+                    'Начало агрессивной медикаментозной терапии',
+                    'Тщательный мониторинг симптомов',
+                    'Рассмотрение реваскуляризации при позитивных результатах тестирования'
+                ],
+                detailedRecommendations: [
+                    '<strong>Диагностическая стратегия:</strong> Инвазивная коронарная ангиография настоятельно рекомендуется',
+                    '<strong>Альтернатива:</strong> CCTA или функциональное тестирование перед ангиографией',
+                    '<strong>Тактика:</strong> При выявлении обструктивного поражения рассмотрение реваскуляризации',
+                    '<strong>Медикаментозное лечение:</strong> Двойная антиагрегантная терапия при показаниях, полная антиишемическая терапия',
+                    '<strong>Интенсивность лечения:</strong> Максимальные дозы статинов, ингибиторов АПФ, бета-блокаторов',
+                    '<strong>Мониторинг:</strong> Частый контроль симптомов, электрокардиографический мониторинг'
+                ]
+            },
+            'very-high': {
+                name: 'ОЧЕНЬ ВЫСОКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС более 85%',
+                shortRecommendations: [
+                    'Инвазивная коронарная ангиография может быть первым диагностическим тестом',
+                    'Особенно при тяжелых симптомах или ангине покоя',
+                    'CCTA или функциональное тестирование альтернативно перед инвазивной процедурой',
+                    'Имеет смысл при наличии показаний к реваскуляризации',
+                    'Агрессивное медикаментозное лечение и управление рисками'
+                ],
+                detailedRecommendations: [
+                    '<strong>Диагностическая стратегия:</strong> Экстренная инвазивная коронарная ангиография при тяжелых симптомах',
+                    '<strong>При нестабильности:</strong> Немедленная госпитализация и коронарография',
+                    '<strong>Реваскуляризация:</strong> При выявлении поддающегося реваскуляризации поражения',
+                    '<strong>Медикаментозное лечение:</strong> Максимальная антиишемическая и кардиопротективная терапия',
+                    '<strong>Интенсивный мониторинг:</strong> Стационарное наблюдение при острых симптомах',
+                    '<strong>Длительное ведение:</strong> Тесное сотрудничество кардиолога и кардиохирурга при выборе тактики'
+                ]
+            }
+        };
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFromLocalStorage();
+            updateRiskFactorCount();
+            
+            // Загрузка использованных ID из журнала
+            patientJournal.forEach(entry => {
+                if (entry.id) {
+                    usedIDs.add(entry.id);
+                }
+            });
+            
+            // Настройка обработчика для загрузки JSON
+            document.getElementById('jsonFileInput').addEventListener('change', handleJsonFileSelect);
+        });
+
+        // Функция для открытия файлового пикера JSON
+        function openJsonFilePicker() {
+            document.getElementById('jsonFileInput').click();
+        }
+
+        function handleJsonFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                readJsonFile(file);
+            }
+            // Сброс значения, чтобы можно было загрузить тот же файл снова
+            e.target.value = '';
+        }
+
+        function readJsonFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    loadPatientData(data);
+                } catch (error) {
+                    showError('❌ Ошибка парсинга JSON: ' + error.message);
+                }
+            };
+            reader.onerror = function() {
+                showError('❌ Ошибка при чтении файла');
+            };
+            reader.readAsText(file);
+        }
+
+        // Функция загрузки данных пациента из JSON
+        function loadPatientData(data) {
+            hideMessages();
+            
+            // Проверяем формат данных
+            if (!isValidDataFormat(data)) {
+                showError('❌ Неверная структура JSON-файла. Файл должен быть экспортирован из калькулятора отбора пациентов');
+                return;
+            }
+            
+            // Нормализуем данные
+            const normalizedData = normalizeDataFormat(data);
+            
+            // Заполняем форму данными
+            fillFormWithData(normalizedData);
+            
+            // Устанавливаем текущий ID
+            const patientId = getPatientId(normalizedData);
+            if (patientId) {
+                currentPatientID = patientId;
+                usedIDs.add(patientId);
+                document.getElementById('patientID').textContent = patientId;
+                document.getElementById('patientID').style.color = '#208081';
+                document.getElementById('patientID').style.fontWeight = 'bold';
+                updateIDHistory();
+            }
+            
+            showSuccess('✅ Данные пациента успешно загружены из файла');
+            
+            // Автоматически рассчитываем риск, если есть все данные
+            setTimeout(() => {
+                if (validateInput()) {
+                    calculateRisk();
+                }
+            }, 100);
+        }
+
+        // Проверка формата данных
+        function isValidDataFormat(data) {
+            // Проверка нового формата (Калькулятор отбора пациентов_v2.0+)
+            if (data.meta && data.meta.tool && data.meta.tool.includes("Калькулятор отбора пациентов")) {
+                return true;
+            }
+            
+            // Проверка структуры с основными полями
+            if (data.patientInfo && data.riskFactors && data.symptoms && data.studyCriteria) {
+                return true;
+            }
+            
+            // Проверка формата журнала
+            if (data.meta && data.meta.journalName && data.patients && Array.isArray(data.patients)) {
+                return true;
+            }
+            
+            return false;
+        }
+
+        // Нормализация формата данных
+        function normalizeDataFormat(data) {
+            // Если это журнал, берем первого пациента
+            if (data.patients && Array.isArray(data.patients) && data.patients.length > 0) {
+                // Показываем диалог выбора пациента
+                if (data.patients.length > 1) {
+                    const patientNames = data.patients.map(p => p.patientName || p.id).join('\n');
+                    const selectedIndex = prompt(`В файле несколько пациентов (${data.patients.length}).\n\nСписок пациентов:\n${patientNames}\n\nВведите номер пациента для загрузки (от 1 до ${data.patients.length}):`, '1');
+                    if (selectedIndex) {
+                        const index = parseInt(selectedIndex) - 1;
+                        if (index >= 0 && index < data.patients.length) {
+                            return data.patients[index].patientData || data.patients[index];
+                        }
+                    }
+                }
+                return data.patients[0].patientData || data.patients[0];
+            }
+            
+            return data;
+        }
+
+        // Получение ID пациента из данных
+        function getPatientId(data) {
+            return data.patientInfo?.id || data.patient?.id || data.id || null;
+        }
+
+        // Заполнение формы данными
+        function fillFormWithData(data) {
+            // Основные данные пациента
+            if (data.patientInfo) {
+                document.getElementById('patientName').value = data.patientInfo.name || '';
+                document.getElementById('sex').value = data.patientInfo.sex || '';
+                document.getElementById('age').value = data.patientInfo.age || '';
+            } else if (data.patient) {
+                document.getElementById('patientName').value = data.patient.name || '';
+                document.getElementById('sex').value = data.patient.sex || '';
+                document.getElementById('age').value = data.patient.age || '';
+            }
+            
+            // Симптомы
+            if (data.symptoms) {
+                if (data.symptoms.chestPainValue !== undefined) {
+                    document.getElementById('chestPainType').value = data.symptoms.chestPainValue.toString();
+                } else if (data.symptoms.chestPainType) {
+                    const mapping = {
+                        'typicalAngina': '3',
+                        'atypicalAngina': data.symptoms.chestPainValue || '1',
+                        'nonAnginal': '0'
+                    };
+                    document.getElementById('chestPainType').value = mapping[data.symptoms.chestPainType] || '0';
+                }
+                
+                if (data.symptoms.dyspneaValue !== undefined) {
+                    document.getElementById('dyspneaType').value = data.symptoms.dyspneaValue.toString();
+                } else if (data.symptoms.dyspneaType) {
+                    const mapping = {
+                        'dyspneaOnExertion': '2',
+                        'noDyspnea': '0'
+                    };
+                    document.getElementById('dyspneaType').value = mapping[data.symptoms.dyspneaType] || '0';
+                }
+            }
+            
+            // Факторы риска
+            if (data.riskFactors) {
+                document.getElementById('familyHistory').checked = data.riskFactors.familyHistory || false;
+                document.getElementById('smoking').checked = data.riskFactors.smoking || false;
+                document.getElementById('dyslipidemia').checked = data.riskFactors.dyslipidemia || false;
+                document.getElementById('hypertension').checked = data.riskFactors.hypertension || false;
+                document.getElementById('diabetes').checked = data.riskFactors.diabetes || false;
+                updateRiskFactorCount();
+            }
+            
+            // Критерии исследования
+            if (data.studyCriteria) {
+                document.getElementById('hasCKD').value = data.studyCriteria.hasCKD ? 'yes' : 'no';
+                document.getElementById('hasACS').value = data.studyCriteria.hasACS ? 'yes' : 'no';
+                document.getElementById('hasContraindications').value = data.studyCriteria.hasContraindications ? 'yes' : 'no';
+            } else if (data.formState) {
+                document.getElementById('hasCKD').value = data.formState.hasCKD || 'no';
+                document.getElementById('hasACS').value = data.formState.hasACS || 'no';
+                document.getElementById('hasContraindications').value = data.formState.hasContraindications || 'no';
+            }
+            
+            // Если есть результаты расчета, показываем их
+            if (data.calculationResults) {
+                setTimeout(() => {
+                    calculateRisk();
+                }, 100);
+            }
+        }
+
+        // Функция генерации ID (2 буквы + 5 цифр)
+        function generatePatientID() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let id;
+            let attempts = 0;
+            const maxAttempts = 1000;
+            
+            do {
+                // Генерация 2 случайных букв
+                let letterPart = '';
+                for (let i = 0; i < 2; i++) {
+                    letterPart += letters[Math.floor(Math.random() * letters.length)];
+                }
+                
+                // Генерация 5 случайных цифр
+                let numberPart = '';
+                for (let i = 0; i < 5; i++) {
+                    numberPart += Math.floor(Math.random() * 10);
+                }
+                
+                id = letterPart + numberPart;
+                attempts++;
+                
+                if (attempts > maxAttempts) {
+                    // Если слишком много попыток, очищаем историю использованных ID
+                    usedIDs.clear();
+                    break;
+                }
+                
+            } while (usedIDs.has(id));
+            
+            // Сохраняем ID
+            usedIDs.add(id);
+            currentPatientID = id;
+            
+            // Отображаем ID в форме
+            document.getElementById('patientID').textContent = id;
+            document.getElementById('patientID').style.color = '#208081';
+            document.getElementById('patientID').style.fontWeight = 'bold';
+            
+            // Показываем историю использованных ID
+            updateIDHistory();
+            
+            return id;
+        }
+
+        // Обновление истории использованных ID
+        function updateIDHistory() {
+            const historyElement = document.getElementById('patientID').parentNode.querySelector('.id-history');
+            if (!historyElement) {
+                const newHistoryElement = document.createElement('div');
+                newHistoryElement.className = 'id-history';
+                newHistoryElement.innerHTML = `Использовано ID: ${usedIDs.size}`;
+                document.getElementById('patientID').parentNode.appendChild(newHistoryElement);
+            } else {
+                historyElement.innerHTML = `Использовано ID: ${usedIDs.size}`;
+            }
+        }
+
+        // Обновление счетчика факторов риска
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateRiskFactorCount);
+        });
+
+        function updateRiskFactorCount() {
+            const checkboxes = document.querySelectorAll('#familyHistory, #smoking, #dyslipidemia, #hypertension, #diabetes');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.querySelector('#riskFactorsCount strong').textContent = checked;
+        }
+
+        // Функции управления журналом
+        function loadFromLocalStorage() {
+            try {
+                const savedJournal = localStorage.getItem('patientRiskJournal');
+                
+                if (savedJournal) {
+                    patientJournal = JSON.parse(savedJournal);
+                    updateJournalStats();
+                }
+            } catch (e) {
+                console.error('Ошибка при загрузке из localStorage:', e);
+            }
+        }
+
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('patientRiskJournal', JSON.stringify(patientJournal));
+            } catch (e) {
+                console.error('Ошибка при сохранении в localStorage:', e);
+            }
+        }
+
+        function toggleJournal() {
+            isJournalVisible = !isJournalVisible;
+            const journalSection = document.getElementById('journalSection');
+            const toggleBtn = document.querySelector('.btn-journal-toggle');
+            
+            if (isJournalVisible) {
+                journalSection.classList.add('show');
+                toggleBtn.innerHTML = '<i class="fas fa-times"></i> СКРЫТЬ ЖУРНАЛ ПАЦИЕНТОВ';
+                updateJournalDisplay();
+            } else {
+                journalSection.classList.remove('show');
+                toggleBtn.innerHTML = '<i class="fas fa-book-medical"></i> ПОКАЗАТЬ ЖУРНАЛ ПАЦИЕНТОВ';
+            }
+        }
+
+        function updateJournalDisplay() {
+            const tbody = document.getElementById('journalTableBody');
+            
+            if (patientJournal.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-journal">
+                            <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #bdc3c7;"></i>
+                            <p>Журнал пациентов пуст</p>
+                            <p>Сохраните первого пациента, чтобы он появился здесь</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            patientJournal.forEach((entry, index) => {
+                const createdDate = new Date(entry.createdDate);
+                const riskPercentage = entry.riskPercentage || 0;
+                
+                let riskClass = 'risk-very-low-badge';
+                let riskText = 'Очень низкий';
+                if (riskPercentage > 5) {
+                    riskClass = 'risk-low-badge';
+                    riskText = 'Низкий';
+                }
+                if (riskPercentage > 15) {
+                    riskClass = 'risk-moderate-badge';
+                    riskText = 'Средний';
+                }
+                if (riskPercentage > 50) {
+                    riskClass = 'risk-high-badge';
+                    riskText = 'Высокий';
+                }
+                if (riskPercentage > 85) {
+                    riskClass = 'risk-very-high-badge';
+                    riskText = 'Очень высокий';
+                }
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="patient-id">${entry.id}</span></td>
+                    <td><strong>${entry.patientName || 'Не указано'}</strong></td>
+                    <td class="patient-summary-cell">
+                        <p><strong>Возраст:</strong> ${entry.patientAge || 'Не указано'}</p>
+                        <p><strong>Пол:</strong> ${entry.patientSex === 'woman' ? 'Женщина' : entry.patientSex === 'man' ? 'Мужчина' : entry.patientSex || '—'}</p>
+                        <p><strong>Для исследования:</strong> ${entry.isEligible ? '✅ Подходит' : '❌ Не подходит'}</p>
+                    </td>
+                    <td><span class="risk-badge ${riskClass}">${riskPercentage}%</span><br><small>${riskText}</small></td>
+                    <td>${createdDate.toLocaleDateString('ru-RU')}<br><small>${createdDate.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</small></td>
+                    <td class="actions-cell">
+                        <button class="btn-sm btn-primary-sm" onclick="loadPatientFromJournal(${index})" title="Загрузить в калькулятор">
+                            <i class="fas fa-upload"></i> Загрузить
+                        </button>
+                        <button class="btn-sm btn-warning-sm" onclick="editJournalEntry(${index})" title="Редактировать">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn-sm btn-danger-sm" onclick="deleteJournalEntry(${index})" title="Удалить">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateJournalStats() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            const totalPatients = patientJournal.length;
+            const todayPatients = patientJournal.filter(entry => {
+                const entryDate = new Date(entry.createdDate);
+                return entryDate >= today;
+            }).length;
+            
+            const eligiblePatients = patientJournal.filter(entry => entry.isEligible).length;
+            const notEligiblePatients = totalPatients - eligiblePatients;
+            
+            document.getElementById('stat-total').textContent = totalPatients;
+            document.getElementById('stat-today').textContent = todayPatients;
+            document.getElementById('stat-eligible').textContent = eligiblePatients;
+            document.getElementById('stat-not-eligible').textContent = notEligiblePatients;
+        }
+
+        window.loadPatientFromJournal = function(index) {
+            if (index < 0 || index >= patientJournal.length) return;
+            
+            const entry = patientJournal[index];
+            
+            if (confirm(`Загрузить данные пациента "${entry.patientName}" в калькулятор? Текущие несохраненные данные будут потеряны.`)) {
+                // Загружаем данные пациента
+                if (entry.patientData) {
+                    loadPatientData(entry.patientData);
+                } else {
+                    // Если нет полных данных, создаем базовую структуру
+                    const patientData = {
+                        patientInfo: {
+                            id: entry.id,
+                            name: entry.patientName,
+                            age: entry.patientAge,
+                            sex: entry.patientSex
+                        },
+                        calculationResults: {
+                            percentage: entry.riskPercentage,
+                            category: entry.riskCategory,
+                            eligibility: {
+                                isEligible: entry.isEligible
+                            }
+                        }
+                    };
+                    loadPatientData(patientData);
+                }
+                
+                // Скрываем журнал
+                toggleJournal();
+                
+                showSuccess(`✅ Пациент "${entry.patientName}" загружен в калькулятор`);
+            }
+        };
+
+        window.editJournalEntry = function(index) {
+            if (index < 0 || index >= patientJournal.length) return;
+            
+            const entry = patientJournal[index];
+            const newName = prompt('Введите новое ФИО пациента:', entry.patientName);
+            
+            if (newName !== null && newName.trim() !== '') {
+                patientJournal[index].patientName = newName.trim();
+                patientJournal[index].updatedDate = new Date().toISOString();
+                
+                // Обновляем в patientData если есть
+                if (patientJournal[index].patientData) {
+                    if (patientJournal[index].patientData.patientInfo) {
+                        patientJournal[index].patientData.patientInfo.name = newName.trim();
+                    }
+                    if (patientJournal[index].patientData.patient) {
+                        patientJournal[index].patientData.patient.name = newName.trim();
+                    }
+                }
+                
+                saveToLocalStorage();
+                updateJournalDisplay();
+                showSuccess('✅ ФИО пациента обновлено');
+            }
+        };
+
+        window.deleteJournalEntry = function(index) {
+            if (index < 0 || index >= patientJournal.length) return;
+            
+            const entry = patientJournal[index];
+            if (confirm(`Вы уверены, что хотите удалить пациента "${entry.patientName}" из журнала?`)) {
+                patientJournal.splice(index, 1);
+                saveToLocalStorage();
+                updateJournalDisplay();
+                updateJournalStats();
+                showSuccess('✅ Пациент удален из журнала');
+            }
+        };
+
+        function saveCurrentToJournal() {
+            if (!window.lastCalculationData) {
+                showError('❌ Нет данных расчета для сохранения');
+                return;
+            }
+            
+            saveToJournal();
+        }
+
+        function saveToJournal() {
+            if (!window.lastCalculationData) {
+                showError('❌ Сначала выполните расчет риска');
+                return;
+            }
+            
+            const patientId = currentPatientID;
+            if (!patientId) {
+                showError('❌ Сначала сгенерируйте ID пациента');
+                return;
+            }
+            
+            const now = new Date();
+            const journalEntry = {
+                id: patientId,
+                patientName: document.getElementById('patientName').value || 'Не указано',
+                patientAge: parseInt(document.getElementById('age').value) || null,
+                patientSex: document.getElementById('sex').value || '',
+                riskPercentage: window.lastCalculationData.percentage,
+                riskCategory: window.lastCalculationData.category,
+                isEligible: window.lastCalculationData.isEligible,
+                createdDate: now.toISOString(),
+                updatedDate: now.toISOString(),
+                patientData: window.lastCalculationData
+            };
+            
+            // Проверяем, существует ли уже пациент с таким ID
+            const existingIndex = patientJournal.findIndex(entry => entry.id === patientId);
+            
+            if (existingIndex !== -1) {
+                if (confirm('Пациент с таким ID уже есть в журнале. Обновить существующую запись?')) {
+                    patientJournal[existingIndex] = {
+                        ...patientJournal[existingIndex],
+                        ...journalEntry,
+                        createdDate: patientJournal[existingIndex].createdDate
+                    };
+                    showSuccess(`✅ Запись пациента обновлена в журнале`);
+                } else {
+                    return;
+                }
+            } else {
+                patientJournal.unshift(journalEntry);
+                showSuccess(`✅ Пациент сохранен в журнал`);
+            }
+            
+            saveToLocalStorage();
+            updateJournalStats();
+            
+            // Обновляем отображение если журнал открыт
+            if (isJournalVisible) {
+                updateJournalDisplay();
+            }
+        }
+
+        function exportJournalToJson() {
+            if (patientJournal.length === 0) {
+                showError('❌ Журнал пуст, нечего экспортировать');
+                return;
+            }
+            
+            const exportData = {
+                meta: {
+                    journalName: 'Журнал пациентов Калькулятор отбора пациентов_v2.2',
+                    exportDate: new Date().toISOString(),
+                    tool: 'Калькулятор отбора пациентов_v2.2',
+                    version: '2.2',
+                    totalPatients: patientJournal.length
+                },
+                patients: patientJournal.map(entry => ({
+                    id: entry.id,
+                    patientName: entry.patientName,
+                    patientAge: entry.patientAge,
+                    patientSex: entry.patientSex,
+                    riskPercentage: entry.riskPercentage,
+                    riskCategory: entry.riskCategory,
+                    isEligible: entry.isEligible,
+                    createdDate: entry.createdDate,
+                    updatedDate: entry.updatedDate,
+                    patientData: entry.patientData
+                }))
+            };
+            
+            const jsonContent = JSON.stringify(exportData, null, 2);
+            const fileName = `Журнал_пациентов_${new Date().toISOString().slice(0,10)}.json`;
+            downloadFile(jsonContent, fileName, 'application/json');
+            
+            showSuccess(`✅ Журнал успешно экспортирован! ${patientJournal.length} пациентов`);
+        }
+
+        function importJournal() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (!importedData.patients || !Array.isArray(importedData.patients)) {
+                            throw new Error('Неверный формат файла журнала');
+                        }
+                        
+                        const patientCount = importedData.patients.length;
+                        
+                        if (confirm(`Импортировать ${patientCount} записей из журнала? Существующие записи будут сохранены.`)) {
+                            let importedCount = 0;
+                            let updatedCount = 0;
+                            
+                            // Добавляем только новые записи (по ID)
+                            importedData.patients.forEach(newPatient => {
+                                const existingIndex = patientJournal.findIndex(entry => entry.id === newPatient.id);
+                                
+                                if (existingIndex !== -1) {
+                                    // Обновляем существующую запись
+                                    patientJournal[existingIndex] = {
+                                        ...patientJournal[existingIndex],
+                                        ...newPatient,
+                                        createdDate: patientJournal[existingIndex].createdDate,
+                                        updatedDate: new Date().toISOString()
+                                    };
+                                    updatedCount++;
+                                } else {
+                                    // Добавляем новую запись
+                                    patientJournal.unshift(newPatient);
+                                    importedCount++;
+                                }
+                            });
+                            
+                            saveToLocalStorage();
+                            updateJournalDisplay();
+                            updateJournalStats();
+                            hideMessages();
+                            
+                            let message = `✅ Журнал загружен! `;
+                            if (importedCount > 0) {
+                                message += `Добавлено ${importedCount} новых пациентов. `;
+                            }
+                            if (updatedCount > 0) {
+                                message += `Обновлено ${updatedCount} существующих записей.`;
+                            }
+                            showSuccess(message);
+                        }
+                    } catch (error) {
+                        showError('❌ Ошибка: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
+        function clearJournal() {
+            if (patientJournal.length === 0) {
+                showError('❌ Журнал пуст');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите полностью очистить журнал пациентов? Это действие нельзя отменить.')) {
+                patientJournal.length = 0;
+                saveToLocalStorage();
+                updateJournalDisplay();
+                updateJournalStats();
+                showSuccess('✅ Журнал пациентов очищен');
+            }
+        }
+
+        function downloadFile(content, fileName, contentType) {
+            const blob = new Blob([content], { type: contentType });
+            const url = URL.createObjectURL(blob);
+            const link = document.getElementById('download-link');
+            link.href = url;
+            link.download = fileName;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        }
+
+        // Функции расчета риска
+        function validateInput() {
+            const errorBox = document.getElementById('errorMessage');
+            errorBox.classList.remove('show');
+
+            const sex = document.getElementById('sex').value;
+            const age = parseInt(document.getElementById('age').value);
+            const chestPain = document.getElementById('chestPainType').value;
+            const dyspnea = document.getElementById('dyspneaType').value;
+
+            if (!sex) {
+                showError('Пожалуйста, выберите пол');
+                return false;
+            }
+            if (!age || age < 18 || age > 120) {
+                showError('Пожалуйста, введите корректный возраст (18-120 лет)');
+                return false;
+            }
+            if (!chestPain) {
+                showError('Пожалуйста, выберите тип боли в груди');
+                return false;
+            }
+            if (!dyspnea) {
+                showError('Пожалуйста, выберите статус одышки');
+                return false;
+            }
+            return true;
+        }
+
+        function showError(message) {
+            const errorBox = document.getElementById('errorMessage');
+            errorBox.textContent = '❌ ' + message;
+            errorBox.classList.add('show');
+        }
+
+        function showSuccess(message) {
+            const successBox = document.getElementById('successMessage');
+            successBox.textContent = '✅ ' + message;
+            successBox.classList.add('show');
+            
+            setTimeout(() => {
+                successBox.classList.remove('show');
+            }, 4000);
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        function calculateRisk() {
+            if (!validateInput()) return;
+
+            const patientName = document.getElementById('patientName').value || 'Не указано';
+            const sex = document.getElementById('sex').value;
+            const age = parseInt(document.getElementById('age').value);
+            const chestPain = parseInt(document.getElementById('chestPainType').value);
+            const dyspnea = parseInt(document.getElementById('dyspneaType').value);
+            const symptomScore = chestPain + dyspnea;
+
+            const riskFactorCount = document.querySelectorAll('input[type="checkbox"]:checked').length;
+            const ageGroup = getAgeGroup(age);
+
+            if (!ageGroup) {
+                showError('Возраст вне диапазона (30-80 лет)');
+                return;
+            }
+
+            const percentage = getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount);
+
+            let category;
+            if (percentage < 5) {
+                category = 'very-low';
+            } else if (percentage < 15) {
+                category = 'low';
+            } else if (percentage < 50) {
+                category = 'moderate';
+            } else if (percentage < 85) {
+                category = 'high';
+            } else {
+                category = 'very-high';
+            }
+
+            const eligibilityResult = checkEligibility(percentage, riskFactorCount, age, document.getElementById('diabetes').checked);
+            
+            displayResults(percentage, category, patientName, sex, age, chestPain, dyspnea, symptomScore, riskFactorCount, ageGroup, eligibilityResult);
+        }
+
+        function getAgeGroup(age) {
+            if (age >= 30 && age < 40) return '30-39';
+            if (age >= 40 && age < 50) return '40-49';
+            if (age >= 50 && age < 60) return '50-59';
+            if (age >= 60 && age < 70) return '60-69';
+            if (age >= 70) return '70-80';
+            return null;
+        }
+
+        function getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount) {
+            // Таблица вероятностей ИБС для женщин (исправленная - соответствует оригиналу)
+            const tableWomen = {
+                '30-39': { '0-1': [1, 2, 3, 4, 5, 6], '2': [4, 7, 10, 13, 15, 18], '3-4': [12, 17, 22, 27, 31, 35], '5+': [17, 25, 32, 39, 44, 48] },
+                '40-49': { '0-1': [2, 4, 6, 8, 10, 12], '2': [8, 12, 16, 20, 24, 27], '3-4': [17, 25, 32, 39, 45, 50], '5+': [25, 34, 42, 50, 57, 62] },
+                '50-59': { '0-1': [4, 7, 10, 13, 16, 19], '2': [12, 17, 23, 29, 34, 39], '3-4': [27, 33, 40, 47, 52, 57], '5+': [34, 45, 54, 62, 69, 75] },
+                '60-69': { '0-1': [9, 14, 19, 25, 30, 36], '2': [22, 32, 42, 52, 60, 68], '3-4': [35, 39, 44, 45, 45, 45], '5+': [45, 45, 45, 45, 45, 45] },
+                '70-80': { '0-1': [14, 20, 27, 34, 41, 48], '2': [27, 33, 40, 47, 54, 60], '3-4': [44, 45, 45, 45, 45, 45], '5+': [45, 45, 45, 45, 45, 45] }
+            };
+
+            // Таблица вероятностей ИБС для мужчин (без изменений)
+            const tableMen = {
+                '30-39': { '0-1': [6, 10, 14, 18, 22, 26], '2': [3, 6, 10, 14, 18, 22], '3-4': [7, 11, 16, 21, 26, 31], '5+': [16, 23, 31, 39, 46, 53] },
+                '40-49': { '0-1': [16, 19, 22, 26, 29, 33], '2': [10, 14, 19, 24, 29, 34], '3-4': [19, 23, 28, 34, 40, 45], '5+': [23, 34, 45, 55, 64, 72] },
+                '50-59': { '0-1': [2, 5, 8, 12, 16, 20], '2': [14, 19, 25, 31, 38, 44], '3-4': [15, 19, 25, 31, 37, 43], '5+': [19, 45, 65, 75, 82, 87] },
+                '60-69': { '0-1': [2, 5, 8, 12, 16, 21], '2': [10, 14, 19, 25, 31, 38], '3-4': [19, 25, 32, 40, 48, 56], '5+': [39, 45, 52, 59, 65, 71] },
+                '70-80': { '0-1': [21, 27, 33, 40, 47, 54], '2': [10, 15, 21, 28, 35, 43], '3-4': [33, 39, 46, 53, 60, 67], '5+': [45, 52, 59, 65, 71, 76] }
+            };
+
+            // Определяем таблицу в зависимости от пола
+            const table = sex === 'woman' ? tableWomen : tableMen;
+            
+            // Определяем группу факторов риска
+            let riskGroup;
+            if (riskFactorCount <= 1) riskGroup = '0-1';
+            else if (riskFactorCount === 2) riskGroup = '2';
+            else if (riskFactorCount === 3 || riskFactorCount === 4) riskGroup = '3-4';
+            else riskGroup = '5+';
+
+            // Определяем индекс симптомов (0-5)
+            const symptomIndex = Math.min(Math.max(chestPain + dyspnea, 0), 5);
+            
+            // Получаем вероятность из таблицы
+            if (table[ageGroup] && table[ageGroup][riskGroup]) {
+                return table[ageGroup][riskGroup][symptomIndex];
+            }
+            
+            return 0; // По умолчанию, если что-то пошло не так
+        }
+
+        function checkEligibility(percentage, riskFactorCount, age, hasDiabetes) {
+            const hasCKD = document.getElementById('hasCKD').value === 'yes';
+            const hasACS = document.getElementById('hasACS').value === 'yes';
+            const hasContraindications = document.getElementById('hasContraindications').value === 'yes';
+            
+            // Проверка критериев включения
+            const criteria1 = (percentage >= 15); // Показания для стресс-ЭхоКГ (средний/высокий риск)
+            const criteria2 = (percentage >= 15) || hasDiabetes || hasCKD; // Средний/высокий риск или СД/ХБП
+            const criteria3 = (age >= 18); // Возраст ≥ 18 лет
+            
+            // Проверка критериев исключения
+            const exclusion1 = hasACS; // Острый коронарный синдром (<7 дней)
+            const exclusion2 = hasContraindications; // Противопоказания к стресс-тестам
+            
+            // Обновляем отображение критериев
+            updateCriteriaDisplay(criteria1, criteria2, criteria3);
+            
+            // Определяем результат отбора
+            const isEligible = criteria1 && criteria2 && criteria3 && !exclusion1 && !exclusion2;
+            
+            return {
+                isEligible,
+                criteria1,
+                criteria2,
+                criteria3,
+                exclusion1,
+                exclusion2,
+                hasCKD,
+                hasDiabetes
+            };
+        }
+
+        function updateCriteriaDisplay(criteria1, criteria2, criteria3) {
+            // Критерий 1: Показания для стресс-ЭхоКГ
+            const criteria1Element = document.getElementById('criteria1');
+            const criteria1Label = document.getElementById('criteria1Label');
+            const criteria1Checkbox = document.getElementById('hasIndication');
+            
+            if (criteria1) {
+                criteria1Element.classList.add('criteria-met');
+                criteria1Label.innerHTML = '✅ ' + criteria1Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria1Checkbox.checked = true;
+            } else {
+                criteria1Element.classList.add('criteria-not-met');
+                criteria1Label.innerHTML = '❌ ' + criteria1Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria1Checkbox.checked = false;
+            }
+            
+            // Критерий 2: Средний/высокий риск или СД/ХБП
+            const criteria2Element = document.getElementById('criteria2');
+            const criteria2Label = document.getElementById('criteria2Label');
+            const criteria2Checkbox = document.getElementById('hasRiskFactors');
+            
+            if (criteria2) {
+                criteria2Element.classList.add('criteria-met');
+                criteria2Label.innerHTML = '✅ ' + criteria2Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria2Checkbox.checked = true;
+            } else {
+                criteria2Element.classList.add('criteria-not-met');
+                criteria2Label.innerHTML = '❌ ' + criteria2Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria2Checkbox.checked = false;
+            }
+            
+            // Критерий 3: Возраст ≥ 18 лет
+            const criteria3Element = document.getElementById('criteria3');
+            const criteria3Label = document.getElementById('criteria3Label');
+            const criteria3Checkbox = document.getElementById('ageOk');
+            
+            if (criteria3) {
+                criteria3Element.classList.add('criteria-met');
+                criteria3Label.innerHTML = '✅ ' + criteria3Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria3Checkbox.checked = true;
+            } else {
+                criteria3Element.classList.add('criteria-not-met');
+                criteria3Label.innerHTML = '❌ ' + criteria3Label.innerHTML.replace(/^[✅❌]\s*/, '');
+                criteria3Checkbox.checked = false;
+            }
+        }
+
+        function displayResults(percentage, category, patientName, sex, age, chestPain, dyspnea, symptomScore, riskFactorCount, ageGroup, eligibilityResult) {
+            // Обновляем ID пациента в результатах
+            document.getElementById('resultPatientID').textContent = currentPatientID || 'Не сгенерирован';
+            
+            // Обновляем основную коробку результатов
+            const resultBox = document.getElementById('resultBox');
+            resultBox.className = `result-box ${category}`;
+            
+            document.getElementById('resultPercentage').textContent = `${percentage}%`;
+            document.getElementById('resultCategory').textContent = categoryDescriptions[category].name;
+            document.getElementById('resultInterpretation').textContent = categoryDescriptions[category].interpretation;
+            
+            // Отображаем детали категории
+            const categoryDetails = document.getElementById('categoryDetails');
+            categoryDetails.innerHTML = `
+                <ul>
+                    ${categoryDescriptions[category].shortRecommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            `;
+            
+            // Отображаем детальные рекомендации
+            const recommendationsContent = document.getElementById('recommendationsContent');
+            recommendationsContent.innerHTML = `
+                <ul>
+                    ${categoryDescriptions[category].detailedRecommendations.map(rec => `<li>${rec}</li>`).join('')}
+                </ul>
+            `;
+            document.getElementById('detailedRecommendations').style.display = 'block';
+            
+            // Отображаем детальные результаты
+            const detailedResults = document.getElementById('detailedResults');
+            detailedResults.innerHTML = `
+                <p><strong>ФИО:</strong> ${patientName}</p>
+                <p><strong>Возраст:</strong> ${age} лет (${ageGroup})</p>
+                <p><strong>Пол:</strong> ${sex === 'woman' ? 'Женщина' : 'Мужчина'}</p>
+                <p><strong>Факторы риска:</strong> ${riskFactorCount} (${getSelectedRiskFactors()})</p>
+                <p><strong>Суммарный балл симптомов:</strong> ${symptomScore} (боль в груди: ${chestPain}, одышка: ${dyspnea})</p>
+            `;
+            
+            // Отображаем анализ влияния параметров
+            const analysisContent = document.getElementById('analysisContent');
+            analysisContent.innerHTML = `
+                <div class="analysis-item">
+                    <strong>Возрастная группа (${ageGroup}):</strong> Увеличивает базовый риск
+                </div>
+                <div class="analysis-item">
+                    <strong>Пол (${sex === 'woman' ? 'Женский' : 'Мужской'}):</strong> ${sex === 'woman' ? 'Ниже базовый риск по сравнению с мужчинами' : 'Выше базовый риск по сравнению с женщинами'}
+                </div>
+                <div class="analysis-item">
+                    <strong>Факторы риска (${riskFactorCount}):</strong> ${riskFactorCount > 0 ? 'Повышают вероятность ИБС' : 'Минимальное влияние на риск'}
+                </div>
+                <div class="analysis-item">
+                    <strong>Симптомы (${symptomScore} баллов):</strong> ${symptomScore > 0 ? 'Значительно повышают вероятность ИБС' : 'Минимальное влияние на риск'}
+                </div>
+            `;
+            document.getElementById('analysisBox').style.display = 'block';
+            
+            // Отображаем результат отбора
+            const finalEligibilityResult = document.getElementById('finalEligibilityResult');
+            const finalEligibilityText = document.getElementById('finalEligibilityText');
+            const eligibilityDetails = document.getElementById('eligibilityDetails');
+            
+            if (eligibilityResult.isEligible) {
+                finalEligibilityResult.classList.add('eligibility-good');
+                finalEligibilityText.innerHTML = '✅ ПОДХОДИТ ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT';
+                eligibilityDetails.innerHTML = `
+                    <p>Все критерии включения выполнены:</p>
+                    <ul>
+                        <li>✅ Возраст ≥ 18 лет: ${age} лет</li>
+                        <li>✅ Показания для стресс-ЭхоКГ: средний/высокий риск (${percentage}%)</li>
+                        <li>✅ Средний/высокий риск или СД/ХБП: ${percentage}% ${eligibilityResult.hasDiabetes ? '+ СД' : ''} ${eligibilityResult.hasCKD ? '+ ХБП' : ''}</li>
+                        <li>✅ Нет острых противопоказаний</li>
+                    </ul>
+                `;
+            } else {
+                finalEligibilityResult.classList.add('eligibility-bad');
+                finalEligibilityText.innerHTML = '❌ НЕ ПОДХОДИТ ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT';
+                
+                let reasons = [];
+                if (!eligibilityResult.criteria1) reasons.push('Низкий риск ИБС (<15%)');
+                if (!eligibilityResult.criteria2) reasons.push('Нет среднего/высокого риска, СД или ХБП');
+                if (!eligibilityResult.criteria3) reasons.push('Возраст менее 18 лет');
+                if (eligibilityResult.exclusion1) reasons.push('Острый коронарный синдром (<7 дней)');
+                if (eligibilityResult.exclusion2) reasons.push('Противопоказания к стресс-тестам');
+                
+                eligibilityDetails.innerHTML = `
+                    <p>Причины невключения:</p>
+                    <ul>
+                        ${reasons.map(reason => `<li>❌ ${reason}</li>`).join('')}
+                    </ul>
+                `;
+            }
+            finalEligibilityResult.style.display = 'block';
+            
+            // Сохраняем данные расчета для экспорта
+            window.lastCalculationData = {
+                percentage,
+                category,
+                isEligible: eligibilityResult.isEligible,
+                patientInfo: {
+                    id: currentPatientID,
+                    name: patientName,
+                    age: age,
+                    sex: sex
+                },
+                riskFactors: {
+                    familyHistory: document.getElementById('familyHistory').checked,
+                    smoking: document.getElementById('smoking').checked,
+                    dyslipidemia: document.getElementById('dyslipidemia').checked,
+                    hypertension: document.getElementById('hypertension').checked,
+                    diabetes: document.getElementById('diabetes').checked,
+                    count: riskFactorCount
+                },
+                symptoms: {
+                    chestPainValue: chestPain,
+                    dyspneaValue: dyspnea,
+                    totalScore: symptomScore
+                },
+                studyCriteria: {
+                    hasCKD: document.getElementById('hasCKD').value === 'yes',
+                    hasACS: document.getElementById('hasACS').value === 'yes',
+                    hasContraindications: document.getElementById('hasContraindications').value === 'yes'
+                },
+                calculationResults: {
+                    percentage,
+                    category,
+                    ageGroup,
+                    eligibility: eligibilityResult
+                },
+                meta: {
+                    tool: "Калькулятор отбора пациентов_v2.2",
+                    version: "2.2",
+                    calculatedAt: new Date().toISOString()
+                }
+            };
+            
+            // Показываем кнопки экспорта
+            document.getElementById('exportButtons').style.display = 'flex';
+            
+            // Показываем секцию результатов
+            document.getElementById('resultSection').classList.add('show');
+            
+            // Прокручиваем к результатам
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getSelectedRiskFactors() {
+            const factors = [];
+            if (document.getElementById('familyHistory').checked) factors.push('Семейная история');
+            if (document.getElementById('smoking').checked) factors.push('Курение');
+            if (document.getElementById('dyslipidemia').checked) factors.push('Дислипидемия');
+            if (document.getElementById('hypertension').checked) factors.push('Гипертензия');
+            if (document.getElementById('diabetes').checked) factors.push('Сахарный диабет');
+            return factors.length > 0 ? factors.join(', ') : 'Нет';
+        }
+
+        function exportAllToJSON() {
+            if (!window.lastCalculationData) {
+                showError('❌ Нет данных для экспорта');
+                return;
+            }
+            
+            const jsonContent = JSON.stringify(window.lastCalculationData, null, 2);
+            const fileName = `Пациент_${currentPatientID || 'без_ID'}_${new Date().toISOString().slice(0,10)}.json`;
+            downloadFile(jsonContent, fileName, 'application/json');
+            
+            showSuccess('✅ Данные успешно экспортированы в JSON');
+        }
+
+        // Функция сброса формы
+        function resetForm() {
+            document.querySelectorAll('input, select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else if (el.id !== 'hasCKD' && el.id !== 'hasACS' && el.id !== 'hasContraindications') el.value = '';
+            });
+            
+            // Сброс дополнительных полей
+            document.getElementById('hasCKD').value = 'no';
+            document.getElementById('hasACS').value = 'no';
+            document.getElementById('hasContraindications').value = 'no';
+            
+            // Сброс индикаторов критериев
+            document.querySelectorAll('.criteria-check').forEach(el => {
+                el.className = 'checkbox-item criteria-check';
+                el.querySelector('input').checked = false;
+                el.querySelector('label').innerHTML = el.querySelector('label').innerHTML.replace(/^[✅❌]\s*/, '');
+            });
+            
+            // Сброс ID (не удаляем из usedIDs, чтобы не повторялся)
+            document.getElementById('patientID').textContent = 'Не сгенерирован';
+            document.getElementById('patientID').style.color = '';
+            document.getElementById('patientID').style.fontWeight = '';
+            document.getElementById('resultPatientID').textContent = 'Не сгенерирован';
+            
+            // Удаляем историю ID
+            const historyElement = document.getElementById('patientID').parentNode.querySelector('.id-history');
+            if (historyElement) {
+                historyElement.remove();
+            }
+            
+            document.getElementById('eligibilityResult').style.display = 'none';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('exportButtons').style.display = 'none';
+            document.getElementById('analysisBox').style.display = 'none';
+            document.getElementById('detailedRecommendations').style.display = 'none';
+            document.getElementById('finalEligibilityResult').style.display = 'none';
+            updateRiskFactorCount();
+            
+            // Сбрасываем последние данные расчета
+            window.lastCalculationData = null;
+        }
+    </script>
+</body>
+</html>

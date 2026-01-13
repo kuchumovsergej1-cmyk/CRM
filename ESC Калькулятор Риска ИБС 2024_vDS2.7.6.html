@@ -1,0 +1,3149 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Калькулятор риска обструктивной ИБС с рекомендациями по стресс-эхокардиографии</title>
+    <style>
+        :root {
+            --color-primary: #208081;
+            --color-success: #22c55e;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            --color-bg: #f9fafb;
+            --color-text: #1f2937;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.95;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e5e7eb;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section h2 i {
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .form-group.required label::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            color: #1f2937;
+            transition: border-color 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #208081;
+            box-shadow: 0 0 0 3px rgba(32, 128, 129, 0.1);
+        }
+
+        .form-group select.error,
+        .form-group input.error {
+            border-color: #ef4444;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #208081;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            cursor: pointer;
+            font-weight: normal;
+            flex: 1;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(32, 128, 129, 0.3);
+        }
+
+        .btn-reset {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-reset:hover {
+            background: #d1d5db;
+        }
+
+        .result-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-box {
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-box.very-low {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+        }
+
+        .result-box.low {
+            background: linear-gradient(135deg, #84cc16 0%, #65a30d 100%);
+            color: white;
+        }
+
+        .result-box.moderate {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .result-box.high {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .result-box.very-high {
+            background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%);
+            color: white;
+        }
+
+        .result-percentage {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .result-category {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-interpretation {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 12px;
+            font-size: 12px;
+            color: #1e40af;
+            margin-top: 15px;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .risk-factors-display {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        .risk-factors-display strong {
+            color: #1f2937;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn-export {
+            flex: 1;
+            min-width: 150px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-export-excel {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: white;
+        }
+
+        .btn-export-excel:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .analysis-box {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #166534;
+        }
+
+        .analysis-box h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #15803d;
+        }
+
+        .analysis-item {
+            margin-bottom: 8px;
+            padding: 8px;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #10b981;
+        }
+
+        .analysis-item strong {
+            color: #047857;
+        }
+
+        .detailed-recommendations {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #78350f;
+        }
+
+        .stress-test-recommendations {
+            background: #e0f2fe;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .stress-test-recommendations h5 {
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            color: #0369a1;
+            font-size: 16px;
+        }
+
+        .test-recommendation {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #0ea5e9;
+        }
+
+        .test-recommendation.recommended {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .test-recommendation.contraindicated {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+
+        .test-recommendation .test-name {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+
+        .test-recommendation .test-reason {
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 8px;
+        }
+
+        .test-recommendation .test-details {
+            font-size: 12px;
+            color: #6b7280;
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .contraindication-list {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            color: #991b1b;
+        }
+
+        .contraindication-list h6 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .bmi-calculator {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #0369a1;
+        }
+
+        .bmi-result {
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        .bmi-highlight {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        /* Новые стили для управления файлами */
+        .file-management-section {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+
+        .file-buttons-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .file-buttons-group {
+                flex-direction: column;
+            }
+            
+            .file-input-container {
+                width: 100%;
+            }
+            
+            .file-input-label {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .file-input-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 13px;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 0.1px;
+            height: 0.1px;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .btn-save-adenosine {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+
+        .btn-save-exercise {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+
+        .btn-save-dobutamine {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-export-txt {
+            background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+            color: white;
+        }
+
+        .file-info-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+        }
+
+        .file-info-box h5 {
+            margin: 0 0 10px 0;
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .file-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .file-stat-item {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+        }
+
+        .file-stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #208081;
+        }
+
+        .file-stat-label {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .load-file-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+        }
+
+        .loaded-files-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 10px;
+            background: #f9fafb;
+            margin-top: 15px;
+        }
+
+        .loaded-file-item {
+            padding: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .loaded-file-item:hover {
+            background-color: #e5e7eb;
+        }
+
+        .loaded-file-item.selected {
+            background-color: #dbeafe;
+            border-left: 3px solid #3b82f6;
+        }
+
+        .loaded-file-item:last-child {
+            border-bottom: none;
+        }
+
+        .loaded-file-name {
+            font-weight: 600;
+            color: #1f2937;
+        }
+
+        .loaded-file-details {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+
+        .loaded-file-type {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .type-adenosine {
+            background-color: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .type-exercise {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .type-dobutamine {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+        }
+
+        .no-files-message {
+            text-align: center;
+            padding: 20px;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .file-type-header {
+            font-weight: bold;
+            color: #1f2937;
+            margin: 15px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e5e7eb;
+            font-size: 14px;
+        }
+        
+        .file-type-header:first-child {
+            margin-top: 0;
+        }
+
+        /* Стили для критериев исследования */
+        .eligibility-result {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-top: 15px;
+            font-size: 13px;
+            display: none;
+        }
+
+        .eligibility-good {
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+        }
+
+        .eligibility-bad {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+
+        .criteria-check {
+            transition: all 0.3s ease;
+        }
+
+        .criteria-met {
+            background: #f0fdf4 !important;
+            border-color: #22c55e !important;
+        }
+
+        .criteria-not-met {
+            background: #fee2e2 !important;
+            border-color: #ef4444 !important;
+        }
+
+        /* Стили для группы рандомизации */
+        .group-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .group-standard {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .group-personalized {
+            background-color: #8b5cf6;
+            color: white;
+        }
+
+        .randomization-info {
+            background: #f0f9ff;
+            border: 2px solid #0ea5e9;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .randomization-info.show {
+            display: block;
+        }
+
+        .randomization-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #0369a1;
+        }
+
+        /* Стили для информации об авторах */
+        .authors-footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            text-align: right;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .authors-footer .authors-names {
+            font-weight: 600;
+            color: #208081;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Калькулятор риска обструктивной ИБС с рекомендациями по стресс-эхокардиографии</h1>
+            <p>На основе Risk Factor-weighted Clinical Likelihood Model (2024) с алгоритмом выбора метода стресс-теста</p>
+        </div>
+
+        <div class="main-content">
+            <!-- ЛЕВАЯ КОЛОНКА -->
+            <div>
+                <div class="section">
+                    <h2><i class="icon">👤</i> 1️⃣ Данные пациента</h2>
+                    
+                    <div class="randomization-info" id="randomizationInfo">
+                        <div class="randomization-title">
+                            <i class="icon">🎲</i> Информация о рандомизации:
+                        </div>
+                        <div id="randomizationDetails">
+                            <!-- Здесь будет отображаться информация о группе -->
+                        </div>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="patientName">ФИО пациента</label>
+                        <input type="text" id="patientName" placeholder="Введите Фамилию Имя Отчество" required>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="sex">Пол</label>
+                        <select id="sex" required>
+                            <option value="">-- Выберите пол --</option>
+                            <option value="woman">Женщина</option>
+                            <option value="man">Мужчина</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group required">
+                        <label for="age">Возраст (лет)</label>
+                        <input type="number" id="age" min="18" max="120" placeholder="Введите возраст" required>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group required">
+                            <label for="height">Рост (см)</label>
+                            <input type="number" id="height" min="100" max="250" placeholder="Рост в см" required>
+                        </div>
+
+                        <div class="form-group required">
+                            <label for="weight">Вес (кг)</label>
+                            <input type="number" id="weight" min="30" max="300" placeholder="Вес в кг" required>
+                        </div>
+                    </div>
+
+                    <div id="bmiContainer" class="bmi-calculator" style="display: none;">
+                        <div>Рассчитанный ИМТ: <span id="bmiValue">-</span></div>
+                        <div id="bmiInterpretation" class="bmi-result"></div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="icon">⚠️</i> 2️⃣ Факторы риска ИБС</h2>
+                    <p class="helper-text">Выберите все применимые факторы:</p>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="familyHistory" value="familyHistory">
+                            <label for="familyHistory">Семейная история ИБС (родственники до 55 лет у мужчин, до 65 лет у женщин)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="smoking" value="smoking">
+                            <label for="smoking">Курение (текущее или в прошлом)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="dyslipidemia" value="dyslipidemia">
+                            <label for="dyslipidemia">Дислипидемия (повышенный холестерин)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="hypertension" value="hypertension">
+                            <label for="hypertension">Гипертензия (повышенное АД)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="diabetes" value="diabetes">
+                            <label for="diabetes">Сахарный диабет</label>
+                        </div>
+                    </div>
+
+                    <div class="risk-factors-display" id="riskFactorsCount">
+                        Количество факторов риска: <strong>0</strong>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="icon">💔</i> 3️⃣ Характеристики симптомов</h2>
+                    
+                    <div class="form-group">
+                        <label for="chestPainType">Тип боли/дискомфорта</label>
+                        <select id="chestPainType">
+                            <option value="">-- Выберите характер боли --</option>
+                            <option value="0">Не подходит ни один вариант (0 баллов)</option>
+                            <option value="1">Атипичная боль - 1 из 3 признаков типичной стенокардии (1 балл)</option>
+                            <option value="2">Атипичная боль - 2 из 3 признаков типичной стенокардии (2 балла)</option>
+                            <option value="3">Типичная стенокардия - сжимающий дискомфорт ретростернально, усиливается при нагрузке/стрессе, облегчается отдыхом/нитратами (3 балла)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dyspneaType">Одышка при физической нагрузке</label>
+                        <select id="dyspneaType">
+                            <option value="">-- Выберите статус --</option>
+                            <option value="0">Отсутствует (0 баллов)</option>
+                            <option value="2">Да, затруднение дыхания при нагрузке (2 балла)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРАВАЯ КОЛОНКА -->
+            <div>
+                <div class="section">
+                    <h2><i class="icon">📊</i> 4️⃣ ЭКГ и гемодинамика</h2>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="sysBP">Систолическое АД (мм рт.ст.)</label>
+                            <input type="number" id="sysBP" min="50" max="250" placeholder="Например: 120">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="hr">ЧСС в покое (уд/мин)</label>
+                            <input type="number" id="hr" min="30" max="180" placeholder="Например: 70">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ecgRhythm">Исходный ритм на ЭКГ</label>
+                        <select id="ecgRhythm">
+                            <option value="">-- Выберите ритм --</option>
+                            <option value="sinus">Синусовый ритм</option>
+                            <option value="af">Фибрилляция предсердий</option>
+                            <option value="other">Другие нарушения ритма</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ecgLBBB" value="lbbb">
+                            <label for="ecgLBBB">Полная блокада левой ножки (ПБЛНПГ)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ecgWPW" value="wpw">
+                            <label for="ecgWPW">WPW-синдром</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ecgBrugada" value="brugada">
+                            <label for="ecgBrugada">Синдром Бругада</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="ecgAVBlock" value="avblock">
+                            <label for="ecgAVBlock">АВ-блокада II-III степени</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="icon">💓</i> 5️⃣ Эхокардиография</h2>
+                    
+                    <div class="form-group">
+                        <label for="ef">Фракция выброса ЛЖ (%)</label>
+                        <input type="number" id="ef" min="10" max="80" placeholder="Введите значение ФВ от 10 до 80">
+                        <div class="helper-text">
+                            Введите числовое значение фракции выброса левого желудочка
+                        </div>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="echoRegional" value="regional">
+                            <label for="echoRegional">Нарушения локальной сократимости (постинфарктный кардиосклероз)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2><i class="icon">🏃</i> 6️⃣ Функциональный статус и сопутствующие заболевания</h2>
+                    
+                    <div class="form-group">
+                        <label for="functionalStatus">Физическая активность</label>
+                        <select id="functionalStatus">
+                            <option value="">-- Выберите статус --</option>
+                            <option value="good">Хорошая (может подняться на 2-3 этажа)</option>
+                            <option value="limited">Ограниченная (медленная ходьба)</option>
+                            <option value="unable">Не может выполнять нагрузку</option>
+                        </select>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="comorbidAsthma" value="asthma">
+                            <label for="comorbidAsthma">Бронхиальная астма/ХОБЛ (противопоказание к аденозину)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="comorbidOrtho" value="ortho">
+                            <label for="comorbidOrtho">Заболевания опорно-двигательного аппарата (артроз, остеохондроз) - показание к аденозину</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="comorbidPAD" value="pad">
+                            <label for="comorbidPAD">Облитерирующий атеросклероз артерий нижних конечностей - показание к аденозину</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ИСПРАВЛЕННЫЙ БЛОК 7 -->
+                <div class="section">
+                    <h2><i class="icon">💊</i> 7️⃣ Медикаментозная терапия *если невозможно отменить за 24 часа до исследования</h2>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medBetaBlocker" value="betablocker">
+                            <label for="medBetaBlocker">Бета-блокаторы (могут ограничить ЧСС-ответ при физической нагрузке)</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="medNitrates" value="nitrates">
+                            <label for="medNitrates">Нитраты</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="histAdenosine" value="histadenosine">
+                            <label for="histAdenosine">Аллергия на аденозин в анамнезе (противопоказание к аденозину)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- НОВЫЙ БЛОК 8: КРИТЕРИИ ИССЛЕДОВАНИЯ -->
+                <div class="section">
+                    <h2><i class="icon">🔬</i> 8️⃣ КРИТЕРИИ ИССЛЕДОВАНИЯ PASS-Echo-PILOT</h2>
+                    
+                    <div class="info-box" style="margin-bottom: 15px;">
+                        <strong>Критерии включения для исследования:</strong><br>
+                        1. Возраст ≥ 18 лет<br>
+                        2. Показания для стресс-ЭхоКГ (средний/высокий риск)<br>
+                        3. Средний/высокий риск ИБС или СД/ХБП<br>
+                        4. Информированное согласие
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <div class="checkbox-item criteria-check" id="criteria1">
+                            <input type="checkbox" id="hasIndication" disabled>
+                            <label for="hasIndication" id="criteria1Label">Показания для стресс-ЭхоКГ (рассчитанный риск)</label>
+                        </div>
+                        <div class="checkbox-item criteria-check" id="criteria2">
+                            <input type="checkbox" id="hasRiskFactors" disabled>
+                            <label for="hasRiskFactors" id="criteria2Label">Средний/высокий риск или СД/ХБП</label>
+                        </div>
+                        <div class="checkbox-item criteria-check" id="criteria3">
+                            <input type="checkbox" id="ageOk" disabled>
+                            <label for="ageOk" id="criteria3Label">Возраст ≥ 18 лет</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasCKD">Наличие ХБП 3-5 ст.</label>
+                        <select id="hasCKD">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да</option>
+                        </select>
+                    </div>
+                    
+                    <div class="info-box" style="background: #fef3c7; border-color: #f59e0b;">
+                        <strong>Критерии невключения (автопроверка):</strong><br>
+                        • Острый коронарный синдром (<7 дней)<br>
+                        • Гемодинамическая нестабильность<br>
+                        • Противопоказания к стресс-тестам<br>
+                        • Невозможность проведения ЭхоКГ
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasACS">Острый коронарный синдром (<7 дней)</label>
+                        <select id="hasACS">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hasContraindications">Противопоказания к стресс-тестам</label>
+                        <select id="hasContraindications">
+                            <option value="no">Нет</option>
+                            <option value="yes">Да (тяжелый аортальный стеноз и др.)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="eligibility-result" id="eligibilityResult">
+                        <strong>Результат отбора: </strong><span id="eligibilityText">-</span>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-calculate" onclick="calculateRisk()">РАССЧИТАТЬ РИСК И РЕКОМЕНДАЦИИ</button>
+                        <button class="btn btn-reset" onclick="resetForm()">ОЧИСТИТЬ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <!-- РЕЗУЛЬТАТЫ -->
+        <div class="result-section" id="resultSection">
+            <h2 style="text-align: center; margin-bottom: 25px;"><i class="icon">📈</i> РЕЗУЛЬТАТЫ РАСЧЕТА</h2>
+            
+            <div class="result-box" id="resultBox">
+                <div class="result-percentage" id="resultPercentage">-</div>
+                <div class="result-category" id="resultCategory">-</div>
+                <div class="result-interpretation" id="resultInterpretation">-</div>
+            </div>
+
+            <!-- БЛОК С ЦИФРАМИ РИСКА -->
+            <div class="analysis-box" id="analysisBox">
+                <h5><i class="icon">🔍</i> АНАЛИЗ ВЛИЯНИЯ ПАРАМЕТРОВ НА ВЫБОР МЕТОДА</h5>
+                <div id="analysisContent"></div>
+            </div>
+
+            <!-- КЛИНИЧЕСКИЕ РЕКОМЕНДАЦИИ -->
+            <div class="detailed-recommendations">
+                <h5><i class="icon">📋</i> КЛИНИЧЕСКИЕ РЕКОМЕНДАЦИИ</h5>
+                <div id="recommendationsContent"></div>
+            </div>
+
+            <!-- РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХО -->
+            <div class="stress-test-recommendations" id="stressTestSection">
+                <h5><i class="icon">🎯</i> РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ</h5>
+                <div id="testRecommendations"></div>
+                
+                <div id="contraindicationsSection" style="display: none;">
+                    <div class="contraindication-list">
+                        <h6><i class="icon">⚠️</i> ВЫЯВЛЕННЫЕ ПРОТИВОПОКАЗАНИЯ:</h6>
+                        <div id="contraindicationsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- РЕЗУЛЬТАТ ОТБОРА ДЛЯ ИССЛЕДОВАНИЯ -->
+            <div class="eligibility-result" id="studyEligibilityResult" style="margin-top: 20px; display: none;">
+                <h5 style="margin-bottom: 10px;"><i class="icon">🔬</i> РЕЗУЛЬТАТ ОТБОРА ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT</h5>
+                <div id="studyEligibilityText" style="font-size: 16px; font-weight: bold;"></div>
+                <div id="eligibilityDetails" style="margin-top: 10px; font-size: 13px;"></div>
+            </div>
+
+            <!-- ИНФОРМАЦИЯ О РАНДОМИЗАЦИИ В РЕЗУЛЬТАТАХ -->
+            <div class="randomization-info" id="resultRandomizationInfo" style="margin-top: 20px; display: none;">
+                <div class="randomization-title">
+                    <i class="icon">🎲</i> Информация о рандомизации:
+                </div>
+                <div id="resultRandomizationDetails">
+                    <!-- Здесь будет отображаться информация о группе в результатах -->
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>⚠️ ВАЖНО:</strong> Этот калькулятор предоставляет предварительную оценку. Окончательное решение о выборе метода стресс-тестирования принимает лечащий врач (терапевт, кардиолог и др.) с учетом всей клинической картины.
+            </div>
+
+            <div class="export-buttons" id="exportButtons" style="display: none;">
+                <button class="btn-export btn-export-excel" onclick="exportToExcel()">📊 СКАЧАТЬ EXCEL</button>
+                <button class="btn-export btn-export-txt" onclick="exportToTxt()">📝 СКАЧАТЬ TXT</button>
+                <button class="btn-export btn-save-adenosine" onclick="saveToFile('adenosine')">💾 АДЕНОЗИН JSON</button>
+                <button class="btn-export btn-save-exercise" onclick="saveToFile('exercise')">💪 ФИЗ.НАГРУЗКА JSON</button>
+                <button class="btn-export btn-save-dobutamine" onclick="saveToFile('dobutamine')">💊 ДОБУТАМИН JSON</button>
+            </div>
+        </div>
+
+        <!-- СЕКЦИЯ УПРАВЛЕНИЯ ФАЙЛАМИ -->
+        <div class="file-management-section" id="fileManagementSection">
+            <h2><i class="icon">📁</i> УПРАВЛЕНИЕ ФАЙЛАМИ С РЕКОМЕНДАЦИЯМИ</h2>
+            
+            <div class="file-buttons-group">
+                <div class="file-input-container">
+                    <label for="importAdenosineFile" class="file-input-label">📥 ЗАГРУЗИТЬ ФАЙЛ АДЕНОЗИН</label>
+                    <input type="file" id="importAdenosineFile" class="file-input" accept=".json" onchange="importFromFile('adenosine', event)">
+                </div>
+                
+                <div class="file-input-container">
+                    <label for="importExerciseFile" class="file-input-label">📥 ЗАГРУЗИТЬ ФАЙЛ ФИЗ.НАГРУЗКА</label>
+                    <input type="file" id="importExerciseFile" class="file-input" accept=".json" onchange="importFromFile('exercise', event)">
+                </div>
+                
+                <div class="file-input-container">
+                    <label for="importDobutamineFile" class="file-input-label">📥 ЗАГРУЗИТЬ ФАЙЛ ДОБУТАМИН</label>
+                    <input type="file" id="importDobutamineFile" class="file-input" accept=".json" onchange="importFromFile('dobutamine', event)">
+                </div>
+                
+                <!-- НОВАЯ КНОПКА ДЛЯ ИМПОРТА ИЗ РАНДОМАЙЗЕРА -->
+                <div class="file-input-container">
+                    <label for="importRandomizerFile" class="file-input-label" style="background: linear-gradient(135deg, #208081 0%, #106b6c 100%);">🎲 ИМПОРТ ИЗ РАНДОМАЙЗЕРА</label>
+                    <input type="file" id="importRandomizerFile" class="file-input" accept=".json" onchange="importRandomizerFile(event)">
+                </div>
+                
+                <button class="btn btn-export" onclick="loadAllFiles()">🔄 ОБНОВИТЬ СПИСОК</button>
+                <button class="btn btn-export-txt" onclick="exportAllFilesSummary()">📊 СВОДНЫЙ ОТЧЕТ</button>
+            </div>
+
+            <div class="file-info-box">
+                <h5><i class="icon">📊</i> СТАТИСТИКА ФАЙЛОВ</h5>
+                <div class="file-stats" id="fileStats">
+                    <div class="file-stat-item">
+                        <div class="file-stat-value" id="adenosineCount">0</div>
+                        <div class="file-stat-label">Файлов с Аденозином</div>
+                    </div>
+                    <div class="file-stat-item">
+                        <div class="file-stat-value" id="exerciseCount">0</div>
+                        <div class="file-stat-label">Файлов с Физ.нагрузкой</div>
+                    </div>
+                    <div class="file-stat-item">
+                        <div class="file-stat-value" id="dobutamineCount">0</div>
+                        <div class="file-stat-label">Файлов с Добутамином</div>
+                    </div>
+                    <div class="file-stat-item">
+                        <div class="file-stat-value" id="totalPatients">0</div>
+                        <div class="file-stat-label">Всего пациентов</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="load-file-section">
+                <h5><i class="icon">📚</i> ЗАГРУЖЕННЫЕ ФАЙЛЫ</h5>
+                <div class="loaded-files-list" id="loadedFilesList">
+                    <div class="no-files-message">Нет загруженных файлов</div>
+                </div>
+                
+                <div class="file-actions" id="fileActions" style="display: none;">
+                    <button class="btn btn-export" onclick="loadSelectedFile()">📂 ЗАГРУЗИТЬ ДАННЫЕ</button>
+                    <button class="btn btn-export-txt" onclick="exportSelectedFile()">📝 ЭКСПОРТ В TXT</button>
+                    <button class="btn btn-export-excel" onclick="exportSelectedFileExcel()">📊 ЭКСПОРТ В EXCEL</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Информация об авторах -->
+        <div class="authors-footer">
+            Авторы проекта: <span class="authors-names">Умнов И.Н. Кучумов С.С.</span>
+        </div>
+    </div>
+
+    <script>
+        // Константы и описания
+        const categoryDescriptions = {
+            'very-low': {
+                name: 'ОЧЕНЬ НИЗКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС менее 5%',
+                shortRecommendations: [
+                    'Дальнейшее диагностическое тестирование обычно не требуется',
+                    'Рекомендуется немедикаментозное лечение',
+                    'Контроль факторов риска'
+                ]
+            },
+            'low': {
+                name: 'НИЗКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 5-15%',
+                shortRecommendations: [
+                    'Диагностическое тестирование может быть рассмотрено при наличии симптомов',
+                    'Активное управление факторами риска'
+                ]
+            },
+            'moderate': {
+                name: 'СРЕДНИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 15-50%',
+                shortRecommendations: [
+                    'Рекомендуется неинвазивное диагностическое тестирование',
+                    'CCTA или функциональные тесты (стресс-ЭХО)'
+                ]
+            },
+            'high': {
+                name: 'ВЫСОКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС 50-85%',
+                shortRecommendations: [
+                    'CCTA или функциональное тестирование настоятельно рекомендуется',
+                    'Возможна инвазивная коронарная ангиография'
+                ]
+            },
+            'very-high': {
+                name: 'ОЧЕНЬ ВЫСОКИЙ РИСК',
+                interpretation: 'Вероятность обструктивной ИБС более 85%',
+                shortRecommendations: [
+                    'Инвазивная коронарная ангиография может быть первым диагностическим тестом',
+                    'Агрессивное медикаментозное лечение'
+                ]
+            }
+        };
+
+        // Глобальные переменные для управления файлами
+        let loadedFiles = {
+            adenosine: [],
+            exercise: [],
+            dobutamine: []
+        };
+        
+        let selectedFile = null;
+        let randomizationInfo = null;
+
+        // Функция отображения информации о рандомизации
+        function displayRandomizationInfo(randomizerData) {
+            const infoElement = document.getElementById('randomizationInfo');
+            const detailsElement = document.getElementById('randomizationDetails');
+            const resultInfoElement = document.getElementById('resultRandomizationInfo');
+            const resultDetailsElement = document.getElementById('resultRandomizationDetails');
+            
+            if (!randomizerData || (!randomizerData.assignedGroup && !randomizerData.randomizationInfo)) {
+                infoElement.style.display = 'none';
+                resultInfoElement.style.display = 'none';
+                return;
+            }
+            
+            // Сохраняем информацию о рандомизации
+            randomizationInfo = randomizerData;
+            
+            const group = randomizerData.assignedGroup || randomizerData.randomizationInfo?.assignedGroup;
+            const groupName = group === 'standard' ? 'Стандартная' : 
+                             (group === 'personalized' ? 'Персонализированная' : group || 'Не назначена');
+            const groupClass = group === 'standard' ? 'group-standard' : 
+                              (group === 'personalized' ? 'group-personalized' : '');
+            
+            const patientName = randomizerData.patientInfo?.name || randomizerData.patient?.name || '';
+            const patientId = randomizerData.patientInfo?.id || randomizerData.patient?.id || '';
+            const date = randomizerData.randomizationInfo?.randomizationDate || 
+                        randomizerData.calculationResults?.eligibility?.randomizationDate ||
+                        new Date().toISOString();
+            
+            const infoHTML = `
+                <div>
+                    <strong>Пациент:</strong> ${patientName} 
+                    ${patientId ? `(ID: ${patientId})` : ''}
+                </div>
+                <div style="margin-top: 8px;">
+                    <strong>Группа рандомизации:</strong> 
+                    <span class="group-badge ${groupClass}">${groupName.toUpperCase()}</span>
+                </div>
+                ${randomizerData.randomizationInfo?.randomizerTool ? 
+                    `<div style="margin-top: 8px;">
+                        <strong>Инструмент:</strong> ${randomizerData.randomizationInfo.randomizerTool}
+                    </div>` : ''}
+                <div style="margin-top: 8px;">
+                    <strong>Дата рандомизации:</strong> ${new Date(date).toLocaleString('ru-RU')}
+                </div>
+            `;
+            
+            detailsElement.innerHTML = infoHTML;
+            resultDetailsElement.innerHTML = infoHTML;
+            
+            infoElement.style.display = 'block';
+            infoElement.classList.add('show');
+            
+            // Удаляем информацию о группе из имени пациента (сохраняем только ФИО)
+            if (patientName) {
+                const nameInput = document.getElementById('patientName');
+                // Удаляем часть с группой, если она есть
+                const cleanName = patientName.replace(/\s*\[.*?\]\s*/g, '').trim();
+                nameInput.value = cleanName;
+            }
+        }
+
+        // Функция расчета ИМТ
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height && weight && height > 0 && weight > 0) {
+                const heightInMeters = height / 100;
+                const bmi = (weight / (heightInMeters * heightInMeters)).toFixed(1);
+                
+                document.getElementById('bmiValue').textContent = bmi;
+                document.getElementById('bmiContainer').style.display = 'block';
+                
+                let interpretation = '';
+                if (bmi < 18.5) interpretation = 'Недостаточный вес';
+                else if (bmi < 25) interpretation = 'Нормальный вес';
+                else if (bmi < 30) interpretation = 'Избыточный вес';
+                else if (bmi < 35) interpretation = 'Ожирение 1 степени';
+                else interpretation = '<span class="bmi-highlight">Ожирение 2 степени и выше (показание к аденозину)</span>';
+                
+                document.getElementById('bmiInterpretation').innerHTML = interpretation;
+                return {bmi: parseFloat(bmi), interpretation: interpretation};
+            } else {
+                document.getElementById('bmiContainer').style.display = 'none';
+                return null;
+            }
+        }
+
+        // Обновление счетчика факторов риска
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateRiskFactorCount);
+        });
+
+        // Обновление ИМТ при изменении роста/веса
+        document.getElementById('height').addEventListener('input', calculateBMI);
+        document.getElementById('weight').addEventListener('input', calculateBMI);
+
+        function updateRiskFactorCount() {
+            const checkboxes = document.querySelectorAll('#familyHistory, #smoking, #dyslipidemia, #hypertension, #diabetes');
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            document.querySelector('#riskFactorsCount strong').textContent = checked;
+        }
+
+        // Валидация (обязательные поля)
+        function validateInput() {
+            const errorBox = document.getElementById('errorMessage');
+            errorBox.classList.remove('show');
+            
+            const requiredFields = [
+                { id: 'patientName', name: 'ФИО пациента' },
+                { id: 'sex', name: 'Пол' },
+                { id: 'age', name: 'Возраст' },
+                { id: 'height', name: 'Рост' },
+                { id: 'weight', name: 'Вес' }
+            ];
+            
+            const errors = [];
+            
+            // Проверяем обязательные поля
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                const value = element.value.trim();
+                
+                if (!value) {
+                    errors.push(`Поле "${field.name}" обязательно для заполнения`);
+                    element.classList.add('error');
+                } else {
+                    element.classList.remove('error');
+                    
+                    // Дополнительная проверка для числовых полей
+                    if (field.id === 'age' || field.id === 'height' || field.id === 'weight') {
+                        const numValue = parseFloat(value);
+                        if (isNaN(numValue) || numValue <= 0) {
+                            errors.push(`Поле "${field.name}" должно содержать положительное число`);
+                            element.classList.add('error');
+                        }
+                    }
+                }
+            });
+            
+            if (errors.length > 0) {
+                showError(errors.join('<br>'));
+                return false;
+            }
+            
+            return true;
+        }
+
+        function showError(message) {
+            const errorBox = document.getElementById('errorMessage');
+            errorBox.innerHTML = '❌ ' + message;
+            errorBox.classList.add('show');
+        }
+
+        // Основные расчетные функции
+        function getAgeGroup(age) {
+            if (!age) return null;
+            if (age >= 30 && age < 40) return '30-39';
+            if (age >= 40 && age < 50) return '40-49';
+            if (age >= 50 && age < 60) return '50-59';
+            if (age >= 60 && age < 70) return '60-69';
+            if (age >= 70) return '70-80';
+            return null;
+        }
+
+        function getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount) {
+            if (!sex || !ageGroup || chestPain === undefined || dyspnea === undefined) {
+                return null; // Недостаточно данных для расчета
+            }
+
+            const table = {
+                'woman': {
+                    '30-39': { '0-1': [1, 2, 3, 4, 5, 6], '2': [4, 7, 10, 13, 15, 18], '3-4': [12, 17, 22, 27, 31, 35], '5+': [17, 25, 32, 39, 44, 48] },
+                    '40-49': { '0-1': [2, 4, 6, 8, 10, 12], '2': [8, 12, 16, 20, 24, 27], '3-4': [17, 25, 32, 39, 45, 50], '5+': [25, 34, 42, 50, 57, 62] },
+                    '50-59': { '0-1': [4, 7, 10, 13, 16, 19], '2': [12, 17, 23, 29, 34, 39], '3-4': [27, 33, 40, 47, 52, 57], '5+': [34, 45, 54, 62, 69, 75] },
+                    '60-69': { '0-1': [9, 14, 19, 25, 30, 36], '2': [22, 32, 42, 52, 60, 68], '3-4': [35, 39, 44, 50, 56, 61], '5+': [45, 45, 45, 45, 45, 45] },
+                    '70-80': { '0-1': [14, 20, 27, 34, 41, 48], '2': [27, 33, 40, 47, 54, 60], '3-4': [44, 45, 45, 45, 45, 45], '5+': [45, 45, 45, 45, 45, 45] }
+                },
+                'man': {
+                    '30-39': { '0-1': [6, 10, 14, 18, 22, 26], '2': [3, 6, 10, 14, 18, 22], '3-4': [7, 11, 16, 21, 26, 31], '5+': [16, 23, 31, 39, 46, 53] },
+                    '40-49': { '0-1': [16, 19, 22, 26, 29, 33], '2': [10, 14, 19, 24, 29, 34], '3-4': [19, 23, 28, 34, 40, 45], '5+': [23, 34, 45, 55, 64, 72] },
+                    '50-59': { '0-1': [2, 5, 8, 12, 16, 20], '2': [14, 19, 25, 31, 38, 44], '3-4': [15, 19, 25, 31, 37, 43], '5+': [19, 45, 65, 75, 82, 87] },
+                    '60-69': { '0-1': [2, 5, 8, 12, 16, 21], '2': [10, 14, 19, 25, 31, 38], '3-4': [19, 25, 32, 40, 48, 56], '5+': [39, 45, 52, 59, 65, 71] },
+                    '70-80': { '0-1': [21, 27, 33, 40, 47, 54], '2': [10, 15, 21, 28, 35, 43], '3-4': [33, 39, 46, 53, 60, 67], '5+': [45, 52, 59, 65, 71, 76] }
+                }
+            };
+
+            let riskGroup;
+            if (riskFactorCount <= 1) riskGroup = '0-1';
+            else if (riskFactorCount === 2) riskGroup = '2';
+            else if (riskFactorCount === 3 || riskFactorCount === 4) riskGroup = '3-4';
+            else riskGroup = '5+';
+
+            const ranges = table[sex][ageGroup][riskGroup];
+            const symptomIndex = Math.min(Math.max(chestPain + dyspnea, 0), 5);
+            return ranges[symptomIndex];
+        }
+
+        // Функция проверки критериев отбора для исследования
+        function checkEligibility(percentage, riskFactorCount, age, hasDiabetes) {
+            const hasCKD = document.getElementById('hasCKD').value === 'yes';
+            const hasACS = document.getElementById('hasACS').value === 'yes';
+            const hasContraindications = document.getElementById('hasContraindications').value === 'yes';
+            
+            // Критерий 1: Показания для стресс-ЭхоКГ (средний/высокий риск)
+            const hasIndication = percentage >= 15; // средний и выше риск
+            
+            // Критерий 2: Средний/высокий риск ИБС ИЛИ СД ИЛИ ХБП
+            const mediumHighRisk = percentage >= 15;
+            const hasDiabetesChecked = hasDiabetes || document.getElementById('diabetes').checked;
+            const meetsRiskCriteria = mediumHighRisk || hasDiabetesChecked || hasCKD;
+            
+            // Критерий 3: Возраст ≥ 18 лет
+            const ageOk = age >= 18;
+            
+            // Обновить индикаторы
+            document.getElementById('criteria1').className = hasIndication ? 
+                'checkbox-item criteria-check criteria-met' : 
+                'checkbox-item criteria-check criteria-not-met';
+            document.getElementById('hasIndication').checked = hasIndication;
+            document.getElementById('criteria1Label').innerHTML = hasIndication ? 
+                '✅ Показания для стресс-ЭхоКГ (риск ≥15%)' : 
+                '❌ Нет показаний для стресс-ЭхоКГ (риск <15%)';
+            
+            document.getElementById('criteria2').className = meetsRiskCriteria ? 
+                'checkbox-item criteria-check criteria-met' : 
+                'checkbox-item criteria-check criteria-not-met';
+            document.getElementById('hasRiskFactors').checked = meetsRiskCriteria;
+            document.getElementById('criteria2Label').innerHTML = meetsRiskCriteria ? 
+                '✅ Средний/высокий риск или СД/ХБП' : 
+                '❌ Не соответствует критериям риска';
+            
+            document.getElementById('criteria3').className = ageOk ? 
+                'checkbox-item criteria-check criteria-met' : 
+                'checkbox-item criteria-check criteria-not-met';
+            document.getElementById('ageOk').checked = ageOk;
+            document.getElementById('criteria3Label').innerHTML = ageOk ? 
+                '✅ Возраст ≥ 18 лет' : 
+                '❌ Возраст < 18 лет';
+            
+            // Проверка критериев невключения
+            const hasExclusionCriteria = hasACS || hasContraindications;
+            
+            // Итоговый результат
+            const isEligible = hasIndication && meetsRiskCriteria && ageOk && !hasExclusionCriteria;
+            
+            const resultElement = document.getElementById('eligibilityResult');
+            const textElement = document.getElementById('eligibilityText');
+            
+            if (isEligible) {
+                resultElement.className = 'eligibility-result eligibility-good';
+                textElement.innerHTML = '<span style="color: #16a34a; font-weight: bold;">✓ ПАЦИЕНТ ПОДХОДИТ для исследования</span>';
+            } else {
+                resultElement.className = 'eligibility-result eligibility-bad';
+                textElement.innerHTML = '<span style="color: #dc2626; font-weight: bold;">✗ ПАЦИЕНТ НЕ ПОДХОДИТ для исследования</span>';
+                
+                // Показать причину
+                const reasons = [];
+                if (!hasIndication) reasons.push('Низкий риск ИБС (<15%)');
+                if (!meetsRiskCriteria) reasons.push('Не соответствует критериям риска/СД/ХБП');
+                if (!ageOk) reasons.push('Возраст < 18 лет');
+                if (hasACS) reasons.push('Острый коронарный синдром (<7 дней)');
+                if (hasContraindications) reasons.push('Противопоказания к стресс-тестам');
+                
+                textElement.innerHTML += `<br><small>Причина: ${reasons.join(', ')}</small>`;
+            }
+            
+            resultElement.style.display = 'block';
+            
+            // Возвращаем детали для финального отображения
+            return {
+                isEligible,
+                hasIndication,
+                meetsRiskCriteria,
+                ageOk,
+                hasExclusionCriteria,
+                hasACS,
+                hasContraindications,
+                hasCKD,
+                hasDiabetes: hasDiabetesChecked,
+                reasons: !isEligible ? {
+                    lowRisk: !hasIndication,
+                    noRiskFactors: !meetsRiskCriteria,
+                    age: !ageOk,
+                    acs: hasACS,
+                    contraindications: hasContraindications
+                } : null
+            };
+        }
+
+        // Функция обновления результата отбора в разделе результатов
+        function updateStudyEligibilityResult(eligibilityResult) {
+            const resultElement = document.getElementById('studyEligibilityResult');
+            const textElement = document.getElementById('studyEligibilityText');
+            const detailsElement = document.getElementById('eligibilityDetails');
+            
+            if (eligibilityResult.isEligible) {
+                resultElement.className = 'eligibility-result eligibility-good';
+                resultElement.style.display = 'block';
+                textElement.innerHTML = '✅ ПАЦИЕНТ ПОДХОДИТ ДЛЯ ВКЛЮЧЕНИЯ В ИССЛЕДОВАНИЕ PASS-Echo-PILOT';
+                detailsElement.innerHTML = `
+                    <strong>Критерии выполнены:</strong><br>
+                    • Показания для стресс-ЭхоКГ: есть (риск ≥15%)<br>
+                    • Средний/высокий риск или СД/ХБП: ${eligibilityResult.hasDiabetes ? 'СД' : ''}${eligibilityResult.hasCKD ? 'ХБП' : ''}${!eligibilityResult.hasDiabetes && !eligibilityResult.hasCKD ? 'риск ≥15%' : ''}<br>
+                    • Возраст: ≥18 лет<br>
+                    • Критерии исключения: отсутствуют
+                `;
+            } else {
+                resultElement.className = 'eligibility-result eligibility-bad';
+                resultElement.style.display = 'block';
+                textElement.innerHTML = '❌ ПАЦИЕНТ НЕ ПОДХОДИТ ДЛЯ ВКЛЮЧЕНИЯ В ИССЛЕДОВАНИЕ PASS-Echo-PILOT';
+                
+                const reasons = [];
+                if (!eligibilityResult.hasIndication) reasons.push('Низкий риск ИБС (<15%)');
+                if (!eligibilityResult.meetsRiskCriteria) reasons.push('Не соответствует критериям риска/СД/ХБП');
+                if (!eligibilityResult.ageOk) reasons.push('Возраст < 18 лет');
+                if (eligibilityResult.hasACS) reasons.push('Острый коронарный синдром (<7 дней)');
+                if (eligibilityResult.hasContraindications) reasons.push('Противопоказания к стресс-тестам');
+                
+                detailsElement.innerHTML = `
+                    <strong>Причины невключения:</strong><br>
+                    ${reasons.map(r => `• ${r}`).join('<br>')}
+                `;
+            }
+        }
+
+        // Функция определения рекомендаций по стресс-тестированию
+        function getStressTestRecommendations(data) {
+            const recommendations = [];
+            let primaryRecommendation = null;
+
+            // Расчет ИМТ и определение ожирения
+            let bmiData = null;
+            if (data.height && data.weight) {
+                const heightInMeters = data.height / 100;
+                bmiData = {
+                    value: (data.weight / (heightInMeters * heightInMeters)).toFixed(1),
+                    hasObesity: (data.weight / (heightInMeters * heightInMeters)) >= 35
+                };
+            }
+
+            // 1. Проверка абсолютных противопоказаний к физической нагрузке
+            const contraToExercise = [];
+            if (data.ecgLBBB) contraToExercise.push('Противопоказание к ФН: Полная блокада левой ножки (ПБЛНПГ)');
+            if (data.ecgWPW) contraToExercise.push('Противопоказание к ФН: WPW-синдром');
+            if (data.sysBP && data.sysBP < 90) contraToExercise.push('Противопоказание к ФН: Систолическое АД < 90 мм рт.ст.');
+            if (data.ef && data.ef < 25) contraToExercise.push('Противопоказание к ФН: ФВ ЛЖ < 25%');
+            if (data.ecgAVBlock) contraToExercise.push('Противопоказание к ФН: АВ1-блокада II-III степени');
+
+            // 2. Проверка противопоказаний к аденозину
+            const contraToAdenosine = [];
+            if (data.ecgBrugada) contraToAdenosine.push('Противопоказание к аденозину: Синдром Бругада');
+            if (data.comorbidAsthma) contraToAdenosine.push('Противопоказание к аденозину: Бронхиальная астма/ХОБЛ');
+            if (data.histAdenosine) contraToAdenosine.push('Противопоказание к аденозину: Аллергия в анамнезе');
+
+            // 3. Показания к аденозину
+            const indicationsForAdenosine = [];
+            if (data.comorbidOrtho) indicationsForAdenosine.push('Показание к аденозину: Заболевания опорно-двигательного аппарата');
+            if (data.comorbidPAD) indicationsForAdenosine.push('Показание к аденозину: Облитерирующий атеросклероз артерий нижних конечностей');
+            if (bmiData && bmiData.hasObesity) indicationsForAdenosine.push('Показание к аденозину: Ожирение 2 степени и выше (ИМТ ≥ 35)');
+            if (data.functionalStatus === 'unable') indicationsForAdenosine.push('Показание к аденозину: Не может выполнять физическую нагрузку');
+            if (data.functionalStatus === 'limited') indicationsForAdenosine.push('Показание к аденозину: Ограниченная физическая активность');
+            if (data.medBetaBlocker) indicationsForAdenosine.push('Показание к аденозину: Прием бета-блокаторов (может ограничить ЧСС-ответ)');
+            if (data.echoRegional) indicationsForAdenosine.push('Показание к аденозину: Наличие нарушений локальной сократимости');
+
+            // 4. Логика выбора метода
+            // Если нет данных для расчета риска ИБС
+            if (data.percentage === null) {
+                primaryRecommendation = {
+                    test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ: ВЫБОР МЕТОДА НА ОСНОВЕ КЛИНИЧЕСКИХ ДАННЫХ',
+                    reason: 'Недостаточно данных для расчета вероятности ИБС',
+                    class: '',
+                    details: 'Выбор метода основывается на наличии противопоказаний и показаний к различным видам стресс-тестов'
+                };
+            } 
+            // Если есть данные для расчета риска ИБС
+            else {
+                if (data.percentage < 5) {
+                    primaryRecommendation = {
+                        test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ НЕ ПОКАЗАНА',
+                        reason: 'Очень низкая вероятность ИБС (<5%)',
+                        class: 'contraindicated',
+                        details: 'Дополнительное диагностическое тестирование не требуется. Рекомендовано немедикаментозное лечение и контроль факторов риска.'
+                    };
+                } else if (data.percentage < 15) {
+                    primaryRecommendation = {
+                        test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ МОЖЕТ БЫТЬ ОБСУЖДЕНА',
+                        reason: 'Низкая вероятность ИБС (5-15%)',
+                        class: '',
+                        details: 'Рассмотреть стресс-ЭхоКГ только при наличии ограничивающих симптомов или высоком клиническом подозрении.'
+                    };
+                } else {
+                    // Средний и высокий риск - нужна конкретная рекомендация
+                    
+                    // Сценарий 1: Противопоказания к физической нагрузке
+                    if (contraToExercise.length > 0) {
+                        if (contraToAdenosine.length > 0) {
+                            primaryRecommendation = {
+                                test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С ДОБУТАМИНОМ',
+                                reason: 'Противопоказания к физической нагрузке и аденозину',
+                                class: 'recommended',
+                                details: 'Добутамин - альтернатива при непереносимости аденозина и противопоказаниях к физической нагрузке. Чувствительность 80-85%, специфичность 84-88%.'
+                            };
+                        } else {
+                            primaryRecommendation = {
+                                test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С АДЕНОЗИНОМ',
+                                reason: 'Имеются противопоказания к физической нагрузке',
+                                class: 'recommended',
+                                details: 'Аденозин безопасен при данных условиях. Чувствительность 82-87%, специфичность 86-90%.'
+                            };
+                        }
+                    }
+                    // Сценарий 2: Противопоказания только к аденозину
+                    else if (contraToAdenosine.length > 0) {
+                        if (data.functionalStatus === 'good') {
+                            primaryRecommendation = {
+                                test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С ФИЗИЧЕСКОЙ НАГРУЗКОЙ',
+                                reason: 'Имеются противопоказания к аденозину',
+                                class: 'recommended',
+                                details: 'Физическая нагрузка предпочтительна. Чувствительность 78-84%, специфичность 80-85%.'
+                            };
+                        } else {
+                            primaryRecommendation = {
+                                test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С ДОБУТАМИНОМ',
+                                reason: 'Противопоказания к аденозину и ограниченная физическая активность',
+                                class: 'recommended',
+                                details: 'Добутамин - альтернатива при непереносимости аденозина. Чувствительность 80-85%, специфичность 84-88%.'
+                            };
+                        }
+                    }
+                    // Сценарий 3: Показания к аденозину
+                    else if (indicationsForAdenosine.length > 0) {
+                        primaryRecommendation = {
+                            test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С АДЕНОЗИНОМ',
+                            reason: 'Наличие показаний к аденозину',
+                            class: 'recommended',
+                            details: 'Аденозин предпочтительнее при данных условиях. Позволяет лучше оценить коронарный резерв и жизнеспособность миокарда.'
+                        };
+                    }
+                    // Сценарий 4: Идеальный кандидат для физической нагрузки
+                    else {
+                        primaryRecommendation = {
+                            test: 'СТРЕСС-ЭХОКАРДИОГРАФИЯ С ФИЗИЧЕСКОЙ НАГРУЗКОЙ',
+                            reason: 'Идеальный кандидат: хорошая ФН, нет противопоказаний',
+                            class: 'recommended',
+                            details: 'Метод выбора для пациентов, способных выполнять физическую нагрузку. Позволяет оценить толерантность и функциональный класс стенокардии.'
+                        };
+                    }
+                }
+            }
+
+            // Добавляем альтернативные рекомендации
+            if (primaryRecommendation && primaryRecommendation.test.includes('АДЕНОЗИНОМ') && contraToExercise.length === 0) {
+                recommendations.push({
+                    test: 'АЛЬТЕРНАТИВА: СТРЕСС-ЭХО С ФИЗИЧЕСКОЙ НАГРУЗКОЙ',
+                    reason: 'Если пациент может и хочет выполнять нагрузку',
+                    class: '',
+                    details: 'Физиологический метод, дополнительно оценивает толерантность к нагрузке.'
+                });
+            }
+            
+            if (primaryRecommendation && primaryRecommendation.test.includes('ФИЗИЧЕСКОЙ НАГРУЗКОЙ') && contraToAdenosine.length === 0) {
+                recommendations.push({
+                    test: 'АЛЬТЕРНАТИВА: СТРЕСС-ЭХО С АДЕНОЗИНОМ',
+                    reason: 'При наличии нарушений локальной сократимости или для оценки коронарного резерва',
+                    class: '',
+                    details: 'Вазодилатационный стресс-тест, особенно эффективен при микрососудистой дисфункции.'
+                });
+            }
+
+            return {
+                primary: primaryRecommendation,
+                alternatives: recommendations,
+                contraindications: {
+                    exercise: contraToExercise,
+                    adenosine: contraToAdenosine,
+                    indicationsAdenosine: indicationsForAdenosine
+                },
+                bmiData: bmiData
+            };
+        }
+
+        // Основная функция расчета (ВСЕГДА ПЕРЕСЧИТЫВАЕТ С ТЕКУЩИМИ ДАННЫМИ)
+        function calculateRisk() {
+            console.log('Начало расчета с текущими данными формы');
+            
+            // ВСЕГДА выполняем валидацию введенных данных
+            if (!validateInput()) {
+                console.log('Валидация не пройдена');
+                return;
+            }
+
+            // Сбор текущих данных из формы (ВСЕГДА используем актуальные данные)
+            const patientName = document.getElementById('patientName').value || 'Не указано';
+            const sex = document.getElementById('sex').value;
+            const age = document.getElementById('age').value ? parseInt(document.getElementById('age').value) : null;
+            const chestPain = document.getElementById('chestPainType').value ? parseInt(document.getElementById('chestPainType').value) : null;
+            const dyspnea = document.getElementById('dyspneaType').value ? parseInt(document.getElementById('dyspneaType').value) : null;
+            const symptomScore = (chestPain !== null && dyspnea !== null) ? chestPain + dyspnea : null;
+            const height = document.getElementById('height').value ? parseFloat(document.getElementById('height').value) : null;
+            const weight = document.getElementById('weight').value ? parseFloat(document.getElementById('weight').value) : null;
+
+            const riskFactorCount = document.querySelectorAll('#familyHistory:checked, #smoking:checked, #dyslipidemia:checked, #hypertension:checked, #diabetes:checked').length;
+            const ageGroup = age ? getAgeGroup(age) : null;
+
+            // Расчет вероятности ИБС (только если есть все необходимые данные)
+            let percentage = null;
+            let category = 'unknown';
+            
+            console.log('Параметры для расчета:', { sex, ageGroup, chestPain, dyspnea, riskFactorCount });
+            
+            if (sex && ageGroup && chestPain !== null && dyspnea !== null) {
+                percentage = getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount);
+                console.log('Рассчитанный процент риска:', percentage);
+                
+                if (percentage !== null) {
+                    if (percentage < 5) category = 'very-low';
+                    else if (percentage < 15) category = 'low';
+                    else if (percentage < 50) category = 'moderate';
+                    else if (percentage < 85) category = 'high';
+                    else category = 'very-high';
+                }
+            }
+
+            // Сбор дополнительных данных
+            const additionalData = {
+                sysBP: document.getElementById('sysBP').value ? parseInt(document.getElementById('sysBP').value) : null,
+                hr: document.getElementById('hr').value ? parseInt(document.getElementById('hr').value) : null,
+                ecgRhythm: document.getElementById('ecgRhythm').value,
+                ecgLBBB: document.getElementById('ecgLBBB').checked,
+                ecgWPW: document.getElementById('ecgWPW').checked,
+                ecgBrugada: document.getElementById('ecgBrugada').checked,
+                ecgAVBlock: document.getElementById('ecgAVBlock').checked,
+                ef: document.getElementById('ef').value ? parseInt(document.getElementById('ef').value) : null,
+                echoRegional: document.getElementById('echoRegional').checked,
+                functionalStatus: document.getElementById('functionalStatus').value,
+                comorbidAsthma: document.getElementById('comorbidAsthma').checked,
+                comorbidOrtho: document.getElementById('comorbidOrtho').checked,
+                comorbidPAD: document.getElementById('comorbidPAD').checked,
+                medBetaBlocker: document.getElementById('medBetaBlocker').checked,
+                medNitrates: document.getElementById('medNitrates').checked,
+                histAdenosine: document.getElementById('histAdenosine').checked,
+                height: height,
+                weight: weight,
+                percentage: percentage,
+                category: category
+            };
+
+            // Получение рекомендаций по стресс-тестированию
+            const stressTestRecs = getStressTestRecommendations(additionalData);
+
+            // Проверка критериев отбора для исследования
+            const eligibilityResult = checkEligibility(percentage, riskFactorCount, age, document.getElementById('diabetes').checked);
+
+            // Отображение результатов
+            displayResults(percentage, category, patientName, sex, age, chestPain, dyspnea, 
+                         symptomScore, riskFactorCount, ageGroup, stressTestRecs, additionalData, eligibilityResult);
+        }
+
+        // Функция отображения результатов
+        function displayResults(percentage, category, patientName, sex, age, chestPain, dyspnea, 
+                              symptomScore, riskFactorCount, ageGroup, stressTestRecs, additionalData, eligibilityResult) {
+            
+            // Определение описания категории
+            let desc;
+            if (category !== 'unknown' && categoryDescriptions[category]) {
+                desc = categoryDescriptions[category];
+                const resultBox = document.getElementById('resultBox');
+                resultBox.className = `result-box ${category}`;
+                
+                document.getElementById('resultPercentage').textContent = percentage + '%';
+                document.getElementById('resultCategory').textContent = desc.name;
+                document.getElementById('resultInterpretation').textContent = desc.interpretation;
+            } else {
+                // Если не хватает данных для расчета риска
+                document.getElementById('resultBox').className = 'result-box';
+                document.getElementById('resultPercentage').textContent = 'Н/Д';
+                document.getElementById('resultCategory').textContent = 'НЕДОСТАТОЧНО ДАННЫХ';
+                document.getElementById('resultInterpretation').textContent = 'Для расчета вероятности ИБС требуется заполнить: пол, возраст, характер боли и одышки';
+                desc = {
+                    name: 'НЕДОСТАТОЧНО ДАННЫХ',
+                    interpretation: 'Для расчета вероятности ИБС требуется заполнить: пол, возраст, характер боли и одышки',
+                    shortRecommendations: [
+                        'Заполните необходимые поля для расчета вероятности ИБС',
+                        'Рекомендации по стресс-ЭхоКГ основаны на клинических данных'
+                    ]
+                };
+            }
+
+            // Отображение рекомендаций по стресс-тестам
+            const testRecommendations = document.getElementById('testRecommendations');
+            const contraindicationsSection = document.getElementById('contraindicationsSection');
+            const contraindicationsList = document.getElementById('contraindicationsList');
+            
+            let recommendationsHTML = '';
+            if (stressTestRecs.primary) {
+                recommendationsHTML += `
+                    <div class="test-recommendation ${stressTestRecs.primary.class}">
+                        <div class="test-name">${stressTestRecs.primary.test}</div>
+                        <div class="test-reason">${stressTestRecs.primary.reason}</div>
+                        <div class="test-details">${stressTestRecs.primary.details}</div>
+                    </div>
+                `;
+            }
+
+            // Добавление альтернативных рекомендаций
+            if (stressTestRecs.alternatives.length > 0) {
+                recommendationsHTML += '<div style="margin-top: 20px; font-weight: 600; color: #4b5563;">Альтернативные варианты:</div>';
+                stressTestRecs.alternatives.forEach(alt => {
+                    recommendationsHTML += `
+                        <div class="test-recommendation">
+                            <div class="test-name">${alt.test}</div>
+                            <div class="test-reason">${alt.reason}</div>
+                            <div class="test-details">${alt.details}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            testRecommendations.innerHTML = recommendationsHTML;
+
+            // Отображение противопоказаний и показаний
+            const allContraindications = [
+                ...stressTestRecs.contraindications.exercise,
+                ...stressTestRecs.contraindications.adenosine
+            ];
+
+            if (allContraindications.length > 0 || stressTestRecs.contraindications.indicationsAdenosine.length > 0) {
+                contraindicationsSection.style.display = 'block';
+                let contraindicationsHTML = '';
+                
+                if (allContraindications.length > 0) {
+                    contraindicationsHTML += '<strong>Противопоказания:</strong><ul style="margin: 5px 0 10px 0; padding-left: 20px;">';
+                    allContraindications.forEach(c => {
+                        contraindicationsHTML += `<li>${c}</li>`;
+                    });
+                    contraindicationsHTML += '</ul>';
+                }
+                
+                if (stressTestRecs.contraindications.indicationsAdenosine.length > 0) {
+                    contraindicationsHTML += '<strong>Показания к аденозину:</strong><ul style="margin: 5px 0 0 0; padding-left: 20px;">';
+                    stressTestRecs.contraindications.indicationsAdenosine.forEach(i => {
+                        contraindicationsHTML += `<li>${i}</li>`;
+                    });
+                    contraindicationsHTML += '</ul>';
+                }
+                
+                contraindicationsList.innerHTML = contraindicationsHTML;
+            } else {
+                contraindicationsSection.style.display = 'none';
+            }
+
+            // Отображение клинических рекомендаций
+            const recommendationsContent = document.getElementById('recommendationsContent');
+            recommendationsContent.innerHTML = '<ul>' + 
+                desc.shortRecommendations.map(r => `<li>${r}</li>`).join('') + 
+                '</ul>';
+
+            // Анализ влияния параметров
+            const analysisContent = document.getElementById('analysisContent');
+            const riskFactors = [];
+            const riskFactorLabels = {
+                'familyHistory': 'Семейная история',
+                'smoking': 'Курение',
+                'dyslipidemia': 'Дислипидемия',
+                'hypertension': 'Гипертензия',
+                'diabetes': 'Сахарный диабет'
+            };
+
+            document.querySelectorAll('#familyHistory:checked, #smoking:checked, #dyslipidemia:checked, #hypertension:checked, #diabetes:checked').forEach(cb => {
+                riskFactors.push(riskFactorLabels[cb.id]);
+            });
+
+            // Подготовка текста для анализа
+            let analysisHTML = '';
+
+            if (percentage !== null) {
+                analysisHTML += `
+                    <div class="analysis-item">
+                        <strong>Оценка риска ИБС:</strong><br>
+                        • Вероятность ИБС: <strong>${percentage}%</strong> (${desc.name})<br>
+                        ${age ? `• Возраст: ${age} лет` : ''}<br>
+                        ${sex ? `• Пол: ${sex === 'woman' ? 'Женщина' : 'Мужчина'}` : ''}<br>
+                        • Факторы риска: ${riskFactorCount} из 5
+                    </div>
+                `;
+            }
+
+            // Данные для выбора метода стресс-теста
+            let methodFactorsHTML = '<div class="analysis-item"><strong>Факторы для выбора метода стресс-ЭхоКГ:</strong><br>';
+
+            if (additionalData.functionalStatus) {
+                const statusText = {
+                    'good': 'Хорошая физическая активность',
+                    'limited': 'Ограниченная физическая активность',
+                    'unable': 'Не может выполнять нагрузку'
+                };
+                methodFactorsHTML += `• ${statusText[additionalData.functionalStatus]}<br>`;
+            }
+
+            if (additionalData.ef) {
+                methodFactorsHTML += `• ФВ ЛЖ: ${additionalData.ef}%<br>`;
+            }
+
+            if (additionalData.sysBP && additionalData.hr) {
+                methodFactorsHTML += `• АД/ЧСС: ${additionalData.sysBP}/${additionalData.hr} мм рт.ст./уд.мин<br>`;
+            }
+
+            if (additionalData.echoRegional) {
+                methodFactorsHTML += `• Нарушения локальной сократимости<br>`;
+            }
+
+            if (stressTestRecs.bmiData) {
+                methodFactorsHTML += `• ИМТ: ${stressTestRecs.bmiData.value} ${stressTestRecs.bmiData.hasObesity ? '(Ожирение 2 степени и выше)' : ''}<br>`;
+            }
+
+            methodFactorsHTML += '</div>';
+
+            analysisHTML += methodFactorsHTML;
+
+            // Критические факторы
+            let criticalFactorsHTML = '<div class="analysis-item"><strong>Критические факторы:</strong><br>';
+            
+            if (additionalData.ecgLBBB || additionalData.ecgWPW || additionalData.ecgBrugada || additionalData.ecgAVBlock) {
+                if (additionalData.ecgLBBB) criticalFactorsHTML += '• Полная блокада левой ножки<br>';
+                if (additionalData.ecgWPW) criticalFactorsHTML += '• WPW-синдром<br>';
+                if (additionalData.ecgBrugada) criticalFactorsHTML += '• Синдром Бругада<br>';
+                if (additionalData.ecgAVBlock) criticalFactorsHTML += '• АВ-блокада II-III степени<br>';
+            } else {
+                criticalFactorsHTML += '• Нет критических нарушений проводимости на ЭКГ<br>';
+            }
+
+            if (additionalData.comorbidAsthma) criticalFactorsHTML += '• Бронхиальная астма/ХОБЛ<br>';
+            if (additionalData.comorbidOrtho) criticalFactorsHTML += '• Заболевания опорно-двигательного аппарата<br>';
+            if (additionalData.comorbidPAD) criticalFactorsHTML += '• Облитерирующий атеросклероз артерий нижних конечностей<br>';
+            if (additionalData.histAdenosine) criticalFactorsHTML += '• Аллергия на аденозин в анамнезе<br>';
+            if (additionalData.medBetaBlocker) criticalFactorsHTML += '• Прием бета-блокаторов<br>';
+
+            criticalFactorsHTML += '</div>';
+            analysisHTML += criticalFactorsHTML;
+
+            analysisContent.innerHTML = analysisHTML;
+
+            // Отображение результата отбора для исследования
+            if (eligibilityResult) {
+                updateStudyEligibilityResult(eligibilityResult);
+            }
+
+            // Отображение информации о рандомизации в результатах
+            if (randomizationInfo) {
+                const resultRandomizationInfo = document.getElementById('resultRandomizationInfo');
+                resultRandomizationInfo.style.display = 'block';
+                resultRandomizationInfo.classList.add('show');
+            }
+
+            // Сохранение данных для экспорта
+            const calculationData = {
+                patientName, sex, age, chestPain, dyspnea, symptomScore, 
+                riskFactorCount, ageGroup, riskFactors, percentage, category, desc,
+                stressTestRecommendations: stressTestRecs,
+                additionalData: additionalData,
+                eligibilityResult: eligibilityResult,
+                randomizationInfo: randomizationInfo,
+                timestamp: new Date().toISOString(),
+                date: new Date().toLocaleString('ru-RU'),
+                formData: getFormData()
+            };
+
+            window.lastCalculationData = calculationData;
+
+            // Показ результатов
+            document.getElementById('resultSection').classList.add('show');
+            document.getElementById('exportButtons').style.display = 'flex';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Получение данных формы
+        function getFormData() {
+            const formData = {
+                patientName: document.getElementById('patientName').value,
+                sex: document.getElementById('sex').value,
+                age: document.getElementById('age').value,
+                height: document.getElementById('height').value,
+                weight: document.getElementById('weight').value,
+                familyHistory: document.getElementById('familyHistory').checked,
+                smoking: document.getElementById('smoking').checked,
+                dyslipidemia: document.getElementById('dyslipidemia').checked,
+                hypertension: document.getElementById('hypertension').checked,
+                diabetes: document.getElementById('diabetes').checked,
+                chestPainType: document.getElementById('chestPainType').value,
+                dyspneaType: document.getElementById('dyspneaType').value,
+                sysBP: document.getElementById('sysBP').value,
+                hr: document.getElementById('hr').value,
+                ecgRhythm: document.getElementById('ecgRhythm').value,
+                ecgLBBB: document.getElementById('ecgLBBB').checked,
+                ecgWPW: document.getElementById('ecgWPW').checked,
+                ecgBrugada: document.getElementById('ecgBrugada').checked,
+                ecgAVBlock: document.getElementById('ecgAVBlock').checked,
+                ef: document.getElementById('ef').value,
+                echoRegional: document.getElementById('echoRegional').checked,
+                functionalStatus: document.getElementById('functionalStatus').value,
+                comorbidAsthma: document.getElementById('comorbidAsthma').checked,
+                comorbidOrtho: document.getElementById('comorbidOrtho').checked,
+                comorbidPAD: document.getElementById('comorbidPAD').checked,
+                medBetaBlocker: document.getElementById('medBetaBlocker').checked,
+                medNitrates: document.getElementById('medNitrates').checked,
+                histAdenosine: document.getElementById('histAdenosine').checked,
+                hasCKD: document.getElementById('hasCKD').value,
+                hasACS: document.getElementById('hasACS').value,
+                hasContraindications: document.getElementById('hasContraindications').value
+            };
+            
+            return formData;
+        }
+
+        // Сброс формы
+        function resetForm() {
+            document.querySelectorAll('input, select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false;
+                else el.value = '';
+                el.classList.remove('error');
+            });
+            
+            // Сброс полей критериев исследования
+            document.getElementById('hasCKD').value = 'no';
+            document.getElementById('hasACS').value = 'no';
+            document.getElementById('hasContraindications').value = 'no';
+            
+            // Сброс индикаторов критериев
+            document.querySelectorAll('.criteria-check').forEach(el => {
+                el.className = 'checkbox-item criteria-check';
+                el.querySelector('input').checked = false;
+                el.querySelector('label').innerHTML = el.querySelector('label').innerHTML.replace(/^[✅❌]\s*/, '');
+            });
+            
+            // Сброс информации о рандомизации
+            document.getElementById('randomizationInfo').style.display = 'none';
+            document.getElementById('resultRandomizationInfo').style.display = 'none';
+            randomizationInfo = null;
+            
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('exportButtons').style.display = 'none';
+            document.getElementById('contraindicationsSection').style.display = 'none';
+            document.getElementById('bmiContainer').style.display = 'none';
+            document.getElementById('eligibilityResult').style.display = 'none';
+            document.getElementById('studyEligibilityResult').style.display = 'none';
+            updateRiskFactorCount();
+        }
+
+        // Вспомогательная функция для получения имени файла с ID пациента
+        function getFileNameWithPatientId(patientName, randomizationInfo) {
+            // Получаем ID пациента из информации о рандомизации
+            const patientId = randomizationInfo ? 
+                (randomizationInfo.patientInfo?.id || 
+                 randomizationInfo.patient?.id || 
+                 randomizationInfo.randomizationInfo?.patientId) : 
+                null;
+            
+            // Если есть ID пациента, используем его
+            if (patientId) {
+                return patientId;
+            }
+            
+            // Если нет ID, используем первые 20 символов имени пациента (без пробелов)
+            return (patientName || 'пациент').replace(/\s+/g, '_').substring(0, 20);
+        }
+
+        // Экспорт в Excel
+        function exportToExcel() {
+            const data = window.lastCalculationData;
+            if (!data) return;
+
+            // Получаем имя файла с ID пациента
+            const fileName = getFileNameWithPatientId(data.patientName, data.randomizationInfo);
+            const lines = [
+                'КАЛЬКУЛЯТОР РИСКА ОБСТРУКТИВНОЙ ИБС С РЕКОМЕНДАЦИЯМИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ',
+                '='.repeat(80),
+                '',
+                'ДАННЫЕ ПАЦИЕНТА:',
+                `ФИО,${data.patientName}`,
+                `Пол,${data.sex === 'woman' ? 'Женщина' : 'Мужчина'}`,
+                `Возраст,${data.age || 'не указан'} лет`,
+                `Рост/Вес,${data.additionalData.height || 'не указан'} см / ${data.additionalData.weight || 'не указан'} кг`,
+                '',
+                'ОСНОВНЫЕ ПАРАМЕТРЫ:',
+                `Боль в груди,${data.chestPain !== null ? data.chestPain + ' баллов' : 'не указано'}`,
+                `Одышка при нагрузке,${data.dyspnea !== null ? data.dyspnea + ' баллов' : 'не указано'}`,
+                `Факторы риска,${data.riskFactorCount} шт.`,
+                `Перечисление,${data.riskFactors.length > 0 ? data.riskFactors.join('; ') : 'не выявлены'}`,
+                '',
+                'РЕЗУЛЬТАТЫ ОЦЕНКИ:',
+                `Вероятность обструктивной ИБС,${data.percentage !== null ? data.percentage + '%' : 'не рассчитано'}`,
+                `Категория риска,${data.desc.name}`,
+                `Интерпретация,${data.desc.interpretation}`,
+                '',
+                'РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ:',
+                `Основной метод,${data.stressTestRecommendations.primary ? data.stressTestRecommendations.primary.test : 'не определен'}`,
+                `Обоснование,${data.stressTestRecommendations.primary ? data.stressTestRecommendations.primary.reason : ''}`,
+                '',
+                'РЕЗУЛЬТАТ ОТБОРА ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT:',
+                `Подходит для исследования,${data.eligibilityResult && data.eligibilityResult.isEligible ? 'Да' : 'Нет'}`,
+                `${data.eligibilityResult && data.eligibilityResult.isEligible ? 'Все критерии выполнены' : 'Причины:'}`,
+                '',
+                'ИНФОРМАЦИЯ О РАНДОМИЗАЦИИ:',
+                `Группа,${data.randomizationInfo ? (data.randomizationInfo.assignedGroup || data.randomizationInfo.randomizationInfo?.assignedGroup || 'не назначена') : 'не назначена'}`,
+                `ID пациента,${data.randomizationInfo ? (data.randomizationInfo.patientInfo?.id || data.randomizationInfo.patient?.id || 'не указан') : 'не указан'}`,
+                '',
+                `Дата расчета,${data.date}`,
+                '',
+                'ВАЖНО: Рекомендации являются ориентировочными. Окончательное решение принимает лечащий врач.'
+            ];
+
+            const csv = lines.join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Рекомендации_стресс-ЭХО_${fileName}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+
+        // ============================================
+        // ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ ФАЙЛАМИ
+        // ============================================
+
+        // Экспорт в TXT
+        function exportToTxt() {
+            const data = window.lastCalculationData;
+            if (!data) {
+                alert('❌ Ошибка: Сначала рассчитайте рекомендации!');
+                return;
+            }
+
+            // Получаем имя файла с ID пациента
+            const fileName = getFileNameWithPatientId(data.patientName, data.randomizationInfo);
+
+            const txtContent = `
+КАЛЬКУЛЯТОР РИСКА ОБСТРУКТИВНОЙ ИБС
+===========================================
+ДАННЫЕ ПАЦИЕНТА:
+ФИО: ${data.patientName}
+Пол: ${data.sex === 'woman' ? 'Женщина' : 'Мужчина'}
+Возраст: ${data.age || 'не указан'} лет
+Рост/Вес: ${data.additionalData.height || 'не указан'} см / ${data.additionalData.weight || 'не указан'} кг
+
+ОСНОВНЫЕ ПАРАМЕТРЫ:
+Боль в груди: ${data.chestPain !== null ? data.chestPain + ' баллов' : 'не указано'}
+Одышка при нагрузке: ${data.dyspnea !== null ? data.dyspnea + ' баллов' : 'не указано'}
+Факторы риска: ${data.riskFactorCount} шт.
+Перечисление: ${data.riskFactors.length > 0 ? data.riskFactors.join(', ') : 'не выявлены'}
+
+РЕЗУЛЬТАТЫ ОЦЕНКИ:
+Вероятность обструктивной ИБС: ${data.percentage !== null ? data.percentage + '%' : 'не рассчитано'}
+Категория риска: ${data.desc.name}
+Интерпретация: ${data.desc.interpretation}
+
+РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ:
+Основной метод: ${data.stressTestRecommendations.primary ? data.stressTestRecommendations.primary.test : 'не определен'}
+Обоснование: ${data.stressTestRecommendations.primary ? data.stressTestRecommendations.primary.reason : ''}
+
+РЕЗУЛЬТАТ ОТБОРА ДЛЯ ИССЛЕДОВАНИЯ PASS-Echo-PILOT:
+${data.eligibilityResult && data.eligibilityResult.isEligible ? '✅ ПАЦИЕНТ ПОДХОДИТ ДЛЯ ИССЛЕДОВАНИЯ' : '❌ ПАЦИЕНТ НЕ ПОДХОДИТ ДЛЯ ИССЛЕДОВАНИЯ'}
+${data.eligibilityResult && !data.eligibilityResult.isEligible ? `Причины: ${Object.values(data.eligibilityResult.reasons || {}).filter(v => v).map((v, i) => ['Низкий риск', 'Не соответствует критериям', 'Возраст', 'ОКС', 'Противопоказания'][i]).join(', ')}` : ''}
+
+ИНФОРМАЦИЯ О РАНДОМИЗАЦИИ:
+${data.randomizationInfo ? 
+`Группа: ${data.randomizationInfo.assignedGroup || data.randomizationInfo.randomizationInfo?.assignedGroup || 'не назначена'}
+ID пациента: ${data.randomizationInfo.patientInfo?.id || data.randomizationInfo.patient?.id || 'не указан'}` : 
+'Рандомизация не проведена'}
+
+ПРОТИВОПОКАЗАНИЯ:
+К физической нагрузке: ${data.stressTestRecommendations.contraindications.exercise.join('; ') || 'нет'}
+К аденозину: ${data.stressTestRecommendations.contraindications.adenosine.join('; ') || 'нет'}
+Показания к аденозину: ${data.stressTestRecommendations.contraindications.indicationsAdenosine.join('; ') || 'нет'}
+
+Дата расчета: ${data.date}
+
+ВАЖНО: Рекомендации являются ориентировочными. Окончательное решение принимает лечащий врач.
+`;
+
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `Рекомендации_стресс-ЭХО_${fileName}_${new Date().toISOString().split('T')[0]}.txt`);
+            link.click();
+        }
+
+        // Определение типа теста для сохранения
+        function getTestTypeFromRecommendation(recommendation) {
+            if (!recommendation || !recommendation.primary) return 'unknown';
+            
+            const testName = recommendation.primary.test;
+            
+            if (testName.includes('АДЕНОЗИНОМ')) return 'adenosine';
+            if (testName.includes('ФИЗИЧЕСКОЙ НАГРУЗКОЙ')) return 'exercise';
+            if (testName.includes('ДОБУТАМИНОМ')) return 'dobutamine';
+            
+            return 'unknown';
+        }
+
+        // Сохранение расчета в файл
+        function saveToFile(fileType) {
+            const data = window.lastCalculationData;
+            if (!data) {
+                alert('❌ Ошибка: Сначала рассчитайте рекомендации!');
+                return;
+            }
+
+            // Проверяем, соответствует ли рекомендованный тип теста выбранному для сохранения
+            const recommendedType = getTestTypeFromRecommendation(data.stressTestRecommendations);
+            
+            if (recommendedType !== fileType && recommendedType !== 'unknown') {
+                const confirmSave = confirm(`Рекомендованный тест: ${recommendedType.toUpperCase()}. Вы сохраняете в файл ${fileType.toUpperCase()}. Продолжить?`);
+                if (!confirmSave) return;
+            }
+
+            // Создаем структуру данных для файла
+            const fileData = {
+                metadata: {
+                    version: '1.0',
+                    fileType: fileType,
+                    created: new Date().toISOString(),
+                    description: getFileTypeDescription(fileType)
+                },
+                calculations: [data]
+            };
+
+            // Получаем имя файла с ID пациента
+            const fileName = getFileNameWithPatientId(data.patientName, data.randomizationInfo);
+
+            // Сохраняем в файл
+            const jsonStr = JSON.stringify(fileData, null, 2);
+            const blob = new Blob([jsonStr], { type: 'application/json' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `ESC_${fileType}_${fileName}_${new Date().toISOString().split('T')[0]}.json`);
+            link.click();
+            
+            alert(`✅ Расчет сохранен в файл ${fileType.toUpperCase()}!`);
+        }
+
+        // Получение описания типа файла
+        function getFileTypeDescription(fileType) {
+            const descriptions = {
+                'adenosine': 'Файл с рекомендациями к стресс-тесту с АДЕНОЗИНОМ',
+                'exercise': 'Файл с рекомендациями к стресс-тесту с ФИЗИЧЕСКОЙ НАГРУЗКОЙ',
+                'dobutamine': 'Файл с рекомендациями к стресс-тесту с ДОБУТАМИНОМ'
+            };
+            return descriptions[fileType] || 'Неизвестный тип файла';
+        }
+
+        // Импорт из файла
+        function importFromFile(fileType, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const fileData = JSON.parse(e.target.result);
+                    
+                    // Проверяем структуру файла
+                    if (!fileData.metadata || !fileData.calculations || !Array.isArray(fileData.calculations)) {
+                        throw new Error('Неправильный формат файла');
+                    }
+                    
+                    // Проверяем тип файла
+                    if (fileData.metadata.fileType !== fileType) {
+                        const confirmLoad = confirm(`Тип файла: ${fileData.metadata.fileType}. Ожидался: ${fileType}. Загрузить все равно?`);
+                        if (!confirmLoad) {
+                            event.target.value = '';
+                            return;
+                        }
+                    }
+                    
+                    // Добавляем загруженные данные
+                    loadedFiles[fileType] = loadedFiles[fileType].concat(fileData.calculations);
+                    
+                    // Сбрасываем поле загрузки файла
+                    event.target.value = '';
+                    
+                    // Обновляем список файлов
+                    updateLoadedFilesList();
+                    
+                    alert(`✅ Успешно загружено ${fileData.calculations.length} расчетов из файла ${fileType.toUpperCase()}!`);
+                } catch (error) {
+                    alert('❌ Ошибка при загрузке файла: ' + error.message);
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Функция обработки импортируемого JSON файла
+        function processImportedJSON(jsonData) {
+            console.log('Обработка импортированного JSON:', jsonData);
+            
+            // Если файл имеет структуру с метаданными и calculations
+            if (jsonData.metadata && jsonData.calculations && Array.isArray(jsonData.calculations)) {
+                // Берем первый расчет из массива
+                const calculation = jsonData.calculations[0];
+                if (!calculation) {
+                    throw new Error('В файле нет расчетов');
+                }
+                
+                console.log('Найден расчет в формате калькулятора:', calculation);
+                return calculation;
+            } 
+            // Если файл уже содержит расчет напрямую (старый формат)
+            else if (jsonData.patientName || jsonData.formData) {
+                console.log('Найден расчет в старом формате:', jsonData);
+                return jsonData;
+            } 
+            // Если это файл рандомайзера
+            else if (jsonData.randomizationInfo || jsonData.calculationResults) {
+                console.log('Найден файл рандомайзера:', jsonData);
+                return convertRandomizerToCalculatorFormat(jsonData);
+            }
+            else {
+                throw new Error('Неизвестный формат файла');
+            }
+        }
+
+        // Функция загрузки выбранного файла в форму
+        function loadSelectedFile() {
+            if (!selectedFile) {
+                alert('❌ Ошибка: Выберите файл из списка!');
+                return;
+            }
+            
+            const calculation = loadedFiles[selectedFile.type][selectedFile.index];
+            if (!calculation) {
+                alert('❌ Ошибка: Расчет не найден!');
+                return;
+            }
+            
+            // Заполняем форму данными
+            fillFormFromCalculation(calculation);
+            
+            // Восстанавливаем результаты расчета
+            window.lastCalculationData = calculation;
+            
+            // Показываем результаты
+            if (calculation.percentage !== undefined) {
+                displayResults(
+                    calculation.percentage,
+                    calculation.category,
+                    calculation.patientName,
+                    calculation.sex,
+                    calculation.age,
+                    calculation.chestPain,
+                    calculation.dyspnea,
+                    calculation.symptomScore,
+                    calculation.riskFactorCount,
+                    calculation.ageGroup,
+                    calculation.stressTestRecommendations,
+                    calculation.additionalData,
+                    calculation.eligibilityResult
+                );
+            }
+            
+            alert('✅ Данные загружены в форму!');
+        }
+
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ: Заполнение формы из расчета
+        function fillFormFromCalculation(calc) {
+            console.log('Заполнение формы из расчета:', calc);
+            
+            // Сначала очищаем форму
+            resetForm();
+            
+            // 1. ОСНОВНЫЕ ДАННЫЕ
+            if (calc.patientName) {
+                document.getElementById('patientName').value = calc.patientName;
+            }
+            if (calc.sex) {
+                document.getElementById('sex').value = calc.sex;
+            }
+            if (calc.age) {
+                document.getElementById('age').value = calc.age;
+            }
+            
+            // 2. РОСТ И ВЕС
+            if (calc.additionalData) {
+                if (calc.additionalData.height) {
+                    document.getElementById('height').value = calc.additionalData.height;
+                }
+                if (calc.additionalData.weight) {
+                    document.getElementById('weight').value = calc.additionalData.weight;
+                }
+            } else if (calc.formData) {
+                if (calc.formData.height) {
+                    document.getElementById('height').value = calc.formData.height;
+                }
+                if (calc.formData.weight) {
+                    document.getElementById('weight').value = calc.formData.weight;
+                }
+            }
+            
+            // 3. ФАКТОРЫ РИСКА (Блок 2)
+            if (calc.formData) {
+                if (calc.formData.familyHistory !== undefined) {
+                    document.getElementById('familyHistory').checked = Boolean(calc.formData.familyHistory);
+                }
+                if (calc.formData.smoking !== undefined) {
+                    document.getElementById('smoking').checked = Boolean(calc.formData.smoking);
+                }
+                if (calc.formData.dyslipidemia !== undefined) {
+                    document.getElementById('dyslipidemia').checked = Boolean(calc.formData.dyslipidemia);
+                }
+                if (calc.formData.hypertension !== undefined) {
+                    document.getElementById('hypertension').checked = Boolean(calc.formData.hypertension);
+                }
+                if (calc.formData.diabetes !== undefined) {
+                    document.getElementById('diabetes').checked = Boolean(calc.formData.diabetes);
+                }
+            }
+            
+            // 4. СИМПТОМЫ (Блок 3)
+            if (calc.formData) {
+                if (calc.formData.chestPainType !== undefined && calc.formData.chestPainType !== null && calc.formData.chestPainType !== '') {
+                    document.getElementById('chestPainType').value = String(calc.formData.chestPainType);
+                }
+                if (calc.formData.dyspneaType !== undefined && calc.formData.dyspneaType !== null && calc.formData.dyspneaType !== '') {
+                    document.getElementById('dyspneaType').value = String(calc.formData.dyspneaType);
+                }
+            }
+            
+            // 5. ЭКГ И ГЕМОДИНАМИКА (Блок 4)
+            if (calc.formData) {
+                if (calc.formData.sysBP) {
+                    document.getElementById('sysBP').value = calc.formData.sysBP;
+                }
+                if (calc.formData.hr) {
+                    document.getElementById('hr').value = calc.formData.hr;
+                }
+                if (calc.formData.ecgRhythm) {
+                    document.getElementById('ecgRhythm').value = calc.formData.ecgRhythm;
+                }
+                if (calc.formData.ecgLBBB !== undefined) {
+                    document.getElementById('ecgLBBB').checked = Boolean(calc.formData.ecgLBBB);
+                }
+                if (calc.formData.ecgWPW !== undefined) {
+                    document.getElementById('ecgWPW').checked = Boolean(calc.formData.ecgWPW);
+                }
+                if (calc.formData.ecgBrugada !== undefined) {
+                    document.getElementById('ecgBrugada').checked = Boolean(calc.formData.ecgBrugada);
+                }
+                if (calc.formData.ecgAVBlock !== undefined) {
+                    document.getElementById('ecgAVBlock').checked = Boolean(calc.formData.ecgAVBlock);
+                }
+            }
+            
+            // 6. ЭХОКАРДИОГРАФИЯ (Блок 5)
+            if (calc.formData) {
+                if (calc.formData.ef) {
+                    document.getElementById('ef').value = calc.formData.ef;
+                }
+                if (calc.formData.echoRegional !== undefined) {
+                    document.getElementById('echoRegional').checked = Boolean(calc.formData.echoRegional);
+                }
+            }
+            
+            // 7. ФУНКЦИОНАЛЬНЫЙ СТАТУС (Блок 6)
+            if (calc.formData) {
+                if (calc.formData.functionalStatus) {
+                    document.getElementById('functionalStatus').value = calc.formData.functionalStatus;
+                }
+                if (calc.formData.comorbidAsthma !== undefined) {
+                    document.getElementById('comorbidAsthma').checked = Boolean(calc.formData.comorbidAsthma);
+                }
+                if (calc.formData.comorbidOrtho !== undefined) {
+                    document.getElementById('comorbidOrtho').checked = Boolean(calc.formData.comorbidOrtho);
+                }
+                if (calc.formData.comorbidPAD !== undefined) {
+                    document.getElementById('comorbidPAD').checked = Boolean(calc.formData.comorbidPAD);
+                }
+            }
+            
+            // 8. МЕДИКАМЕНТОЗНАЯ ТЕРАПИЯ (Блок 7)
+            if (calc.formData) {
+                if (calc.formData.medBetaBlocker !== undefined) {
+                    document.getElementById('medBetaBlocker').checked = Boolean(calc.formData.medBetaBlocker);
+                }
+                if (calc.formData.medNitrates !== undefined) {
+                    document.getElementById('medNitrates').checked = Boolean(calc.formData.medNitrates);
+                }
+                if (calc.formData.histAdenosine !== undefined) {
+                    document.getElementById('histAdenosine').checked = Boolean(calc.formData.histAdenosine);
+                }
+            }
+            
+            // 9. КРИТЕРИИ ИССЛЕДОВАНИЯ (Блок 8)
+            if (calc.formData) {
+                if (calc.formData.hasCKD !== undefined) {
+                    document.getElementById('hasCKD').value = calc.formData.hasCKD;
+                }
+                if (calc.formData.hasACS !== undefined) {
+                    document.getElementById('hasACS').value = calc.formData.hasACS;
+                }
+                if (calc.formData.hasContraindications !== undefined) {
+                    document.getElementById('hasContraindications').value = calc.formData.hasContraindications;
+                }
+            }
+            
+            // 10. Отображаем информацию о рандомизации
+            if (calc.randomizationInfo) {
+                displayRandomizationInfo(calc.randomizationInfo);
+            }
+            
+            // Обновляем UI
+            updateRiskFactorCount();
+            calculateBMI();
+            
+            console.log('Форма заполнена данными из расчета');
+        }
+
+        // Обновленный обработчик импорта файлов
+        function importFromFile(fileType, event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const jsonData = JSON.parse(e.target.result);
+                    console.log('Импортируемый файл:', jsonData);
+                    
+                    // Обрабатываем импортируемые данные
+                    const calculation = processImportedJSON(jsonData);
+                    
+                    // Добавляем тип файла для идентификации
+                    calculation.fileType = fileType;
+                    
+                    // Добавляем расчет в соответствующий список
+                    loadedFiles[fileType].push(calculation);
+                    
+                    // Сбрасываем поле загрузки файла
+                    event.target.value = '';
+                    
+                    // Обновляем список файлов
+                    updateLoadedFilesList();
+                    
+                    // Заполняем форму данными
+                    fillFormFromCalculation(calculation);
+                    
+                    alert(`✅ Файл ${fileType.toUpperCase()} успешно импортирован! Форма заполнена.`);
+                    
+                } catch (error) {
+                    console.error('Ошибка при импорте:', error);
+                    alert('❌ Ошибка при импорте файла: ' + error.message);
+                    event.target.value = '';
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Функция проверки, что это файл из рандомайзера
+        function isRandomizerFile(data) {
+            return (
+                (data.randomizationInfo && data.randomizationInfo.randomizerTool === 'PASS-Echo-PILOT Рандомизатор') ||
+                (data.calculationResults && data.calculationResults.eligibility && data.calculationResults.eligibility.assignedGroup) ||
+                data.assignedGroup ||
+                (data.randomizationInfo && data.randomizationInfo.assignedGroup) ||
+                data.formState
+            );
+        }
+
+        // Функция конвертации данных рандомайзера в формат калькулятора
+        function convertRandomizerToCalculatorFormat(randomizerData) {
+            console.log('Конвертируем данные рандомайзера:', randomizerData);
+            
+            const calculatorData = {};
+            
+            // 1. БАЗОВЫЕ ДАННЫЕ ПАЦИЕНТА
+            if (randomizerData.patientInfo) {
+                calculatorData.patientName = randomizerData.patientInfo.name || '';
+                calculatorData.sex = randomizerData.patientInfo.sex || '';
+                calculatorData.age = randomizerData.patientInfo.age || '';
+            } else if (randomizerData.patient) {
+                calculatorData.patientName = randomizerData.patient.name || '';
+                calculatorData.sex = randomizerData.patient.sex || '';
+                calculatorData.age = randomizerData.patient.age || '';
+            }
+            
+            // 2. ФАКТОРЫ РИСКА (Блок 2)
+            if (randomizerData.riskFactors) {
+                calculatorData.familyHistory = Boolean(randomizerData.riskFactors.familyHistory);
+                calculatorData.smoking = Boolean(randomizerData.riskFactors.smoking);
+                calculatorData.dyslipidemia = Boolean(randomizerData.riskFactors.dyslipidemia);
+                calculatorData.hypertension = Boolean(randomizerData.riskFactors.hypertension);
+                calculatorData.diabetes = Boolean(randomizerData.riskFactors.diabetes);
+            }
+            
+            // 3. СИМПТОМЫ (Блок 3)
+            if (randomizerData.symptoms) {
+                // БОЛЬ В ГРУДИ
+                const chestPainValue = randomizerData.symptoms.chestPainValue;
+                if (chestPainValue !== undefined && chestPainValue !== null) {
+                    calculatorData.chestPainType = String(chestPainValue);
+                }
+                
+                // ОДЫШКА
+                const dyspneaValue = randomizerData.symptoms.dyspneaValue;
+                if (dyspneaValue !== undefined && dyspneaValue !== null) {
+                    calculatorData.dyspneaType = String(dyspneaValue);
+                }
+            }
+            
+            // 4. КРИТЕРИИ ИССЛЕДОВАНИЯ PASS-Echo-PILOT (Блок 8)
+            if (randomizerData.studyCriteria) {
+                calculatorData.hasCKD = randomizerData.studyCriteria.hasCKD ? 'yes' : 'no';
+                calculatorData.hasACS = randomizerData.studyCriteria.hasACS ? 'yes' : 'no';
+                calculatorData.hasContraindications = randomizerData.studyCriteria.hasContraindications ? 'yes' : 'no';
+            } else if (randomizerData.formState) {
+                calculatorData.hasCKD = randomizerData.formState.hasCKD || 'no';
+                calculatorData.hasACS = randomizerData.formState.hasACS || 'no';
+                calculatorData.hasContraindications = randomizerData.formState.hasContraindications || 'no';
+            }
+            
+            // 5. РАСЧЕТ РИСКА (из randomizerData)
+            if (randomizerData.calculationResults) {
+                calculatorData.percentage = randomizerData.calculationResults.percentage;
+                calculatorData.category = randomizerData.calculationResults.category;
+                calculatorData.ageGroup = randomizerData.calculationResults.ageGroup;
+            }
+            
+            // 6. ИНФОРМАЦИЯ О РАНДОМИЗАЦИИ
+            if (randomizerData.randomizationInfo || randomizerData.assignedGroup) {
+                calculatorData.randomizationInfo = {
+                    ...randomizerData,
+                    assignedGroup: randomizerData.assignedGroup || 
+                                  randomizerData.randomizationInfo?.assignedGroup,
+                    randomizationDate: randomizerData.randomizationInfo?.randomizationDate,
+                    randomizerTool: randomizerData.randomizationInfo?.randomizerTool || 'PASS-Echo-PILOT Рандомизатор',
+                    patientInfo: randomizerData.patientInfo || randomizerData.patient
+                };
+            }
+            
+            // 7. СОБИРАЕМ formData для заполнения формы
+            calculatorData.formData = {
+                patientName: calculatorData.patientName,
+                sex: calculatorData.sex,
+                age: calculatorData.age,
+                familyHistory: calculatorData.familyHistory,
+                smoking: calculatorData.smoking,
+                dyslipidemia: calculatorData.dyslipidemia,
+                hypertension: calculatorData.hypertension,
+                diabetes: calculatorData.diabetes,
+                chestPainType: calculatorData.chestPainType,
+                dyspneaType: calculatorData.dyspneaType,
+                hasCKD: calculatorData.hasCKD,
+                hasACS: calculatorData.hasACS,
+                hasContraindications: calculatorData.hasContraindications
+            };
+            
+            console.log('Итоговые данные для калькулятора:', calculatorData);
+            return calculatorData;
+        }
+
+        // Функция импорта файла из рандомайзера
+        function importRandomizerFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const fileData = JSON.parse(e.target.result);
+                    console.log('Загружен файл рандомайзера:', fileData);
+                    
+                    // Проверяем, что это файл из рандомайзера
+                    if (isRandomizerFile(fileData)) {
+                        // Конвертируем данные рандомайзера в формат калькулятора
+                        const calculatorData = convertRandomizerToCalculatorFormat(fileData);
+                        
+                        // Добавляем в список файлов
+                        loadedFiles.adenosine.push(calculatorData);
+                        
+                        // Сбрасываем поле загрузки файла
+                        event.target.value = '';
+                        
+                        // Обновляем список файлов
+                        updateLoadedFilesList();
+                        
+                        // Заполняем форму данными
+                        fillFormFromCalculation(calculatorData);
+                        
+                        alert('✅ Файл из рандомайзера успешно импортирован! Форма заполнена.');
+                    } else {
+                        alert('❌ Это не файл из рандомайзера PASS-Echo-PILOT. Используйте стандартные кнопки импорта для файлов этого калькулятора.');
+                        event.target.value = '';
+                    }
+                } catch (error) {
+                    alert('❌ Ошибка при загрузке файла: ' + error.message);
+                    event.target.value = '';
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+
+        // Обновление списка загруженных файлов
+        function updateLoadedFilesList() {
+            const listElement = document.getElementById('loadedFilesList');
+            const fileActions = document.getElementById('fileActions');
+            
+            // Считаем общее количество расчетов
+            let totalCalculations = 0;
+            let html = '';
+            
+            // Добавляем расчеты для аденозина
+            if (loadedFiles.adenosine.length > 0) {
+                html += `<div class="file-type-header">АДЕНОЗИН (${loadedFiles.adenosine.length})</div>`;
+                loadedFiles.adenosine.forEach((calc, index) => {
+                    totalCalculations++;
+                    const isSelected = selectedFile && selectedFile.type === 'adenosine' && selectedFile.index === index ? 'selected' : '';
+                    const riskPercentage = calc.percentage !== null ? `${calc.percentage}%` : 'Н/Д';
+                    const groupInfo = calc.randomizationInfo ? 
+                        `<span class="group-badge ${calc.randomizationInfo.assignedGroup === 'standard' ? 'group-standard' : 'group-personalized'}">${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}</span>` : '';
+                    
+                    html += `
+                        <div class="loaded-file-item ${isSelected}" onclick="selectLoadedFile('adenosine', ${index})">
+                            <div class="loaded-file-name">
+                                <span class="loaded-file-type type-adenosine">АДЕНОЗИН</span>
+                                ${calc.patientName} ${groupInfo}
+                            </div>
+                            <div class="loaded-file-details">
+                                ${calc.date || 'Нет даты'} • Риск: ${riskPercentage} • ${calc.desc?.name || 'Не рассчитано'}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Добавляем расчеты для физической нагрузки
+            if (loadedFiles.exercise.length > 0) {
+                html += `<div class="file-type-header">ФИЗИЧЕСКАЯ НАГРУЗКА (${loadedFiles.exercise.length})</div>`;
+                loadedFiles.exercise.forEach((calc, index) => {
+                    totalCalculations++;
+                    const isSelected = selectedFile && selectedFile.type === 'exercise' && selectedFile.index === index ? 'selected' : '';
+                    const riskPercentage = calc.percentage !== null ? `${calc.percentage}%` : 'Н/Д';
+                    const groupInfo = calc.randomizationInfo ? 
+                        `<span class="group-badge ${calc.randomizationInfo.assignedGroup === 'standard' ? 'group-standard' : 'group-personalized'}">${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}</span>` : '';
+                    
+                    html += `
+                        <div class="loaded-file-item ${isSelected}" onclick="selectLoadedFile('exercise', ${index})">
+                            <div class="loaded-file-name">
+                                <span class="loaded-file-type type-exercise">ФИЗ.НАГРУЗКА</span>
+                                ${calc.patientName} ${groupInfo}
+                            </div>
+                            <div class="loaded-file-details">
+                                ${calc.date || 'Нет даты'} • Риск: ${riskPercentage} • ${calc.desc?.name || 'Не рассчитано'}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Добавляем расчеты для добутамина
+            if (loadedFiles.dobutamine.length > 0) {
+                html += `<div class="file-type-header">ДОБУТАМИН (${loadedFiles.dobutamine.length})</div>`;
+                loadedFiles.dobutamine.forEach((calc, index) => {
+                    totalCalculations++;
+                    const isSelected = selectedFile && selectedFile.type === 'dobutamine' && selectedFile.index === index ? 'selected' : '';
+                    const riskPercentage = calc.percentage !== null ? `${calc.percentage}%` : 'Н/Д';
+                    const groupInfo = calc.randomizationInfo ? 
+                        `<span class="group-badge ${calc.randomizationInfo.assignedGroup === 'standard' ? 'group-standard' : 'group-personalized'}">${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}</span>` : '';
+                    
+                    html += `
+                        <div class="loaded-file-item ${isSelected}" onclick="selectLoadedFile('dobutamine', ${index})">
+                            <div class="loaded-file-name">
+                                <span class="loaded-file-type type-dobutamine">ДОБУТАМИН</span>
+                                ${calc.patientName} ${groupInfo}
+                            </div>
+                            <div class="loaded-file-details">
+                                ${calc.date || 'Нет даты'} • Риск: ${riskPercentage} • ${calc.desc?.name || 'Не рассчитано'}
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (totalCalculations === 0) {
+                listElement.innerHTML = '<div class="no-files-message">Нет загруженных файлов</div>';
+                fileActions.style.display = 'none';
+            } else {
+                listElement.innerHTML = html;
+                fileActions.style.display = 'flex';
+            }
+            
+            // Обновляем статистику
+            updateFileStats();
+        }
+
+        // Обновление статистики файлов
+        function updateFileStats() {
+            document.getElementById('adenosineCount').textContent = loadedFiles.adenosine.length;
+            document.getElementById('exerciseCount').textContent = loadedFiles.exercise.length;
+            document.getElementById('dobutamineCount').textContent = loadedFiles.dobutamine.length;
+            
+            const totalPatients = loadedFiles.adenosine.length + loadedFiles.exercise.length + loadedFiles.dobutamine.length;
+            document.getElementById('totalPatients').textContent = totalPatients;
+        }
+
+        // Выбор файла из списка
+        function selectLoadedFile(fileType, index) {
+            selectedFile = { type: fileType, index: index };
+            updateLoadedFilesList();
+        }
+
+        // Экспорт выбранного файла в TXT
+        function exportSelectedFile() {
+            if (!selectedFile) {
+                alert('❌ Ошибка: Выберите файл из списка!');
+                return;
+            }
+            
+            const calculation = loadedFiles[selectedFile.type][selectedFile.index];
+            if (!calculation) {
+                alert('❌ Ошибка: Расчет не найден!');
+                return;
+            }
+            
+            // Получаем имя файла с ID пациента
+            const fileName = getFileNameWithPatientId(calculation.patientName, calculation.randomizationInfo);
+            
+            const groupInfo = calculation.randomizationInfo ? 
+                `Группа: ${calculation.randomizationInfo.assignedGroup === 'standard' ? 'Стандартная' : 'Персонализированная'}\n` : '';
+            
+            const txtContent = `
+КАЛЬКУЛЯТОР РИСКА ОБСТРУКТИВНОЙ ИБС - ЭКСПОРТ ДАННЫХ
+===========================================
+ТИП ТЕСТА: ${selectedFile.type.toUpperCase()}
+${groupInfo}
+ДАННЫЕ ПАЦИЕНТА:
+ФИО: ${calculation.patientName}
+Пол: ${calculation.sex === 'woman' ? 'Женщина' : 'Мужчина'}
+Возраст: ${calculation.age || 'не указан'} лет
+Дата расчета: ${calculation.date || 'не указана'}
+
+ОСНОВНЫЕ ПАРАМЕТРЫ:
+Боль в груди: ${calculation.chestPain !== null ? calculation.chestPain + ' баллов' : 'не указано'}
+Одышка при нагрузке: ${calculation.dyspnea !== null ? calculation.dyspnea + ' баллов' : 'не указано'}
+Факторы риска: ${calculation.riskFactorCount || 'не указано'} шт.
+
+РЕЗУЛЬТАТЫ ОЦЕНКИ:
+Вероятность обструктивной ИБС: ${calculation.percentage !== null ? calculation.percentage + '%' : 'не рассчитано'}
+Категория риска: ${calculation.desc?.name || 'не рассчитано'}
+Интерпретация: ${calculation.desc?.interpretation || 'не рассчитано'}
+
+РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ:
+Основной метод: ${calculation.stressTestRecommendations?.primary ? calculation.stressTestRecommendations.primary.test : 'не определен'}
+Обоснование: ${calculation.stressTestRecommendations?.primary ? calculation.stressTestRecommendations.primary.reason : ''}
+
+===========================================
+Экспортировано: ${new Date().toLocaleString('ru-RU')}
+`;
+
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `ESC_экспорт_${selectedFile.type}_${fileName}_${new Date().toISOString().split('T')[0]}.txt`);
+            link.click();
+        }
+
+        // Экспорт выбранного файла в Excel
+        function exportSelectedFileExcel() {
+            if (!selectedFile) {
+                alert('❌ Ошибка: Выберите файл из списка!');
+                return;
+            }
+            
+            const calculation = loadedFiles[selectedFile.type][selectedFile.index];
+            if (!calculation) {
+                alert('❌ Ошибка: Расчет не найден!');
+                return;
+            }
+
+            // Получаем имя файла с ID пациента
+            const fileName = getFileNameWithPatientId(calculation.patientName, calculation.randomizationInfo);
+
+            const groupInfo = calculation.randomizationInfo ? 
+                `Группа,${calculation.randomizationInfo.assignedGroup === 'standard' ? 'Стандартная' : 'Персонализированная'}` : '';
+
+            const lines = [
+                'КАЛЬКУЛЯТОР РИСКА ОБСТРУКТИВНОЙ ИБС - ЭКСПОРТ ДАННЫХ',
+                `ТИП ТЕСТА,${selectedFile.type.toUpperCase()}`,
+                groupInfo,
+                '',
+                'ДАННЫЕ ПАЦИЕНТА:',
+                `ФИО,${calculation.patientName || 'не указан'}`,
+                `Пол,${calculation.sex === 'woman' ? 'Женщина' : 'Мужчина'}`,
+                `Возраст,${calculation.age || 'не указан'} лет`,
+                `Дата расчета,${calculation.date || 'не указана'}`,
+                '',
+                'ОСНОВНЫЕ ПАРАМЕТРЫ:',
+                `Боль в груди,${calculation.chestPain !== null ? calculation.chestPain + ' баллов' : 'не указано'}`,
+                `Одышка при нагрузке,${calculation.dyspnea !== null ? calculation.dyspnea + ' баллов' : 'не указано'}`,
+                `Факторы риска,${calculation.riskFactorCount || 'не указано'} шт.`,
+                '',
+                'РЕЗУЛЬТАТЫ ОЦЕНКИ:',
+                `Вероятность обструктивной ИБС,${calculation.percentage !== null ? calculation.percentage + '%' : 'не рассчитано'}`,
+                `Категория риска,${calculation.desc?.name || 'не рассчитано'}`,
+                `Интерпретация,${calculation.desc?.interpretation || 'не рассчитано'}`,
+                '',
+                'РЕКОМЕНДАЦИИ ПО СТРЕСС-ЭХОКАРДИОГРАФИИ:',
+                `Основной метод,${calculation.stressTestRecommendations?.primary ? calculation.stressTestRecommendations.primary.test : 'не определен'}`,
+                `Обоснование,${calculation.stressTestRecommendations?.primary ? calculation.stressTestRecommendations.primary.reason : ''}`,
+                '',
+                `Экспортировано,${new Date().toLocaleString('ru-RU')}`
+            ];
+
+            const csv = lines.join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `ESC_экспорт_${selectedFile.type}_${fileName}_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+        }
+
+        // Загрузка всех файлов
+        function loadAllFiles() {
+            // Сбрасываем загруженные файлы
+            loadedFiles = {
+                adenosine: [],
+                exercise: [],
+                dobutamine: []
+            };
+            selectedFile = null;
+            updateLoadedFilesList();
+            alert('✅ Список файлов обновлен!');
+        }
+
+        // Экспорт сводного отчета
+        function exportAllFilesSummary() {
+            if (loadedFiles.adenosine.length === 0 && loadedFiles.exercise.length === 0 && loadedFiles.dobutamine.length === 0) {
+                alert('❌ Нет данных для экспорта!');
+                return;
+            }
+            
+            let txtContent = `
+СВОДНЫЙ ОТЧЕТ ПО РЕКОМЕНДАЦИЯМ СТРЕСС-ЭХОКАРДИОГРАФИИ
+===========================================
+Дата формирования отчета: ${new Date().toLocaleString('ru-RU')}
+Общее количество пациентов: ${loadedFiles.adenosine.length + loadedFiles.exercise.length + loadedFiles.dobutamine.length}
+
+СТАТИСТИКА ПО ТИПАМ ТЕСТОВ:
+АДЕНОЗИН: ${loadedFiles.adenosine.length} пациентов
+ФИЗИЧЕСКАЯ НАГРУЗКА: ${loadedFiles.exercise.length} пациентов
+ДОБУТАМИН: ${loadedFiles.dobutamine.length} пациентов
+
+СТАТИСТИКА ПО ГРУППАМ:
+${getGroupStatistics()}
+
+===========================================
+ДЕТАЛЬНЫЙ СПИСОК ПАЦИЕНТОВ:
+`;
+
+            // Добавляем пациентов с аденозином
+            if (loadedFiles.adenosine.length > 0) {
+                txtContent += '\nАДЕНОЗИН:\n';
+                txtContent += '='.repeat(50) + '\n';
+                loadedFiles.adenosine.forEach((calc, index) => {
+                    const group = calc.randomizationInfo ? `[${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}] ` : '';
+                    txtContent += `${index + 1}. ${group}${calc.patientName} - ${calc.percentage || 'Н/Д'}% (${calc.date || 'нет даты'})\n`;
+                });
+            }
+
+            // Добавляем пациентов с физической нагрузкой
+            if (loadedFiles.exercise.length > 0) {
+                txtContent += '\nФИЗИЧЕСКАЯ НАГРУЗКА:\n';
+                txtContent += '='.repeat(50) + '\n';
+                loadedFiles.exercise.forEach((calc, index) => {
+                    const group = calc.randomizationInfo ? `[${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}] ` : '';
+                    txtContent += `${index + 1}. ${group}${calc.patientName} - ${calc.percentage || 'Н/Д'}% (${calc.date || 'нет даты'})\n`;
+                });
+            }
+
+            // Добавляем пациентов с добутамином
+            if (loadedFiles.dobutamine.length > 0) {
+                txtContent += '\nДОБУТАМИН:\n';
+                txtContent += '='.repeat(50) + '\n';
+                loadedFiles.dobutamine.forEach((calc, index) => {
+                    const group = calc.randomizationInfo ? `[${calc.randomizationInfo.assignedGroup === 'standard' ? 'СТАНДАРТ' : 'ПЕРСОНАЛ'}] ` : '';
+                    txtContent += `${index + 1}. ${group}${calc.patientName} - ${calc.percentage || 'Н/Д'}% (${calc.date || 'нет даты'})\n`;
+                });
+            }
+
+            txtContent += '\n===========================================\n';
+            txtContent += 'ОТЧЕТ СФОРМИРОВАН АВТОМАТИЧЕСКИ\n';
+
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `ESC_сводный_отчет_${new Date().toISOString().split('T')[0]}.txt`);
+            link.click();
+        }
+
+        // Функция получения статистики по группам
+        function getGroupStatistics() {
+            let standardCount = 0;
+            let personalizedCount = 0;
+            let noGroupCount = 0;
+            
+            // Считаем пациентов по всем типам файлов
+            Object.values(loadedFiles).forEach(fileArray => {
+                fileArray.forEach(calc => {
+                    if (calc.randomizationInfo && calc.randomizationInfo.assignedGroup) {
+                        if (calc.randomizationInfo.assignedGroup === 'standard') {
+                            standardCount++;
+                        } else if (calc.randomizationInfo.assignedGroup === 'personalized') {
+                            personalizedCount++;
+                        } else {
+                            noGroupCount++;
+                        }
+                    } else {
+                        noGroupCount++;
+                    }
+                });
+            });
+            
+            return `Стандартная группа: ${standardCount} пациентов\nПерсонализированная группа: ${personalizedCount} пациентов\nБез группы: ${noGroupCount} пациентов`;
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRiskFactorCount();
+            // Рассчитать ИМТ при загрузке, если есть данные
+            calculateBMI();
+            
+            // Инициализируем список файлов
+            updateLoadedFilesList();
+        });
+    </script>
+</body>
+</html>

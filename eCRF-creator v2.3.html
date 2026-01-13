@@ -1,0 +1,3359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eCRF-creator v2.0 - Формирование карты пациента</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eaeaea;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .patient-name {
+            font-size: 22px;
+            color: #2980b9;
+            margin-bottom: 5px;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d68910;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #6c7b7d;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .form-field {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .form-field.date-field {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .date-field input {
+            flex: 1;
+        }
+
+        .date-confirm-btn {
+            height: 46px;
+            min-width: 46px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            transition: border 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        input.error {
+            border-color: #e74c3c;
+            background-color: #fdf2f0;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 5px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .attachments-section {
+            background-color: #e8f4fc;
+            padding: 25px;
+            border-radius: 8px;
+            margin-top: 30px;
+        }
+
+        .attachments-list {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .attachment-item {
+            background-color: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            padding: 15px;
+            width: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .attachment-icon {
+            font-size: 40px;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .attachment-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+
+        .attachment-size {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        .delete-attachment {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-button {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-input-button:hover {
+            background-color: #2980b9;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #7f8c8d;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background-color: #f5f5f5;
+            color: #e74c3c;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            padding-right: 30px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-success {
+            background-color: #d5f4e6;
+            color: #27ae60;
+            border: 1px solid #27ae60;
+        }
+
+        .status-error {
+            background-color: #fadbd8;
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+        }
+
+        .status-info {
+            background-color: #d6eaf8;
+            color: #3498db;
+            border: 1px solid #3498db;
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            
+            .no-print {
+                display: none !important;
+            }
+            
+            .print-only {
+                display: block;
+            }
+        }
+
+        .json-preview {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 14px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .file-link {
+            color: #3498db;
+            text-decoration: underline;
+            cursor: pointer;
+            margin: 5px 0;
+            display: block;
+        }
+
+        .file-link:hover {
+            color: #2980b9;
+        }
+
+        /* Журнал пациентов */
+        .journal-section {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #eaeaea;
+        }
+
+        .journal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .journal-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .journal-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .journal-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        .journal-table th {
+            background-color: #3498db;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .journal-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eaeaea;
+            vertical-align: top;
+        }
+
+        .journal-table tr:hover {
+            background-color: #f5f9fd;
+        }
+
+        .journal-table .actions-cell {
+            white-space: nowrap;
+        }
+
+        .journal-table .actions-cell button {
+            margin-right: 5px;
+        }
+
+        .empty-journal {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+
+        .patient-id {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .patient-summary {
+            max-width: 300px;
+            word-wrap: break-word;
+        }
+
+        .patient-summary p {
+            margin: 3px 0;
+            font-size: 14px;
+        }
+
+        .journal-stats {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        /* Модальное окно для журнала */
+        .journal-modal .modal-content {
+            max-width: 700px;
+        }
+
+        .journal-modal-content {
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .save-card-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .save-card-btn:hover {
+            background-color: #8e44ad;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>eCRF-creator v2.0 - Карта пациента</h1>
+                <div class="patient-name" id="patient-name-display">Не загружено</div>
+            </div>
+            <div class="no-print">
+                <div class="btn btn-secondary" id="toggle-preview-btn">
+                    <i class="fas fa-eye"></i> Предпросмотр
+                </div>
+            </div>
+        </div>
+
+        <div id="status-message" class="status-message hidden"></div>
+
+        <div class="controls no-print">
+            <button class="btn btn-primary" id="import-json-btn">
+                <i class="fas fa-file-import"></i> Импорт JSON
+            </button>
+            <button class="btn btn-success" id="export-html-btn">
+                <i class="fas fa-file-export"></i> Экспорт HTML
+            </button>
+            <button class="btn btn-warning" id="export-text-btn">
+                <i class="fas fa-file-alt"></i> Экспорт текста
+            </button>
+            <button class="btn btn-secondary" id="import-card-btn">
+                <i class="fas fa-folder-open"></i> Импорт карты
+            </button>
+            <button class="btn btn-danger" id="reset-btn">
+                <i class="fas fa-redo"></i> Сбросить
+            </button>
+            <button class="btn save-card-btn" id="save-to-journal-btn">
+                <i class="fas fa-save"></i> Сохранить в журнал
+            </button>
+        </div>
+
+        <div class="form-area">
+            <!-- Клинико-демографические данные -->
+            <div class="section">
+                <h2 class="section-title">Клинико-демографические данные</h2>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="patient-id">ID пациента:</label>
+                        <input type="text" id="patient-id" placeholder="ID пациента">
+                    </div>
+                    <div class="form-field">
+                        <label for="randomization-group">Группа рандомизации:</label>
+                        <input type="text" id="randomization-group" placeholder="персонализированная или стандарт">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="patient-fio">ФИО:</label>
+                        <input type="text" id="patient-fio" placeholder="Введите ФИО">
+                    </div>
+                    <div class="form-field">
+                        <label for="patient-phone">Номер телефона:</label>
+                        <input type="tel" id="patient-phone" placeholder="+7-XXX-XXX-XX-XX">
+                        <div class="error-message" id="phone-error">Номер телефона должен быть в формате +7-XXX-XXX-XX-XX</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="patient-age">Возраст:</label>
+                        <input type="number" id="patient-age" min="0" max="120">
+                    </div>
+                    <div class="form-field">
+                        <label for="patient-gender">Пол:</label>
+                        <select id="patient-gender">
+                            <option value="">Выберите</option>
+                            <option value="муж">Мужской</option>
+                            <option value="жен">Женский</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="patient-bmi">ИМТ:</label>
+                        <input type="number" id="patient-bmi" step="0.1" placeholder="кг/м²">
+                    </div>
+                    <div class="form-field">
+                        <label for="pretest-probability">Претестовая вероятность ИБС, %:</label>
+                        <input type="number" id="pretest-probability" min="0" max="100">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="risk-category">Категория риска:</label>
+                        <input type="text" id="risk-category">
+                    </div>
+                    <div class="form-field">
+                        <label for="chest-pain">Характер боли в груди (баллы):</label>
+                        <input type="number" id="chest-pain" min="0" max="10">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="dyspnea">Одышка при физической нагрузке:</label>
+                        <input type="text" id="dyspnea">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Данные анамнеза -->
+            <div class="section">
+                <h2 class="section-title">Данные анамнеза</h2>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="risk-factors-count">Факторы риска (количество):</label>
+                        <input type="number" id="risk-factors-count" min="0">
+                    </div>
+                    <div class="form-field">
+                        <label for="family-history">Семейный анамнез ИБС:</label>
+                        <select id="family-history">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="dyslipidemia">Дислипидемия:</label>
+                        <select id="dyslipidemia">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="smoking">Курение:</label>
+                        <select id="smoking">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="hypertension">Артериальная гипертензия:</label>
+                        <select id="hypertension">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="diabetes">Сахарный диабет:</label>
+                        <select id="diabetes">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="ckd">Хроническая болезнь почек:</label>
+                        <select id="ckd">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="carotid-stenosis">Стенозы сонных артерий:</label>
+                        <select id="carotid-stenosis">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="copd">ХОБЛ:</label>
+                        <select id="copd">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="piks">ПИКС:</label>
+                        <select id="piks">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="chkv-history">ЧКВ в анамнезе:</label>
+                        <select id="chkv-history">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="aksh-history">АКШ в анамнезе:</label>
+                        <select id="aksh-history">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Лечение -->
+            <div class="section">
+                <h2 class="section-title">Лечение</h2>
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="beta-blockers">Бета-адреноблокаторы:</label>
+                        <select id="beta-blockers">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="calcium-antagonists">Антагонисты кальция:</label>
+                        <select id="calcium-antagonists">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="nitrates">Нитраты:</label>
+                        <select id="nitrates">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="ace-inhibitors">Ингибиторы АПФ:</label>
+                        <select id="ace-inhibitors">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="sartans">Сартаны:</label>
+                        <select id="sartans">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="diuretics">Диуретики:</label>
+                        <select id="diuretics">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="aspirin">Аспирин:</label>
+                        <select id="aspirin">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="other-antiplatelets">Другие дезагреганты:</label>
+                        <select id="other-antiplatelets">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-field">
+                        <label for="anticoagulants">Антикоагулянты:</label>
+                        <select id="anticoagulants">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                    <div class="form-field">
+                        <label for="statins">Статины и прочие гиполипидемические препараты:</label>
+                        <select id="statins">
+                            <option value="">Выберите</option>
+                            <option value="+">+</option>
+                            <option value="-">-</option>
+                            <option value="нет данных">Нет данных</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Направления на дополнительные исследования -->
+            <div class="section">
+                <h2 class="section-title">Направления на дополнительные исследования</h2>
+                
+                <div class="form-group">
+                    <h3 style="margin-bottom: 15px; color: #3498db;">Стресс-эхокардиография</h3>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="stress-agent">Выбор стресс-агента:</label>
+                            <select id="stress-agent">
+                                <option value="">Выберите</option>
+                                <option value="Тредмил">Тредмил</option>
+                                <option value="АТФ">АТФ</option>
+                            </select>
+                        </div>
+                        <div class="form-field date-field">
+                            <label for="stress-date">Дата исследования:</label>
+                            <input type="text" id="stress-date" class="datetime-picker" placeholder="Выберите дату и время">
+                            <button class="btn btn-primary btn-sm date-confirm-btn" id="confirm-stress-date">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="stress-completed">Факт выполнения:</label>
+                            <select id="stress-completed">
+                                <option value="">Выберите</option>
+                                <option value="выполнено">Выполнено</option>
+                                <option value="не выполнено">Не выполнено</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group" style="margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px; color: #3498db;">Инвазивная коронароангиография</h3>
+                    <div class="form-row">
+                        <div class="form-field date-field">
+                            <label for="angiography-date">Дата исследования:</label>
+                            <input type="text" id="angiography-date" class="datetime-picker" placeholder="Выберите дату и время">
+                            <button class="btn btn-primary btn-sm date-confirm-btn" id="confirm-angiography-date">
+                                <i class="fas fa-check"></i>
+                            </button>
+                        </div>
+                        <div class="form-field">
+                            <label for="angiography-completed">Факт выполнения:</label>
+                            <select id="angiography-completed">
+                                <option value="">Выберите</option>
+                                <option value="выполнено">Выполнено</option>
+                                <option value="не выполнено">Не выполнено</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="ffr-ifr">FFR (iFR):</label>
+                            <select id="ffr-ifr">
+                                <option value="">Выберите</option>
+                                <option value="+">+</option>
+                                <option value="-">-</option>
+                                <option value="нет данных">Нет данных</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Прикрепленные файлы -->
+            <div class="attachments-section">
+                <h2 class="section-title">Прикрепленные файлы</h2>
+                <p>Прикрепите файлы любого типа (изображения, документы, PDF и т.д.)</p>
+                
+                <div class="file-input-wrapper">
+                    <div class="file-input-button">
+                        <i class="fas fa-paperclip"></i> Прикрепить файлы
+                    </div>
+                    <input type="file" id="file-upload" multiple>
+                </div>
+                
+                <div class="attachments-list" id="attachments-list">
+                    <!-- Прикрепленные файлы будут появляться здесь -->
+                    <div class="attachment-item empty-state">
+                        <div class="attachment-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="attachment-name">Файлы не прикреплены</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Журнал пациентов -->
+        <div class="journal-section">
+            <div class="journal-header">
+                <h2 class="section-title">Журнал пациентов</h2>
+                <div class="journal-controls">
+                    <button class="btn btn-primary" id="export-journal-json-btn">
+                        <i class="fas fa-file-export"></i> Экспорт JSON
+                    </button>
+                    <button class="btn btn-success" id="export-journal-excel-btn">
+                        <i class="fas fa-file-excel"></i> Экспорт Excel
+                    </button>
+                    <button class="btn btn-warning" id="export-journal-txt-btn">
+                        <i class="fas fa-file-alt"></i> Экспорт TXT
+                    </button>
+                    <button class="btn btn-secondary" id="import-journal-btn">
+                        <i class="fas fa-file-import"></i> Импорт журнала
+                    </button>
+                    <button class="btn btn-danger" id="clear-journal-btn">
+                        <i class="fas fa-trash"></i> Очистить журнал
+                    </button>
+                </div>
+            </div>
+
+            <div class="journal-stats" id="journal-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Всего пациентов</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-today">0</div>
+                    <div class="stat-label">Добавлено сегодня</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-last-week">0</div>
+                    <div class="stat-label">За последнюю неделю</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="stat-with-files">0</div>
+                    <div class="stat-label">С прикрепленными файлами</div>
+                </div>
+            </div>
+
+            <div class="journal-table-container">
+                <table class="journal-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">ID</th>
+                            <th width="20%">ФИО пациента</th>
+                            <th width="30%">Краткая информация</th>
+                            <th width="15%">Дата создания</th>
+                            <th width="15%">Дата обновления</th>
+                            <th width="15%">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="journal-table-body">
+                        <tr>
+                            <td colspan="6" class="empty-journal">
+                                <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #bdc3c7;"></i>
+                                <p>Журнал пациентов пуст</p>
+                                <p>Сохраните первую карту пациента, чтобы она появилась здесь</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для импорта JSON -->
+    <div id="import-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" id="close-import-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Импорт данных из JSON</h2>
+            <p>Выберите JSON файл для импорта данных пациента:</p>
+            <input type="file" id="json-file-input" accept=".json">
+            <div class="json-preview" id="json-preview">Здесь будет предпросмотр JSON файла...</div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="cancel-import-btn">Отмена</button>
+                <button class="btn btn-primary" id="confirm-import-btn">Импортировать</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для предпросмотра -->
+    <div id="preview-modal" class="modal hidden">
+        <div class="modal-content">
+            <button class="modal-close" id="close-preview-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Предпросмотр карты пациента</h2>
+            <div id="preview-content">
+                <!-- Предпросмотр будет здесь -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="close-preview-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для журнала -->
+    <div id="journal-modal" class="modal hidden journal-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-journal-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <h2 class="modal-title">Управление журналом</h2>
+            <div id="journal-modal-content" class="journal-modal-content">
+                <!-- Содержимое модального окна будет здесь -->
+            </div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="close-journal-btn">Закрыть</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Скрытые элементы для экспорта -->
+    <div id="print-area" class="print-area hidden"></div>
+    <textarea id="export-textarea" class="hidden"></textarea>
+
+    <!-- Ссылка для скачивания файла (скрытая) -->
+    <a id="download-link" class="hidden"></a>
+
+    <!-- Библиотеки -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ru.js"></script>
+    <!-- Библиотека для экспорта в Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    
+    <script>
+        // Инициализация календаря
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация Flatpickr для полей с датой
+            flatpickr(".datetime-picker", {
+                enableTime: true,
+                dateFormat: "d.m.Y H:i",
+                time_24hr: true,
+                locale: "ru",
+                minuteIncrement: 1
+            });
+            
+            // Инициализация переменных
+            let attachments = [];
+            let jsonData = null;
+            let patientJournal = JSON.parse(localStorage.getItem('patientJournal')) || [];
+            
+            // Элементы DOM
+            const importJsonBtn = document.getElementById('import-json-btn');
+            const exportHtmlBtn = document.getElementById('export-html-btn');
+            const exportTextBtn = document.getElementById('export-text-btn');
+            const importCardBtn = document.getElementById('import-card-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const saveToJournalBtn = document.getElementById('save-to-journal-btn');
+            const fileUpload = document.getElementById('file-upload');
+            const attachmentsList = document.getElementById('attachments-list');
+            const importModal = document.getElementById('import-modal');
+            const previewModal = document.getElementById('preview-modal');
+            const jsonFileInput = document.getElementById('json-file-input');
+            const confirmImportBtn = document.getElementById('confirm-import-btn');
+            const closePreviewBtn = document.getElementById('close-preview-btn');
+            const togglePreviewBtn = document.getElementById('toggle-preview-btn');
+            const statusMessage = document.getElementById('status-message');
+            const patientNameDisplay = document.getElementById('patient-name-display');
+            const closeImportModalBtn = document.getElementById('close-import-modal');
+            const closePreviewModalBtn = document.getElementById('close-preview-modal');
+            const patientPhoneInput = document.getElementById('patient-phone');
+            const phoneError = document.getElementById('phone-error');
+            const confirmStressDateBtn = document.getElementById('confirm-stress-date');
+            const confirmAngiographyDateBtn = document.getElementById('confirm-angiography-date');
+            
+            // Элементы журнала
+            const exportJournalJsonBtn = document.getElementById('export-journal-json-btn');
+            const exportJournalExcelBtn = document.getElementById('export-journal-excel-btn');
+            const exportJournalTxtBtn = document.getElementById('export-journal-txt-btn');
+            const importJournalBtn = document.getElementById('import-journal-btn');
+            const clearJournalBtn = document.getElementById('clear-journal-btn');
+            const journalTableBody = document.getElementById('journal-table-body');
+            const journalStats = document.getElementById('journal-stats');
+            
+            // Функции для работы с модальными окнами
+            function showModal(modal) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.add('show');
+                }, 10);
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                });
+                
+                document.addEventListener('keydown', function handleEsc(e) {
+                    if (e.key === 'Escape') {
+                        closeModal(modal);
+                        document.removeEventListener('keydown', handleEsc);
+                    }
+                });
+            }
+            
+            function closeModal(modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            }
+            
+            // Валидация номера телефона
+            function validatePhoneNumber(phone) {
+                const pattern = /^\+7-\d{3}-\d{3}-\d{2}-\d{2}$/;
+                return pattern.test(phone);
+            }
+            
+            // Обработчик ввода номера телефона
+            patientPhoneInput.addEventListener('blur', function() {
+                const phone = this.value.trim();
+                if (phone === '') {
+                    this.classList.remove('error');
+                    phoneError.classList.remove('show');
+                    return;
+                }
+                
+                if (!validatePhoneNumber(phone)) {
+                    this.classList.add('error');
+                    phoneError.classList.add('show');
+                } else {
+                    this.classList.remove('error');
+                    phoneError.classList.remove('show');
+                }
+            });
+            
+            // Обработчики кнопок подтверждения даты
+            confirmStressDateBtn.addEventListener('click', function() {
+                const stressDateInput = document.getElementById('stress-date');
+                if (stressDateInput.value) {
+                    showStatus(`Дата стресс-эхокардиографии установлена: ${stressDateInput.value}`, 'success');
+                } else {
+                    showStatus('Пожалуйста, выберите дату сначала', 'error');
+                }
+            });
+            
+            confirmAngiographyDateBtn.addEventListener('click', function() {
+                const angiographyDateInput = document.getElementById('angiography-date');
+                if (angiographyDateInput.value) {
+                    showStatus(`Дата коронароангиографии установлена: ${angiographyDateInput.value}`, 'success');
+                } else {
+                    showStatus('Пожалуйста, выберите дату сначала', 'error');
+                }
+            });
+            
+            // Обработчики событий для кнопок
+            importJsonBtn.addEventListener('click', () => showModal(importModal));
+            exportHtmlBtn.addEventListener('click', exportToHtml);
+            exportTextBtn.addEventListener('click', exportToText);
+            importCardBtn.addEventListener('click', importCard);
+            resetBtn.addEventListener('click', resetForm);
+            togglePreviewBtn.addEventListener('click', () => {
+                showPreview();
+                showModal(previewModal);
+            });
+            saveToJournalBtn.addEventListener('click', saveToJournal);
+            
+            // Обработчики событий для журнала
+            exportJournalJsonBtn.addEventListener('click', exportJournalToJson);
+            exportJournalExcelBtn.addEventListener('click', exportJournalToExcel);
+            exportJournalTxtBtn.addEventListener('click', exportJournalToTxt);
+            importJournalBtn.addEventListener('click', importJournal);
+            clearJournalBtn.addEventListener('click', clearJournal);
+            
+            // Обработчики событий для модальных окон
+            closeImportModalBtn.addEventListener('click', () => closeModal(importModal));
+            closePreviewModalBtn.addEventListener('click', () => closeModal(previewModal));
+            closePreviewBtn.addEventListener('click', () => closeModal(previewModal));
+            
+            // Обработчик выбора JSON файла
+            jsonFileInput.addEventListener('change', handleJsonFileSelect);
+            
+            // Обработчик подтверждения импорта
+            confirmImportBtn.addEventListener('click', importJsonData);
+            
+            // Обработчик загрузки файлов
+            fileUpload.addEventListener('change', handleFileUpload);
+            
+            // Функция для отображения сообщения о статусе
+            function showStatus(message, type = 'info') {
+                statusMessage.textContent = message;
+                statusMessage.className = `status-message status-${type}`;
+                statusMessage.classList.remove('hidden');
+                
+                setTimeout(() => {
+                    statusMessage.classList.add('hidden');
+                }, 5000);
+            }
+            
+            // Функция обработки выбора JSON файла
+            function handleJsonFileSelect(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        jsonData = JSON.parse(e.target.result);
+                        document.getElementById('json-preview').textContent = 
+                            JSON.stringify(jsonData, null, 2).substring(0, 2000) + '...';
+                    } catch (error) {
+                        document.getElementById('json-preview').textContent = 'Ошибка: Неверный формат JSON файла';
+                        jsonData = null;
+                    }
+                };
+                reader.readAsText(file);
+            }
+            
+            // Функция импорта данных из JSON - УЛУЧШЕННАЯ ДЛЯ КАЛЬКУЛЯТОРА ОТБОРА ПАЦИЕНТОВ
+            function importJsonData() {
+                if (!jsonData) {
+                    showStatus('Пожалуйста, выберите файл JSON', 'error');
+                    return;
+                }
+                
+                try {
+                    // Проверяем, является ли файл из калькулятора отбора пациентов
+                    const isFromCalculator = jsonData.meta && jsonData.meta.tool && 
+                                           jsonData.meta.tool.includes("Калькулятор отбора пациентов");
+                    
+                    if (isFromCalculator) {
+                        // Импорт из калькулятора отбора пациентов
+                        importFromPatientCalculator(jsonData);
+                    } else {
+                        // Старый формат импорта (для обратной совместимости)
+                        importFromOldFormat(jsonData);
+                    }
+                    
+                    showStatus('Данные успешно импортированы из JSON', 'success');
+                    closeModal(importModal);
+                } catch (error) {
+                    showStatus('Ошибка при импорте данных: ' + error.message, 'error');
+                    console.error('Import error:', error);
+                }
+            }
+            
+            // Импорт данных из калькулятора отбора пациентов
+            function importFromPatientCalculator(data) {
+                console.log('Импорт из калькулятора отбора пациентов:', data);
+                
+                // 1. ID пациента
+                if (data.patientInfo?.id) {
+                    document.getElementById('patient-id').value = data.patientInfo.id;
+                } else if (data.id) {
+                    document.getElementById('patient-id').value = data.id;
+                }
+                
+                // 2. ФИО пациента
+                if (data.patientInfo?.name) {
+                    const name = data.patientInfo.name;
+                    document.getElementById('patient-fio').value = name;
+                    patientNameDisplay.textContent = name;
+                } else if (data.patientName) {
+                    document.getElementById('patient-fio').value = data.patientName;
+                    patientNameDisplay.textContent = data.patientName;
+                }
+                
+                // 3. Возраст
+                if (data.patientInfo?.age) {
+                    document.getElementById('patient-age').value = data.patientInfo.age;
+                } else if (data.age) {
+                    document.getElementById('patient-age').value = data.age;
+                }
+                
+                // 4. Пол (преобразование из английского в русский)
+                if (data.patientInfo?.sex) {
+                    const genderMap = {
+                        'woman': 'жен',
+                        'man': 'муж',
+                        'женщина': 'жен',
+                        'мужчина': 'муж',
+                        'female': 'жен',
+                        'male': 'муж'
+                    };
+                    const russianGender = genderMap[data.patientInfo.sex.toLowerCase()] || '';
+                    document.getElementById('patient-gender').value = russianGender;
+                } else if (data.sex) {
+                    const genderMap = {
+                        'woman': 'жен',
+                        'man': 'муж',
+                        'женщина': 'жен',
+                        'мужчина': 'муж',
+                        'female': 'жен',
+                        'male': 'муж'
+                    };
+                    const russianGender = genderMap[data.sex.toLowerCase()] || '';
+                    document.getElementById('patient-gender').value = russianGender;
+                }
+                
+                // 5. Претестовая вероятность ИБС
+                if (data.percentage !== undefined) {
+                    document.getElementById('pretest-probability').value = data.percentage;
+                } else if (data.calculationResults?.percentage) {
+                    document.getElementById('pretest-probability').value = data.calculationResults.percentage;
+                }
+                
+                // 6. Категория риска (перевод с английского)
+                if (data.category) {
+                    const categoryMap = {
+                        'very-low': 'очень низкий',
+                        'low': 'низкий',
+                        'moderate': 'средний',
+                        'high': 'высокий',
+                        'very-high': 'очень высокий'
+                    };
+                    const russianCategory = categoryMap[data.category.toLowerCase()] || data.category;
+                    document.getElementById('risk-category').value = russianCategory;
+                } else if (data.calculationResults?.category) {
+                    const categoryMap = {
+                        'very-low': 'очень низкий',
+                        'low': 'низкий',
+                        'moderate': 'средний',
+                        'high': 'высокий',
+                        'very-high': 'очень высокий'
+                    };
+                    const russianCategory = categoryMap[data.calculationResults.category.toLowerCase()] || data.calculationResults.category;
+                    document.getElementById('risk-category').value = russianCategory;
+                }
+                
+                // 7. Боли в груди
+                if (data.symptoms?.chestPainValue !== undefined) {
+                    document.getElementById('chest-pain').value = data.symptoms.chestPainValue;
+                } else if (data.symptoms?.chestPain) {
+                    document.getElementById('chest-pain').value = data.symptoms.chestPain;
+                }
+                
+                // 8. Факторы риска (количество)
+                if (data.riskFactors?.count !== undefined) {
+                    document.getElementById('risk-factors-count').value = data.riskFactors.count;
+                } else if (data.riskFactorCount !== undefined) {
+                    document.getElementById('risk-factors-count').value = data.riskFactorCount;
+                }
+                
+                // 9. Факторы риска (индивидуальные)
+                if (data.riskFactors) {
+                    // Семейный анамнез
+                    if (data.riskFactors.familyHistory !== undefined) {
+                        document.getElementById('family-history').value = data.riskFactors.familyHistory ? '+' : '-';
+                    }
+                    
+                    // Курение
+                    if (data.riskFactors.smoking !== undefined) {
+                        document.getElementById('smoking').value = data.riskFactors.smoking ? '+' : '-';
+                    }
+                    
+                    // Дислипидемия
+                    if (data.riskFactors.dyslipidemia !== undefined) {
+                        document.getElementById('dyslipidemia').value = data.riskFactors.dyslipidemia ? '+' : '-';
+                    }
+                    
+                    // Гипертензия
+                    if (data.riskFactors.hypertension !== undefined) {
+                        document.getElementById('hypertension').value = data.riskFactors.hypertension ? '+' : '-';
+                    }
+                    
+                    // Сахарный диабет
+                    if (data.riskFactors.diabetes !== undefined) {
+                        document.getElementById('diabetes').value = data.riskFactors.diabetes ? '+' : '-';
+                    }
+                }
+                
+                // 10. Хроническая болезнь почек
+                if (data.studyCriteria?.hasCKD !== undefined) {
+                    document.getElementById('ckd').value = data.studyCriteria.hasCKD ? '+' : '-';
+                } else if (data.calculationResults?.eligibility?.hasCKD !== undefined) {
+                    document.getElementById('ckd').value = data.calculationResults.eligibility.hasCKD ? '+' : '-';
+                }
+                
+                // 11. Одышка (если есть в данных)
+                if (data.symptoms?.dyspneaValue !== undefined) {
+                    const dyspneaValue = data.symptoms.dyspneaValue;
+                    let dyspneaText = '';
+                    if (dyspneaValue === 0) {
+                        dyspneaText = 'Отсутствует';
+                    } else if (dyspneaValue === 2) {
+                        dyspneaText = 'Да, затруднение дыхания при нагрузке';
+                    }
+                    document.getElementById('dyspnea').value = dyspneaText;
+                }
+                
+                // Логирование успешного импорта
+                console.log('Импорт завершен успешно');
+            }
+            
+            // Старый формат импорта (для обратной совместимости)
+            function importFromOldFormat(data) {
+                // Извлечение данных из JSON структуры
+                const calculations = data.calculations?.[0];
+                const randomizationInfo = data.randomizationInfo || calculations?.randomizationInfo;
+                const patientInfo = randomizationInfo?.patientInfo || calculations?.patient;
+                const riskFactors = randomizationInfo?.riskFactors || calculations?.riskFactors;
+                const symptoms = randomizationInfo?.symptoms;
+                const formData = calculations?.formData;
+                
+                // Заполнение полей формы данными из JSON
+                // ID пациента
+                const patientId = patientInfo?.id || randomizationInfo?.patientInfo?.id || 'YM64788';
+                if (patientId) {
+                    document.getElementById('patient-id').value = patientId;
+                }
+                
+                // Группа рандомизации
+                const assignedGroup = randomizationInfo?.assignedGroup || calculations?.randomizationInfo?.assignedGroup;
+                let groupText = '';
+                if (assignedGroup === 'personal' || assignedGroup === 'personalized') {
+                    groupText = 'персонализированная';
+                } else if (assignedGroup === 'standard') {
+                    groupText = 'стандарт';
+                }
+                document.getElementById('randomization-group').value = groupText;
+                
+                // ФИО пациента
+                const patientName = patientInfo?.name || calculations?.patientName;
+                if (patientName) {
+                    document.getElementById('patient-fio').value = patientName.replace(/ \[.*\]/, '');
+                    patientNameDisplay.textContent = patientName.replace(/ \[.*\]/, '');
+                }
+                
+                // Возраст
+                if (patientInfo?.age || calculations?.age) {
+                    document.getElementById('patient-age').value = patientInfo?.age || calculations?.age;
+                }
+                
+                // Пол
+                if (patientInfo?.sex || calculations?.sex) {
+                    const gender = patientInfo?.sex || calculations?.sex;
+                    document.getElementById('patient-gender').value = gender === 'woman' ? 'жен' : 'муж';
+                }
+                
+                // ИМТ
+                const bmiData = calculations?.stressTestRecommendations?.bmiData;
+                if (bmiData?.value) {
+                    document.getElementById('patient-bmi').value = bmiData.value;
+                } else if (calculations?.additionalData?.height && calculations?.additionalData?.weight) {
+                    const heightInM = calculations.additionalData.height / 100;
+                    const weight = calculations.additionalData.weight;
+                    const calculatedBmi = (weight / (heightInM * heightInM)).toFixed(1);
+                    document.getElementById('patient-bmi').value = calculatedBmi;
+                } else if (patientInfo?.bmi || calculations?.bmi) {
+                    document.getElementById('patient-bmi').value = patientInfo?.bmi || calculations?.bmi;
+                }
+                
+                // Боли в груди
+                if (symptoms?.chestPainValue || calculations?.chestPain) {
+                    document.getElementById('chest-pain').value = symptoms?.chestPainValue || calculations?.chestPain;
+                }
+                
+                // Одышка
+                if (symptoms?.dyspneaText || calculations?.dyspnea) {
+                    document.getElementById('dyspnea').value = symptoms?.dyspneaText || calculations?.dyspnea;
+                }
+                
+                // Факторы риска
+                if (riskFactors?.count || calculations?.riskFactorCount) {
+                    document.getElementById('risk-factors-count').value = riskFactors?.count || calculations?.riskFactorCount;
+                }
+                
+                // Семейный анамнез
+                document.getElementById('family-history').value = riskFactors?.familyHistory ? '+' : '-';
+                
+                // Дислипидемия
+                document.getElementById('dyslipidemia').value = riskFactors?.dyslipidemia ? '+' : '-';
+                
+                // Курение
+                document.getElementById('smoking').value = riskFactors?.smoking ? '+' : '-';
+                
+                // Гипертензия
+                document.getElementById('hypertension').value = riskFactors?.hypertension ? '+' : '-';
+                
+                // Сахарный диабет
+                document.getElementById('diabetes').value = riskFactors?.diabetes ? '+' : '-';
+                
+                // ХБП
+                document.getElementById('ckd').value = calculations?.eligibilityResult?.hasCKD || 
+                                                      randomizationInfo?.studyCriteria?.hasCKD ? '+' : '-';
+                
+                // Вероятность ИБС
+                if (calculations?.percentage) {
+                    document.getElementById('pretest-probability').value = calculations.percentage;
+                }
+                
+                // Категория риска
+                if (calculations?.category) {
+                    const riskCategory = calculations.category;
+                    const russianCategory = 
+                        riskCategory === 'high' ? 'высокий' : 
+                        riskCategory === 'medium' ? 'средний' : 
+                        riskCategory === 'low' ? 'низкий' : riskCategory;
+                    document.getElementById('risk-category').value = russianCategory;
+                }
+                
+                // Лекарства из formData
+                if (formData) {
+                    if (formData.medBetaBlocker !== undefined) {
+                        document.getElementById('beta-blockers').value = formData.medBetaBlocker ? '+' : '-';
+                    }
+                    
+                    if (formData.medNitrates !== undefined) {
+                        document.getElementById('nitrates').value = formData.medNitrates ? '+' : '-';
+                    }
+                }
+            }
+            
+            // Функция обработки загрузки файлов
+            function handleFileUpload(event) {
+                const files = Array.from(event.target.files);
+                
+                files.forEach(file => {
+                    if (attachments.some(att => att.name === file.name)) {
+                        showStatus(`Файл "${file.name}" уже прикреплен`, 'error');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        attachments.push({
+                            name: file.name,
+                            size: formatFileSize(file.size),
+                            type: file.type,
+                            data: e.target.result,
+                            mimeType: file.type
+                        });
+                        
+                        updateAttachmentsList();
+                        showStatus(`Файл "${file.name}" успешно прикреплен`, 'success');
+                    };
+                    reader.readAsDataURL(file);
+                });
+                
+                event.target.value = '';
+            }
+            
+            // Функция обновления списка прикрепленных файлов
+            function updateAttachmentsList() {
+                attachmentsList.innerHTML = '';
+                
+                if (attachments.length === 0) {
+                    attachmentsList.innerHTML = `
+                        <div class="attachment-item empty-state">
+                            <div class="attachment-icon">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <div class="attachment-name">Файлы не прикреплены</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                attachments.forEach((attachment, index) => {
+                    const icon = getFileIcon(attachment.name, attachment.type);
+                    
+                    const attachmentElement = document.createElement('div');
+                    attachmentElement.className = 'attachment-item';
+                    attachmentElement.innerHTML = `
+                        <button class="delete-attachment" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div class="attachment-icon">
+                            <i class="${icon}"></i>
+                        </div>
+                        <div class="attachment-name">${attachment.name}</div>
+                        <div class="attachment-size">${attachment.size}</div>
+                    `;
+                    
+                    attachmentsList.appendChild(attachmentElement);
+                });
+                
+                document.querySelectorAll('.delete-attachment').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        const fileName = attachments[index].name;
+                        attachments.splice(index, 1);
+                        updateAttachmentsList();
+                        showStatus(`Файл "${fileName}" удален`, 'info');
+                    });
+                });
+            }
+            
+            // Функция получения иконки для типа файла
+            function getFileIcon(fileName, fileType) {
+                const extension = fileName.split('.').pop().toLowerCase();
+                
+                if (fileType.startsWith('image/')) return 'fas fa-file-image';
+                if (fileType === 'application/pdf') return 'fas fa-file-pdf';
+                if (fileType.startsWith('text/')) return 'fas fa-file-alt';
+                if (fileType.includes('word') || extension === 'doc' || extension === 'docx') return 'fas fa-file-word';
+                if (fileType.includes('excel') || extension === 'xls' || extension === 'xlsx') return 'fas fa-file-excel';
+                if (fileType.includes('powerpoint') || extension === 'ppt' || extension === 'pptx') return 'fas fa-file-powerpoint';
+                
+                return 'fas fa-file';
+            }
+            
+            // Функция форматирования размера файла
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Б';
+                
+                const k = 1024;
+                const sizes = ['Б', 'КБ', 'МБ', 'ГБ'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+            
+            // Функция сбора всех данных формы
+            function collectFormData() {
+                const phone = document.getElementById('patient-phone').value.trim();
+                if (phone && !validatePhoneNumber(phone)) {
+                    showStatus('Номер телефона имеет неверный формат. Исправьте перед экспортом.', 'error');
+                    throw new Error('Некорректный номер телефона');
+                }
+                
+                const formData = {
+                    patientId: document.getElementById('patient-id').value,
+                    randomizationGroup: document.getElementById('randomization-group').value,
+                    patientFio: document.getElementById('patient-fio').value,
+                    patientPhone: document.getElementById('patient-phone').value,
+                    patientAge: document.getElementById('patient-age').value,
+                    patientGender: document.getElementById('patient-gender').value,
+                    patientBmi: document.getElementById('patient-bmi').value,
+                    pretestProbability: document.getElementById('pretest-probability').value,
+                    riskCategory: document.getElementById('risk-category').value,
+                    chestPain: document.getElementById('chest-pain').value,
+                    dyspnea: document.getElementById('dyspnea').value,
+                    
+                    riskFactorsCount: document.getElementById('risk-factors-count').value,
+                    familyHistory: document.getElementById('family-history').value,
+                    dyslipidemia: document.getElementById('dyslipidemia').value,
+                    smoking: document.getElementById('smoking').value,
+                    hypertension: document.getElementById('hypertension').value,
+                    diabetes: document.getElementById('diabetes').value,
+                    ckd: document.getElementById('ckd').value,
+                    carotidStenosis: document.getElementById('carotid-stenosis').value,
+                    copd: document.getElementById('copd').value,
+                    piks: document.getElementById('piks').value,
+                    chkvHistory: document.getElementById('chkv-history').value,
+                    akshHistory: document.getElementById('aksh-history').value,
+                    
+                    betaBlockers: document.getElementById('beta-blockers').value,
+                    calciumAntagonists: document.getElementById('calcium-antagonists').value,
+                    nitrates: document.getElementById('nitrates').value,
+                    aceInhibitors: document.getElementById('ace-inhibitors').value,
+                    sartans: document.getElementById('sartans').value,
+                    diuretics: document.getElementById('diuretics').value,
+                    aspirin: document.getElementById('aspirin').value,
+                    otherAntiplatelets: document.getElementById('other-antiplatelets').value,
+                    anticoagulants: document.getElementById('anticoagulants').value,
+                    statins: document.getElementById('statins').value,
+                    
+                    stressAgent: document.getElementById('stress-agent').value,
+                    stressDate: document.getElementById('stress-date').value,
+                    stressCompleted: document.getElementById('stress-completed').value,
+                    angiographyDate: document.getElementById('angiography-date').value,
+                    angiographyCompleted: document.getElementById('angiography-completed').value,
+                    ffrIfr: document.getElementById('ffr-ifr').value,
+                    
+                    attachments: attachments,
+                    
+                    exportDate: new Date().toLocaleString('ru-RU'),
+                    exportType: 'eCRF-creator v2.0',
+                    version: '2.0'
+                };
+                
+                return formData;
+            }
+            
+            // Функция экспорта в HTML с вложенными файлами и кнопкой печати
+            function exportToHtml() {
+                try {
+                    const formData = collectFormData();
+                    
+                    // Используем ID пациента для имени файла, если он есть
+                    const fileNameId = formData.patientId || formData.patientFio || 'без_имени';
+                    // Очищаем ID от недопустимых символов для имени файла
+                    const safeFileNameId = fileNameId.replace(/[^a-zA-Z0-9а-яА-ЯёЁ_-]/g, '_');
+                    
+                    let htmlContent = `
+                        <!DOCTYPE html>
+                        <html lang="ru">
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title>Карта пациента eCRF: ${formData.patientFio || 'Не указано'} (ID: ${formData.patientId || 'Нет'})</title>
+                            <style>
+                                body {
+                                    font-family: 'Times New Roman', Times, serif;
+                                    line-height: 1.5;
+                                    color: #000;
+                                    padding: 20px;
+                                    max-width: 210mm;
+                                    margin: 0 auto;
+                                }
+                                
+                                h1 {
+                                    text-align: center;
+                                    font-size: 24px;
+                                    margin-bottom: 30px;
+                                    color: #000;
+                                    border-bottom: 2px solid #000;
+                                    padding-bottom: 10px;
+                                }
+                                
+                                h2 {
+                                    font-size: 18px;
+                                    margin-top: 25px;
+                                    margin-bottom: 15px;
+                                    color: #000;
+                                    border-bottom: 1px solid #000;
+                                    padding-bottom: 5px;
+                                }
+                                
+                                h3 {
+                                    font-size: 16px;
+                                    margin-top: 20px;
+                                    margin-bottom: 10px;
+                                    color: #000;
+                                }
+                                
+                                .section {
+                                    margin-bottom: 25px;
+                                }
+                                
+                                .field-row {
+                                    margin-bottom: 10px;
+                                    display: flex;
+                                    flex-wrap: wrap;
+                                }
+                                
+                                .field-label {
+                                    font-weight: bold;
+                                    min-width: 300px;
+                                }
+                                
+                                .field-value {
+                                    flex: 1;
+                                }
+                                
+                                .attachments {
+                                    margin-top: 30px;
+                                }
+                                
+                                .file-link {
+                                    color: #3498db;
+                                    text-decoration: underline;
+                                    cursor: pointer;
+                                    margin: 5px 0;
+                                    display: block;
+                                }
+                                
+                                .file-link:hover {
+                                    color: #2980b9;
+                                }
+                                
+                                .print-button {
+                                    background-color: #3498db;
+                                    color: white;
+                                    padding: 10px 20px;
+                                    border: none;
+                                    border-radius: 5px;
+                                    cursor: pointer;
+                                    font-size: 16px;
+                                    margin-top: 20px;
+                                    display: inline-block;
+                                }
+                                
+                                .print-button:hover {
+                                    background-color: #2980b9;
+                                }
+                                
+                                .hidden-data {
+                                    display: none;
+                                }
+                                
+                                @media print {
+                                    body {
+                                        padding: 10px;
+                                    }
+                                    
+                                    .no-print {
+                                        display: none;
+                                    }
+                                    
+                                    .file-link {
+                                        color: #000;
+                                    }
+                                }
+                            </style>
+                            <script>
+                                function downloadFile(fileName, base64Data, mimeType) {
+                                    try {
+                                        const byteCharacters = atob(base64Data.split(',')[1]);
+                                        const byteNumbers = new Array(byteCharacters.length);
+                                        for (let i = 0; i < byteCharacters.length; i++) {
+                                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                        }
+                                        const byteArray = new Uint8Array(byteNumbers);
+                                        const blob = new Blob([byteArray], { type: mimeType });
+                                        
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = fileName;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        setTimeout(() => {
+                                            document.body.removeChild(a);
+                                            URL.revokeObjectURL(url);
+                                        }, 100);
+                                    } catch (error) {
+                                        alert('Ошибка при скачивании файла: ' + error.message);
+                                    }
+                                }
+                                
+                                function displayAttachments() {
+                                    const attachmentsContainer = document.getElementById('attachments-container');
+                                    const attachmentsDataElement = document.getElementById('attachments-data');
+                                    
+                                    if (attachmentsDataElement) {
+                                        const attachments = JSON.parse(attachmentsDataElement.textContent);
+                                        
+                                        if (attachments && attachments.length > 0) {
+                                            let html = '<h3>Вложенные файлы (доступны для скачивания):</h3>';
+                                            
+                                            attachments.forEach(attachment => {
+                                                html += \`
+                                                    <div>
+                                                        <a href="#" class="file-link" onclick="downloadFile('\${attachment.name}', '\${attachment.data}', '\${attachment.mimeType}')">
+                                                            \${attachment.name} (\${attachment.size})
+                                                        </a>
+                                                    </div>
+                                                \`;
+                                            });
+                                            
+                                            attachmentsContainer.innerHTML = html;
+                                        }
+                                    }
+                                }
+                                
+                                document.addEventListener('DOMContentLoaded', displayAttachments);
+                            <\/script>
+                        </head>
+                        <body>
+                            <div class="print-header">
+                                <h1>КАРТА ПАЦИЕНТА (eCRF-creator v2.0)</h1>
+                                <div class="print-date">Дата формирования: ${formData.exportDate}</div>
+                                <div class="no-print" style="text-align: center; margin-top: 20px;">
+                                    <button class="print-button" onclick="window.print()">
+                                        <i class="fas fa-print"></i> Печать карты
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Клинико-демографические данные</h2>
+                                <div class="field-row">
+                                    <div class="field-label">ID пациента:</div>
+                                    <div class="field-value">${formData.patientId || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Группа рандомизации:</div>
+                                    <div class="field-value">${formData.randomizationGroup || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">ФИО:</div>
+                                    <div class="field-value">${formData.patientFio || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Номер телефона:</div>
+                                    <div class="field-value">${formData.patientPhone || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Возраст:</div>
+                                    <div class="field-value">${formData.patientAge || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Пол:</div>
+                                    <div class="field-value">${formData.patientGender || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">ИМТ:</div>
+                                    <div class="field-value">${formData.patientBmi || 'Не указано'} кг/м²</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Претестовая вероятность ИБС, %:</div>
+                                    <div class="field-value">${formData.pretestProbability || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Категория риска:</div>
+                                    <div class="field-value">${formData.riskCategory || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Характер боли в груди (баллы):</div>
+                                    <div class="field-value">${formData.chestPain || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Одышка при физической нагрузке:</div>
+                                    <div class="field-value">${formData.dyspnea || 'Не указано'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Данные анамнеза</h2>
+                                <div class="field-row">
+                                    <div class="field-label">Факторы риска (количество):</div>
+                                    <div class="field-value">${formData.riskFactorsCount || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Семейный анамнез ИБС:</div>
+                                    <div class="field-value">${formData.familyHistory || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Дислипидемия:</div>
+                                    <div class="field-value">${formData.dyslipidemia || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Курение:</div>
+                                    <div class="field-value">${formData.smoking || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Артериальная гипертензия:</div>
+                                    <div class="field-value">${formData.hypertension || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Сахарный диабет:</div>
+                                    <div class="field-value">${formData.diabetes || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Хроническая болезнь почек:</div>
+                                    <div class="field-value">${formData.ckd || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Стенозы сонных артерий:</div>
+                                    <div class="field-value">${formData.carotidStenosis || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">ХОБЛ:</div>
+                                    <div class="field-value">${formData.copd || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">ПИКС:</div>
+                                    <div class="field-value">${formData.piks || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">ЧКВ в анамнезе:</div>
+                                    <div class="field-value">${formData.chkvHistory || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">АКШ в анамнезе:</div>
+                                    <div class="field-value">${formData.akshHistory || 'Не указано'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Лечение</h2>
+                                <div class="field-row">
+                                    <div class="field-label">Бета-адреноблокаторы:</div>
+                                    <div class="field-value">${formData.betaBlockers || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Антагонисты кальция:</div>
+                                    <div class="field-value">${formData.calciumAntagonists || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Нитраты:</div>
+                                    <div class="field-value">${formData.nitrates || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Ингибиторы АПФ:</div>
+                                    <div class="field-value">${formData.aceInhibitors || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Сартаны:</div>
+                                    <div class="field-value">${formData.sartans || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Диуретики:</div>
+                                    <div class="field-value">${formData.diuretics || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Аспирин:</div>
+                                    <div class="field-value">${formData.aspirin || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Другие дезагреганты:</div>
+                                    <div class="field-value">${formData.otherAntiplatelets || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Антикоагулянты:</div>
+                                    <div class="field-value">${formData.anticoagulants || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Статины и прочие гиполипидемические препараты:</div>
+                                    <div class="field-value">${formData.statins || 'Не указано'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="section">
+                                <h2>Направления на дополнительные исследования</h2>
+                                
+                                <h3>Стресс-эхокардиография</h3>
+                                <div class="field-row">
+                                    <div class="field-label">Выбор стресс-агента:</div>
+                                    <div class="field-value">${formData.stressAgent || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Дата исследования:</div>
+                                    <div class="field-value">${formData.stressDate || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Факт выполнения:</div>
+                                    <div class="field-value">${formData.stressCompleted || 'Не указано'}</div>
+                                </div>
+                                
+                                <h3>Инвазивная коронароангиография</h3>
+                                <div class="field-row">
+                                    <div class="field-label">Дата исследования:</div>
+                                    <div class="field-value">${formData.angiographyDate || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">Факт выполнения:</div>
+                                    <div class="field-value">${formData.angiographyCompleted || 'Не указано'}</div>
+                                </div>
+                                <div class="field-row">
+                                    <div class="field-label">FFR (iFR):</div>
+                                    <div class="field-value">${formData.ffrIfr || 'Не указано'}</div>
+                                </div>
+                            </div>
+                    `;
+                    
+                    htmlContent += `
+                        <div class="section attachments">
+                            <h2>Прикрепленные файлы</h2>
+                            <div id="attachments-container">
+                                <p>Количество файлов: ${formData.attachments.length}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    htmlContent += `
+                        <div class="hidden-data">
+                            <div id="attachments-data">${JSON.stringify(formData.attachments)}</div>
+                            <!-- Добавляем скрытый JSON для совместимости с импортом -->
+                            <div id="form-data-json">${JSON.stringify(formData)}</div>
+                        </div>
+                        
+                        <div class="no-print" style="margin-top: 40px; text-align: center;">
+                            <hr>
+                            <p>Документ сформирован электронно в программе eCRF-creator v2.0</p>
+                            <p>Версия: ${formData.version}</p>
+                        </div>
+                    </body>
+                    </html>
+                    `;
+                    
+                    const blob = new Blob([htmlContent], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = url;
+                    downloadLink.download = `Карта_пациента_${safeFileNameId}_${new Date().toISOString().slice(0,10)}.html`;
+                    downloadLink.click();
+                    
+                    showStatus('HTML файл успешно экспортирован с вложенными файлами и кнопкой печати', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при экспорте: ' + error.message, 'error');
+                }
+            }
+            
+            // Функция экспорта в текстовый формат
+            function exportToText() {
+                try {
+                    const formData = collectFormData();
+                    
+                    // Используем ID пациента для имени файла, если он есть
+                    const fileNameId = formData.patientId || formData.patientFio || 'без_имени';
+                    // Очищаем ID от недопустимых символов для имени файла
+                    const safeFileNameId = fileNameId.replace(/[^a-zA-Z0-9а-яА-ЯёЁ_-]/g, '_');
+                    
+                    let textContent = `КАРТА ПАЦИЕНТА (eCRF-creator v2.0)\n`;
+                    textContent += `Дата формирования: ${formData.exportDate}\n`;
+                    textContent += `\n`;
+                    
+                    textContent += `КЛИНИКО-ДЕМОГРАФИЧЕСКИЕ ДАННЫЕ\n`;
+                    textContent += `ID пациента: ${formData.patientId || 'Не указано'}\n`;
+                    textContent += `Группа рандомизации: ${formData.randomizationGroup || 'Не указано'}\n`;
+                    textContent += `ФИО: ${formData.patientFio || 'Не указано'}\n`;
+                    textContent += `Номер телефона: ${formData.patientPhone || 'Не указано'}\n`;
+                    textContent += `Возраст: ${formData.patientAge || 'Не указано'}\n`;
+                    textContent += `Пол: ${formData.patientGender || 'Не указано'}\n`;
+                    textContent += `ИМТ: ${formData.patientBmi || 'Не указано'} кг/м²\n`;
+                    textContent += `Претестовая вероятность ИБС, %: ${formData.pretestProbability || 'Не указано'}\n`;
+                    textContent += `Категория риска: ${formData.riskCategory || 'Не указано'}\n`;
+                    textContent += `Характер боли в груди (баллы): ${formData.chestPain || 'Не указано'}\n`;
+                    textContent += `Одышка при физической нагрузке: ${formData.dyspnea || 'Не указано'}\n`;
+                    textContent += `\n`;
+                    
+                    textContent += `ДАННЫЕ АНАМНЕЗА\n`;
+                    textContent += `Факторы риска (количество): ${formData.riskFactorsCount || 'Не указано'}\n`;
+                    textContent += `Семейный анамнез ИБС: ${formData.familyHistory || 'Не указано'}\n`;
+                    textContent += `Дислипидемия: ${formData.dyslipidemia || 'Не указано'}\n`;
+                    textContent += `Курение: ${formData.smoking || 'Не указано'}\n`;
+                    textContent += `Артериальная гипертензия: ${formData.hypertension || 'Не указано'}\n`;
+                    textContent += `Сахарный диабет: ${formData.diabetes || 'Не указано'}\n`;
+                    textContent += `Хроническая болезнь почек: ${formData.ckd || 'Не указано'}\n`;
+                    textContent += `Стенозы сонных артерий: ${formData.carotidStenosis || 'Не указано'}\n`;
+                    textContent += `ХОБЛ: ${formData.copd || 'Не указано'}\n`;
+                    textContent += `ПИКС: ${formData.piks || 'Не указано'}\n`;
+                    textContent += `ЧКВ в анамнезе: ${formData.chkvHistory || 'Не указано'}\n`;
+                    textContent += `АКШ в анамнезе: ${formData.akshHistory || 'Не указано'}\n`;
+                    textContent += `\n`;
+                    
+                    textContent += `ЛЕЧЕНИЕ\n`;
+                    textContent += `Бета-адреноблокаторы: ${formData.betaBlockers || 'Не указано'}\n`;
+                    textContent += `Антагонисты кальция: ${formData.calciumAntagonists || 'Не указано'}\n`;
+                    textContent += `Нитраты: ${formData.nitrates || 'Не указано'}\n`;
+                    textContent += `Ингибиторы АПФ: ${formData.aceInhibitors || 'Не указано'}\n`;
+                    textContent += `Сартаны: ${formData.sartans || 'Не указано'}\n`;
+                    textContent += `Диуретики: ${formData.diuretics || 'Не указано'}\n`;
+                    textContent += `Аспирин: ${formData.aspirin || 'Не указано'}\n`;
+                    textContent += `Другие дезагреганты: ${formData.otherAntiplatelets || 'Не указано'}\n`;
+                    textContent += `Антикоагулянты: ${formData.anticoagulants || 'Не указано'}\n`;
+                    textContent += `Статины и прочие гиполипидемические препараты: ${formData.statins || 'Не указано'}\n`;
+                    textContent += `\n`;
+                    
+                    textContent += `НАПРАВЛЕНИЯ НА ДОПОЛНИТЕЛЬНЫЕ ИССЛЕДОВАНИЯ\n`;
+                    textContent += `Стресс-эхокардиография\n`;
+                    textContent += `  Выбор стресс-агента: ${formData.stressAgent || 'Не указано'}\n`;
+                    textContent += `  Дата исследования: ${formData.stressDate || 'Не указано'}\n`;
+                    textContent += `  Факт выполнения: ${formData.stressCompleted || 'Не указано'}\n`;
+                    textContent += `Инвазивная коронароангиография\n`;
+                    textContent += `  Дата исследования: ${formData.angiographyDate || 'Не указано'}\n`;
+                    textContent += `  Факт выполнения: ${formData.angiographyCompleted || 'Не указано'}\n`;
+                    textContent += `  FFR (iFR): ${formData.ffrIfr || 'Не указано'}\n`;
+                    textContent += `\n`;
+                    
+                    if (formData.attachments && formData.attachments.length > 0) {
+                        textContent += `ПРИКРЕПЛЕННЫЕ ФАЙЛЫ\n`;
+                        textContent += `Количество файлов: ${formData.attachments.length}\n`;
+                        formData.attachments.forEach(attachment => {
+                            textContent += `  ${attachment.name} (${attachment.size})\n`;
+                        });
+                    }
+                    
+                    const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = url;
+                    downloadLink.download = `Карта_пациента_${safeFileNameId}_${new Date().toISOString().slice(0,10)}.txt`;
+                    downloadLink.click();
+                    
+                    showStatus('Текстовый файл успешно экспортирован', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при экспорте: ' + error.message, 'error');
+                }
+            }
+            
+            // Функция импорта ранее сохраненной карты
+            function importCard() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.html,.txt';
+                
+                input.onchange = function(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const content = e.target.result;
+                            
+                            if (file.name.endsWith('.html')) {
+                                importHtmlContent(content);
+                            } else if (file.name.endsWith('.txt')) {
+                                importTextContent(content);
+                            } else {
+                                showStatus('Неподдерживаемый формат файла', 'error');
+                            }
+                        } catch (error) {
+                            showStatus('Ошибка при чтении файла: ' + error.message, 'error');
+                            console.error('Import error:', error);
+                        }
+                    };
+                    reader.readAsText(file);
+                };
+                
+                input.click();
+            }
+            
+            // Функция импорта из HTML с восстановлением вложенных файлов
+            function importHtmlContent(htmlContent) {
+                try {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(htmlContent, 'text/html');
+                    
+                    // Пытаемся получить данные из скрытого JSON для совместимости
+                    const formDataElement = doc.getElementById('form-data-json');
+                    
+                    if (formDataElement && formDataElement.textContent) {
+                        // Способ 1: Используем скрытый JSON (если он есть)
+                        const savedData = JSON.parse(formDataElement.textContent);
+                        fillFormFromData(savedData);
+                        
+                        // Восстанавливаем вложенные файлы
+                        const attachmentsDataElement = doc.getElementById('attachments-data');
+                        if (attachmentsDataElement) {
+                            try {
+                                const attachmentsData = JSON.parse(attachmentsDataElement.textContent);
+                                if (Array.isArray(attachmentsData)) {
+                                    attachments = attachmentsData;
+                                    updateAttachmentsList();
+                                    showStatus(`Восстановлено ${attachments.length} вложенных файлов`, 'success');
+                                }
+                            } catch (e) {
+                                console.error('Ошибка при восстановлении вложений:', e);
+                                attachments = [];
+                            }
+                        }
+                        
+                        showStatus('Данные успешно восстановлены из HTML файла с вложениями', 'success');
+                        return;
+                    }
+                    
+                    // Способ 2: Извлекаем данные из HTML структуры (для старых файлов)
+                    extractDataFromHtml(doc);
+                    
+                    showStatus('Данные успешно восстановлены из HTML файла', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при импорте HTML файла: ' + error.message, 'error');
+                    console.error('HTML import error:', error);
+                }
+            }
+            
+            // Функция заполнения формы из данных объекта
+            function fillFormFromData(savedData) {
+                document.getElementById('patient-id').value = savedData.patientId || '';
+                document.getElementById('randomization-group').value = savedData.randomizationGroup || '';
+                
+                const patientFio = savedData.patientFio || '';
+                document.getElementById('patient-fio').value = patientFio;
+                patientNameDisplay.textContent = patientFio || 'Не загружено';
+                
+                document.getElementById('patient-phone').value = savedData.patientPhone || '';
+                document.getElementById('patient-age').value = savedData.patientAge || '';
+                document.getElementById('patient-gender').value = savedData.patientGender || '';
+                document.getElementById('patient-bmi').value = savedData.patientBmi || '';
+                document.getElementById('pretest-probability').value = savedData.pretestProbability || '';
+                document.getElementById('risk-category').value = savedData.riskCategory || '';
+                document.getElementById('chest-pain').value = savedData.chestPain || '';
+                document.getElementById('dyspnea').value = savedData.dyspnea || '';
+                
+                document.getElementById('risk-factors-count').value = savedData.riskFactorsCount || '';
+                document.getElementById('family-history').value = savedData.familyHistory || '';
+                document.getElementById('dyslipidemia').value = savedData.dyslipidemia || '';
+                document.getElementById('smoking').value = savedData.smoking || '';
+                document.getElementById('hypertension').value = savedData.hypertension || '';
+                document.getElementById('diabetes').value = savedData.diabetes || '';
+                document.getElementById('ckd').value = savedData.ckd || '';
+                document.getElementById('carotid-stenosis').value = savedData.carotidStenosis || '';
+                document.getElementById('copd').value = savedData.copd || '';
+                document.getElementById('piks').value = savedData.piks || '';
+                document.getElementById('chkv-history').value = savedData.chkvHistory || '';
+                document.getElementById('aksh-history').value = savedData.akshHistory || '';
+                
+                document.getElementById('beta-blockers').value = savedData.betaBlockers || '';
+                document.getElementById('calcium-antagonists').value = savedData.calciumAntagonists || '';
+                document.getElementById('nitrates').value = savedData.nitrates || '';
+                document.getElementById('ace-inhibitors').value = savedData.aceInhibitors || '';
+                document.getElementById('sartans').value = savedData.sartans || '';
+                document.getElementById('diuretics').value = savedData.diuretics || '';
+                document.getElementById('aspirin').value = savedData.aspirin || '';
+                document.getElementById('other-antiplatelets').value = savedData.otherAntiplatelets || '';
+                document.getElementById('anticoagulants').value = savedData.anticoagulants || '';
+                document.getElementById('statins').value = savedData.statins || '';
+                
+                document.getElementById('stress-agent').value = savedData.stressAgent || '';
+                document.getElementById('stress-date').value = savedData.stressDate || '';
+                document.getElementById('stress-completed').value = savedData.stressCompleted || '';
+                document.getElementById('angiography-date').value = savedData.angiographyDate || '';
+                document.getElementById('angiography-completed').value = savedData.angiographyCompleted || '';
+                document.getElementById('ffr-ifr').value = savedData.ffrIfr || '';
+                
+                // Восстановление вложенных файлов
+                if (savedData.attachments && Array.isArray(savedData.attachments)) {
+                    attachments = savedData.attachments;
+                    updateAttachmentsList();
+                }
+            }
+            
+            // Функция извлечения данных из HTML структуры
+            function extractDataFromHtml(doc) {
+                // Извлекаем данные из текстового представления
+                const fieldRows = doc.querySelectorAll('.field-row');
+                
+                fieldRows.forEach(row => {
+                    const labelElement = row.querySelector('.field-label');
+                    const valueElement = row.querySelector('.field-value');
+                    
+                    if (labelElement && valueElement) {
+                        const label = labelElement.textContent.trim();
+                        const value = valueElement.textContent.trim();
+                        
+                        // Сопоставляем метки с полями формы
+                        switch(label) {
+                            case 'ID пациента:':
+                                document.getElementById('patient-id').value = value;
+                                break;
+                            case 'Группа рандомизации:':
+                                document.getElementById('randomization-group').value = value;
+                                break;
+                            case 'ФИО:':
+                                document.getElementById('patient-fio').value = value;
+                                patientNameDisplay.textContent = value || 'Не загружено';
+                                break;
+                            case 'Номер телефона:':
+                                document.getElementById('patient-phone').value = value;
+                                break;
+                            case 'Возраст:':
+                                document.getElementById('patient-age').value = value;
+                                break;
+                            case 'Пол:':
+                                document.getElementById('patient-gender').value = value === 'Мужской' ? 'муж' : 
+                                                                                  value === 'Женский' ? 'жен' : value;
+                                break;
+                            case 'ИМТ:':
+                                document.getElementById('patient-bmi').value = value.replace(' кг/м²', '');
+                                break;
+                            case 'Претестовая вероятность ИБС, %:':
+                                document.getElementById('pretest-probability').value = value;
+                                break;
+                            case 'Категория риска:':
+                                document.getElementById('risk-category').value = value;
+                                break;
+                            case 'Характер боли в груди (баллы):':
+                                document.getElementById('chest-pain').value = value;
+                                break;
+                            case 'Одышка при физической нагрузке:':
+                                document.getElementById('dyspnea').value = value;
+                                break;
+                            case 'Факторы риска (количество):':
+                                document.getElementById('risk-factors-count').value = value;
+                                break;
+                            case 'Семейный анамнез ИБС:':
+                                document.getElementById('family-history').value = value === '+' ? '+' : 
+                                                                                  value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Дислипидемия:':
+                                document.getElementById('dyslipidemia').value = value === '+' ? '+' : 
+                                                                                value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Курение:':
+                                document.getElementById('smoking').value = value === '+' ? '+' : 
+                                                                           value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Артериальная гипертензия:':
+                                document.getElementById('hypertension').value = value === '+' ? '+' : 
+                                                                                value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Сахарный диабет:':
+                                document.getElementById('diabetes').value = value === '+' ? '+' : 
+                                                                            value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Хроническая болезнь почек:':
+                                document.getElementById('ckd').value = value === '+' ? '+' : 
+                                                                       value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Стенозы сонных артерий:':
+                                document.getElementById('carotid-stenosis').value = value === '+' ? '+' : 
+                                                                                    value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'ХОБЛ:':
+                                document.getElementById('copd').value = value === '+' ? '+' : 
+                                                                        value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'ПИКС:':
+                                document.getElementById('piks').value = value === '+' ? '+' : 
+                                                                        value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'ЧКВ в анамнезе:':
+                                document.getElementById('chkv-history').value = value === '+' ? '+' : 
+                                                                                value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'АКШ в анамнезе:':
+                                document.getElementById('aksh-history').value = value === '+' ? '+' : 
+                                                                                value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Бета-адреноблокаторы:':
+                                document.getElementById('beta-blockers').value = value === '+' ? '+' : 
+                                                                                 value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Антагонисты кальция:':
+                                document.getElementById('calcium-antagonists').value = value === '+' ? '+' : 
+                                                                                       value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Нитраты:':
+                                document.getElementById('nitrates').value = value === '+' ? '+' : 
+                                                                            value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Ингибиторы АПФ:':
+                                document.getElementById('ace-inhibitors').value = value === '+' ? '+' : 
+                                                                                  value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Сартаны:':
+                                document.getElementById('sartans').value = value === '+' ? '+' : 
+                                                                           value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Диуретики:':
+                                document.getElementById('diuretics').value = value === '+' ? '+' : 
+                                                                             value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Аспирин:':
+                                document.getElementById('aspirin').value = value === '+' ? '+' : 
+                                                                           value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Другие дезагреганты:':
+                                document.getElementById('other-antiplatelets').value = value === '+' ? '+' : 
+                                                                                       value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Антикоагулянты:':
+                                document.getElementById('anticoagulants').value = value === '+' ? '+' : 
+                                                                                  value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Статины и прочие гиполипидемические препараты:':
+                                document.getElementById('statins').value = value === '+' ? '+' : 
+                                                                           value === '-' ? '-' : 'нет данных';
+                                break;
+                            case 'Выбор стресс-агента:':
+                                document.getElementById('stress-agent').value = value;
+                                break;
+                            case 'Дата исследования:':
+                                // Определяем, к какому полю относится дата по контексту
+                                const parentSection = row.closest('.section');
+                                if (parentSection) {
+                                    const h3 = parentSection.querySelector('h3');
+                                    if (h3 && h3.textContent.includes('Стресс-эхокардиография')) {
+                                        document.getElementById('stress-date').value = value;
+                                    } else if (h3 && h3.textContent.includes('Инвазивная коронароангиография')) {
+                                        document.getElementById('angiography-date').value = value;
+                                    }
+                                }
+                                break;
+                            case 'Факт выполнения:':
+                                // Определяем, к какому полю относится по контексту
+                                const parentSection2 = row.closest('.section');
+                                if (parentSection2) {
+                                    const h3 = parentSection2.querySelector('h3');
+                                    if (h3 && h3.textContent.includes('Стресс-эхокардиография')) {
+                                        document.getElementById('stress-completed').value = value;
+                                    } else if (h3 && h3.textContent.includes('Инвазивная коронароангиография')) {
+                                        document.getElementById('angiography-completed').value = value;
+                                    }
+                                }
+                                break;
+                            case 'FFR (iFR):':
+                                document.getElementById('ffr-ifr').value = value === '+' ? '+' : 
+                                                                           value === '-' ? '-' : 'нет данных';
+                                break;
+                        }
+                    }
+                });
+            }
+            
+            // Функция импорта из текстового файла
+            function importTextContent(textContent) {
+                try {
+                    const lines = textContent.split('\n');
+                    const data = {};
+                    
+                    let currentSection = '';
+                    lines.forEach(line => {
+                        line = line.trim();
+                        
+                        if (line.includes('КЛИНИКО-ДЕМОГРАФИЧЕСКИЕ ДАННЫЕ')) {
+                            currentSection = 'clinical';
+                        } else if (line.includes('ДАННЫЕ АНАМНЕЗА')) {
+                            currentSection = 'history';
+                        } else if (line.includes('ЛЕЧЕНИЕ')) {
+                            currentSection = 'treatment';
+                        } else if (line.includes('НАПРАВЛЕНИЯ НА ДОПОЛНИТЕЛЬНЫЕ ИССЛЕДОВАНИЯ')) {
+                            currentSection = 'examinations';
+                        } else if (line.includes('ПРИКРЕПЛЕННЫЕ ФАЙЛЫ')) {
+                            currentSection = 'attachments';
+                        } else if (line.includes(':')) {
+                            const [key, value] = line.split(':').map(s => s.trim());
+                            data[key] = value;
+                        }
+                    });
+                    
+                    document.getElementById('patient-id').value = data['ID пациента'] || '';
+                    document.getElementById('randomization-group').value = data['Группа рандомизации'] || '';
+                    
+                    const patientFio = data['ФИО'] || '';
+                    document.getElementById('patient-fio').value = patientFio;
+                    patientNameDisplay.textContent = patientFio || 'Не загружено';
+                    
+                    document.getElementById('patient-phone').value = data['Номер телефона'] || '';
+                    document.getElementById('patient-age').value = data['Возраст'] || '';
+                    document.getElementById('patient-gender').value = data['Пол'] || '';
+                    document.getElementById('patient-bmi').value = data['ИМТ'] ? data['ИМТ'].replace(' кг/м²', '') : '';
+                    document.getElementById('pretest-probability').value = data['Претестовая вероятность ИБС, %'] || '';
+                    document.getElementById('risk-category').value = data['Категория риска'] || '';
+                    document.getElementById('chest-pain').value = data['Характер боли в груди (баллы)'] || '';
+                    document.getElementById('dyspnea').value = data['Одышка при физической нагрузке'] || '';
+                    
+                    document.getElementById('risk-factors-count').value = data['Факторы риска (количество)'] || '';
+                    document.getElementById('family-history').value = data['Семейный анамнез ИБС'] || '';
+                    document.getElementById('dyslipidemia').value = data['Дислипидемия'] || '';
+                    document.getElementById('smoking').value = data['Курение'] || '';
+                    document.getElementById('hypertension').value = data['Артериальная гипертензия'] || '';
+                    document.getElementById('diabetes').value = data['Сахарный диабет'] || '';
+                    document.getElementById('ckd').value = data['Хроническая болезнь почек'] || '';
+                    document.getElementById('carotid-stenosis').value = data['Стенозы сонных артерий'] || '';
+                    document.getElementById('copd').value = data['ХОБЛ'] || '';
+                    document.getElementById('piks').value = data['ПИКС'] || '';
+                    document.getElementById('chkv-history').value = data['ЧКВ в анамнезе'] || '';
+                    document.getElementById('aksh-history').value = data['АКШ в анамнезе'] || '';
+                    
+                    document.getElementById('beta-blockers').value = data['Бета-адреноблокаторы'] || '';
+                    document.getElementById('calcium-antagonists').value = data['Антагонисты кальция'] || '';
+                    document.getElementById('nitrates').value = data['Нитраты'] || '';
+                    document.getElementById('ace-inhibitors').value = data['Ингибиторы АПФ'] || '';
+                    document.getElementById('sartans').value = data['Сартаны'] || '';
+                    document.getElementById('diuretics').value = data['Диуретики'] || '';
+                    document.getElementById('aspirin').value = data['Аспирин'] || '';
+                    document.getElementById('other-antiplatelets').value = data['Другие дезагреганты'] || '';
+                    document.getElementById('anticoagulants').value = data['Антикоагулянты'] || '';
+                    document.getElementById('statins').value = data['Статины и прочие гиполипидемические препараты'] || '';
+                    
+                    lines.forEach((line, index) => {
+                        line = line.trim();
+                        
+                        if (line.includes('Стресс-эхокардиография')) {
+                            for (let i = index + 1; i < Math.min(index + 10, lines.length); i++) {
+                                const subLine = lines[i].trim();
+                                if (subLine.includes('Выбор стресс-агента:')) {
+                                    document.getElementById('stress-agent').value = subLine.split(':')[1].trim();
+                                } else if (subLine.includes('Дата исследования:')) {
+                                    document.getElementById('stress-date').value = subLine.split(':')[1].trim();
+                                } else if (subLine.includes('Факт выполнения:')) {
+                                    document.getElementById('stress-completed').value = subLine.split(':')[1].trim();
+                                }
+                            }
+                        }
+                        
+                        if (line.includes('Инвазивная коронароангиография')) {
+                            for (let i = index + 1; i < Math.min(index + 10, lines.length); i++) {
+                                const subLine = lines[i].trim();
+                                if (subLine.includes('Дата исследования:')) {
+                                    document.getElementById('angiography-date').value = subLine.split(':')[1].trim();
+                                } else if (subLine.includes('Факт выполнения:')) {
+                                    document.getElementById('angiography-completed').value = subLine.split(':')[1].trim();
+                                } else if (subLine.includes('FFR (iFR):')) {
+                                    document.getElementById('ffr-ifr').value = subLine.split(':')[1].trim();
+                                }
+                            }
+                        }
+                    });
+                    
+                    showStatus('Данные успешно импортированы из текстового файла', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при импорте текстового файла: ' + error.message, 'error');
+                    console.error('Text import error:', error);
+                }
+            }
+            
+            // Функция сброса формы
+            function resetForm() {
+                if (confirm('Вы уверены, что хотите сбросить все данные? Все несохраненные изменения будут потеряны.')) {
+                    document.querySelectorAll('input, select, textarea').forEach(element => {
+                        if (element.type !== 'file') {
+                            element.value = '';
+                        }
+                    });
+                    
+                    attachments = [];
+                    updateAttachmentsList();
+                    
+                    patientNameDisplay.textContent = 'Не загружено';
+                    
+                    showStatus('Форма успешно сброшена', 'success');
+                }
+            }
+            
+            // Функция предпросмотра
+            function showPreview() {
+                const formData = collectFormData();
+                const previewContent = document.getElementById('preview-content');
+                
+                let previewHtml = `
+                    <div style="padding: 10px;">
+                        <h3 style="color: #2c3e50; border-bottom: 1px solid #3498db; padding-bottom: 5px;">Основные данные</h3>
+                        <p><strong>ID пациента:</strong> ${formData.patientId || 'Не указано'}</p>
+                        <p><strong>ФИО:</strong> ${formData.patientFio || 'Не указано'}</p>
+                        <p><strong>Возраст:</strong> ${formData.patientAge || 'Не указано'}</p>
+                        <p><strong>Пол:</strong> ${formData.patientGender || 'Не указано'}</p>
+                        <p><strong>Телефон:</strong> ${formData.patientPhone || 'Не указано'}</p>
+                        <p><strong>Группа рандомизации:</strong> ${formData.randomizationGroup || 'Не указано'}</p>
+                        
+                        <h3 style="color: #2c3e50; border-bottom: 1px solid #3498db; padding-bottom: 5px; margin-top: 20px;">Ключевые показатели</h3>
+                        <p><strong>Претестовая вероятность ИБС:</strong> ${formData.pretestProbability || 'Не указано'}%</p>
+                        <p><strong>Категория риска:</strong> ${formData.riskCategory || 'Не указано'}</p>
+                        <p><strong>ИМТ:</strong> ${formData.patientBmi || 'Не указано'} кг/м²</p>
+                        
+                        <h3 style="color: #2c3e50; border-bottom: 1px solid #3498db; padding-bottom: 5px; margin-top: 20px;">Факторы риска</h3>
+                        <p><strong>Количество факторов риска:</strong> ${formData.riskFactorsCount || 'Не указано'}</p>
+                        <p><strong>Курение:</strong> ${formData.smoking || 'Не указано'}</p>
+                        <p><strong>Гипертензия:</strong> ${formData.hypertension || 'Не указано'}</p>
+                        <p><strong>Сахарный диабет:</strong> ${formData.diabetes || 'Не указано'}</p>
+                        
+                        <h3 style="color: #2c3e50; border-bottom: 1px solid #3498db; padding-bottom: 5px; margin-top: 20px;">Прикрепленные файлы</h3>
+                        <p><strong>Количество файлов:</strong> ${formData.attachments.length}</p>
+                    </div>
+                `;
+                
+                previewContent.innerHTML = previewHtml;
+            }
+            
+            // ========== ФУНКЦИИ ДЛЯ ЖУРНАЛА ПАЦИЕНТОВ ==========
+            
+            // Сохранение текущей карты в журнал
+            function saveToJournal() {
+                try {
+                    const formData = collectFormData();
+                    
+                    if (!formData.patientFio || formData.patientFio.trim() === '') {
+                        showStatus('Пожалуйста, укажите ФИО пациента перед сохранением в журнал', 'error');
+                        return;
+                    }
+                    
+                    const now = new Date();
+                    // Используем ID пациента из формы или генерируем новый
+                    const patientId = formData.patientId || 'P' + now.getTime().toString().slice(-8);
+                    
+                    const journalEntry = {
+                        id: patientId,
+                        patientFio: formData.patientFio,
+                        patientAge: formData.patientAge,
+                        patientGender: formData.patientGender,
+                        patientBmi: formData.patientBmi,
+                        riskCategory: formData.riskCategory,
+                        pretestProbability: formData.pretestProbability,
+                        randomizationGroup: formData.randomizationGroup,
+                        attachmentsCount: formData.attachments.length,
+                        createdDate: now.toISOString(),
+                        updatedDate: now.toISOString(),
+                        formData: formData
+                    };
+                    
+                    // Проверяем, существует ли уже пациент с таким ФИО
+                    const existingIndex = patientJournal.findIndex(entry => 
+                        entry.patientFio.toLowerCase() === formData.patientFio.toLowerCase()
+                    );
+                    
+                    if (existingIndex !== -1) {
+                        if (confirm('Пациент с таким ФИО уже существует. Обновить существующую запись?')) {
+                            patientJournal[existingIndex] = {
+                                ...patientJournal[existingIndex],
+                                ...journalEntry,
+                                createdDate: patientJournal[existingIndex].createdDate, // Сохраняем оригинальную дату создания
+                                updatedDate: now.toISOString()
+                            };
+                            showStatus('Запись пациента обновлена в журнале', 'success');
+                        } else {
+                            return;
+                        }
+                    } else {
+                        patientJournal.unshift(journalEntry);
+                        showStatus('Карта пациента сохранена в журнал', 'success');
+                    }
+                    
+                    // Сохраняем в localStorage
+                    localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                    
+                    // Обновляем отображение журнала
+                    updateJournalDisplay();
+                } catch (error) {
+                    showStatus('Ошибка при сохранении в журнал: ' + error.message, 'error');
+                }
+            }
+            
+            // Обновление отображения журнала
+            function updateJournalDisplay() {
+                if (patientJournal.length === 0) {
+                    journalTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="empty-journal">
+                                <i class="fas fa-folder-open" style="font-size: 48px; margin-bottom: 15px; color: #bdc3c7;"></i>
+                                <p>Журнал пациентов пуст</p>
+                                <p>Сохраните первую карту пациента, чтобы она появилась здесь</p>
+                            </td>
+                        </tr>
+                    `;
+                    journalStats.style.display = 'none';
+                    return;
+                }
+                
+                journalStats.style.display = 'flex';
+                journalTableBody.innerHTML = '';
+                
+                patientJournal.forEach((entry, index) => {
+                    const createdDate = new Date(entry.createdDate);
+                    const updatedDate = new Date(entry.updatedDate);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><span class="patient-id">${entry.id}</span></td>
+                        <td><strong>${entry.patientFio || 'Не указано'}</strong></td>
+                        <td class="patient-summary">
+                            <p><strong>Возраст:</strong> ${entry.patientAge || 'Не указано'}</p>
+                            <p><strong>Пол:</strong> ${entry.patientGender || 'Не указано'}</p>
+                            <p><strong>ИМТ:</strong> ${entry.patientBmi || 'Не указано'} кг/м²</p>
+                            <p><strong>Категория риска:</strong> ${entry.riskCategory || 'Не указано'}</p>
+                            <p><strong>Группа рандомизации:</strong> ${entry.randomizationGroup || 'Не указано'}</p>
+                        </td>
+                        <td>${createdDate.toLocaleDateString('ru-RU')}<br><small>${createdDate.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</small></td>
+                        <td>${updatedDate.toLocaleDateString('ru-RU')}<br><small>${updatedDate.toLocaleTimeString('ru-RU', {hour: '2-digit', minute: '2-digit'})}</small></td>
+                        <td class="actions-cell">
+                            <button class="btn btn-primary btn-sm" onclick="loadPatientFromJournal(${index})" title="Загрузить">
+                                <i class="fas fa-upload"></i>
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="editJournalEntry(${index})" title="Редактировать">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteJournalEntry(${index})" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    journalTableBody.appendChild(row);
+                });
+                
+                updateJournalStats();
+            }
+            
+            // Обновление статистики журнала
+            function updateJournalStats() {
+                const now = new Date();
+                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                const lastWeek = new Date(today);
+                lastWeek.setDate(lastWeek.getDate() - 7);
+                
+                const totalPatients = patientJournal.length;
+                const todayPatients = patientJournal.filter(entry => {
+                    const entryDate = new Date(entry.createdDate);
+                    return entryDate >= today;
+                }).length;
+                
+                const lastWeekPatients = patientJournal.filter(entry => {
+                    const entryDate = new Date(entry.createdDate);
+                    return entryDate >= lastWeek;
+                }).length;
+                
+                const patientsWithFiles = patientJournal.filter(entry => 
+                    entry.attachmentsCount > 0
+                ).length;
+                
+                document.getElementById('stat-total').textContent = totalPatients;
+                document.getElementById('stat-today').textContent = todayPatients;
+                document.getElementById('stat-last-week').textContent = lastWeekPatients;
+                document.getElementById('stat-with-files').textContent = patientsWithFiles;
+            }
+            
+            // Загрузка пациента из журнала в форму
+            window.loadPatientFromJournal = function(index) {
+                if (index < 0 || index >= patientJournal.length) return;
+                
+                const entry = patientJournal[index];
+                const formData = entry.formData;
+                
+                if (!formData) {
+                    showStatus('Ошибка: данные пациента повреждены', 'error');
+                    return;
+                }
+                
+                if (confirm('Загрузить данные пациента "' + entry.patientFio + '"? Текущие несохраненные данные будут потеряны.')) {
+                    fillFormFromData(formData);
+                    showStatus('Данные пациента "' + entry.patientFio + '" загружены', 'success');
+                }
+            };
+            
+            // Редактирование записи в журнале
+            window.editJournalEntry = function(index) {
+                if (index < 0 || index >= patientJournal.length) return;
+                
+                const entry = patientJournal[index];
+                const modalContent = document.getElementById('journal-modal-content');
+                
+                modalContent.innerHTML = `
+                    <h3>Редактирование записи пациента</h3>
+                    <div class="form-group">
+                        <label for="edit-patient-fio">ФИО:</label>
+                        <input type="text" id="edit-patient-fio" value="${entry.patientFio || ''}" class="form-control">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="edit-patient-age">Возраст:</label>
+                            <input type="number" id="edit-patient-age" value="${entry.patientAge || ''}">
+                        </div>
+                        <div class="form-field">
+                            <label for="edit-patient-gender">Пол:</label>
+                            <select id="edit-patient-gender">
+                                <option value="">Выберите</option>
+                                <option value="муж" ${entry.patientGender === 'муж' ? 'selected' : ''}>Мужской</option>
+                                <option value="жен" ${entry.patientGender === 'жен' ? 'selected' : ''}>Женский</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-risk-category">Категория риска:</label>
+                        <input type="text" id="edit-risk-category" value="${entry.riskCategory || ''}">
+                    </div>
+                    <div class="modal-buttons" style="margin-top: 20px;">
+                        <button class="btn btn-primary" id="save-edited-entry">Сохранить изменения</button>
+                        <button class="btn btn-secondary" id="cancel-edit">Отмена</button>
+                    </div>
+                `;
+                
+                const journalModal = document.getElementById('journal-modal');
+                showModal(journalModal);
+                
+                document.getElementById('save-edited-entry').addEventListener('click', function() {
+                    const editedFio = document.getElementById('edit-patient-fio').value.trim();
+                    if (!editedFio) {
+                        alert('Пожалуйста, укажите ФИО пациента');
+                        return;
+                    }
+                    
+                    patientJournal[index].patientFio = editedFio;
+                    patientJournal[index].patientAge = document.getElementById('edit-patient-age').value;
+                    patientJournal[index].patientGender = document.getElementById('edit-patient-gender').value;
+                    patientJournal[index].riskCategory = document.getElementById('edit-risk-category').value;
+                    patientJournal[index].updatedDate = new Date().toISOString();
+                    
+                    localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                    updateJournalDisplay();
+                    closeModal(journalModal);
+                    showStatus('Запись пациента обновлена', 'success');
+                });
+                
+                document.getElementById('cancel-edit').addEventListener('click', function() {
+                    closeModal(journalModal);
+                });
+            };
+            
+            // Удаление записи из журнала
+            window.deleteJournalEntry = function(index) {
+                if (index < 0 || index >= patientJournal.length) return;
+                
+                const entry = patientJournal[index];
+                if (confirm(`Вы уверены, что хотите удалить пациента "${entry.patientFio}" из журнала?`)) {
+                    patientJournal.splice(index, 1);
+                    localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                    updateJournalDisplay();
+                    showStatus('Пациент удален из журнала', 'success');
+                }
+            };
+            
+            // Экспорт журнала в JSON
+            function exportJournalToJson() {
+                try {
+                    if (patientJournal.length === 0) {
+                        showStatus('Журнал пуст, нечего экспортировать', 'warning');
+                        return;
+                    }
+                    
+                    const exportData = {
+                        journalName: 'Журнал пациентов',
+                        exportDate: new Date().toLocaleString('ru-RU'),
+                        totalPatients: patientJournal.length,
+                        patients: patientJournal
+                    };
+                    
+                    const jsonContent = JSON.stringify(exportData, null, 2);
+                    const blob = new Blob([jsonContent], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = url;
+                    downloadLink.download = `Журнал_пациентов_${new Date().toISOString().slice(0,10)}.json`;
+                    downloadLink.click();
+                    
+                    showStatus('Журнал успешно экспортирован в JSON', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при экспорте журнала: ' + error.message, 'error');
+                }
+            }
+            
+            // Экспорт журнала в Excel
+            function exportJournalToExcel() {
+                try {
+                    if (patientJournal.length === 0) {
+                        showStatus('Журнал пуст, нечего экспортировать', 'warning');
+                        return;
+                    }
+                    
+                    const worksheetData = [
+                        ['ID', 'ФИО пациента', 'Возраст', 'Пол', 'ИМТ', 'Категория риска', 'Группа рандомизации', 'Дата создания', 'Дата обновления', 'Количество файлов']
+                    ];
+                    
+                    patientJournal.forEach(entry => {
+                        const createdDate = new Date(entry.createdDate);
+                        const updatedDate = new Date(entry.updatedDate);
+                        
+                        worksheetData.push([
+                            entry.id,
+                            entry.patientFio || '',
+                            entry.patientAge || '',
+                            entry.patientGender || '',
+                            entry.patientBmi ? entry.patientBmi + ' кг/м²' : '',
+                            entry.riskCategory || '',
+                            entry.randomizationGroup || '',
+                            createdDate.toLocaleDateString('ru-RU'),
+                            updatedDate.toLocaleDateString('ru-RU'),
+                            entry.attachmentsCount || 0
+                        ]);
+                    });
+                    
+                    const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+                    const workbook = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(workbook, worksheet, 'Журнал пациентов');
+                    
+                    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+                    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = url;
+                    downloadLink.download = `Журнал_пациентов_${new Date().toISOString().slice(0,10)}.xlsx`;
+                    downloadLink.click();
+                    
+                    showStatus('Журнал успешно экспортирован в Excel', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при экспорте в Excel: ' + error.message, 'error');
+                }
+            }
+            
+            // Экспорт журнала в TXT
+            function exportJournalToTxt() {
+                try {
+                    if (patientJournal.length === 0) {
+                        showStatus('Журнал пуст, нечего экспортировать', 'warning');
+                        return;
+                    }
+                    
+                    let txtContent = `ЖУРНАЛ ПАЦИЕНТОВ (eCRF-creator v2.0)\n`;
+                    txtContent += `Дата экспорта: ${new Date().toLocaleString('ru-RU')}\n`;
+                    txtContent += `Всего пациентов: ${patientJournal.length}\n`;
+                    txtContent += `\n`;
+                    txtContent += `================================================================================\n\n`;
+                    
+                    patientJournal.forEach((entry, index) => {
+                        const createdDate = new Date(entry.createdDate);
+                        const updatedDate = new Date(entry.updatedDate);
+                        
+                        txtContent += `ПАЦИЕНТ ${index + 1}\n`;
+                        txtContent += `ID: ${entry.id}\n`;
+                        txtContent += `ФИО: ${entry.patientFio || 'Не указано'}\n`;
+                        txtContent += `Возраст: ${entry.patientAge || 'Не указано'}\n`;
+                        txtContent += `Пол: ${entry.patientGender || 'Не указано'}\n`;
+                        txtContent += `ИМТ: ${entry.patientBmi || 'Не указано'} кг/м²\n`;
+                        txtContent += `Категория риска: ${entry.riskCategory || 'Не указано'}\n`;
+                        txtContent += `Группа рандомизации: ${entry.randomizationGroup || 'Не указано'}\n`;
+                        txtContent += `Дата создания: ${createdDate.toLocaleDateString('ru-RU')}\n`;
+                        txtContent += `Дата обновления: ${updatedDate.toLocaleDateString('ru-RU')}\n`;
+                        txtContent += `Количество прикрепленных файлов: ${entry.attachmentsCount || 0}\n`;
+                        txtContent += `\n`;
+                        txtContent += `--------------------------------------------------------------------------------\n\n`;
+                    });
+                    
+                    const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+                    const downloadLink = document.getElementById('download-link');
+                    downloadLink.href = url;
+                    downloadLink.download = `Журнал_пациентов_${new Date().toISOString().slice(0,10)}.txt`;
+                    downloadLink.click();
+                    
+                    showStatus('Журнал успешно экспортирован в TXT', 'success');
+                } catch (error) {
+                    showStatus('Ошибка при экспорте журнала: ' + error.message, 'error');
+                }
+            }
+            
+            // Импорт журнала
+            function importJournal() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json,.xlsx,.xls,.txt';
+                
+                input.onchange = function(event) {
+                    const file = event.target.files[0];
+                    if (!file) return;
+                    
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const fileName = file.name.toLowerCase();
+                            
+                            if (fileName.endsWith('.json')) {
+                                importJournalFromJson(e.target.result);
+                            } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                                importJournalFromExcel(e.target.result);
+                            } else if (fileName.endsWith('.txt')) {
+                                importJournalFromTxt(e.target.result);
+                            } else {
+                                showStatus('Неподдерживаемый формат файла', 'error');
+                            }
+                        } catch (error) {
+                            showStatus('Ошибка при импорте журнала: ' + error.message, 'error');
+                            console.error('Journal import error:', error);
+                        }
+                    };
+                    
+                    if (file.name.endsWith('.json') || file.name.endsWith('.txt')) {
+                        reader.readAsText(file);
+                    } else {
+                        reader.readAsArrayBuffer(file);
+                    }
+                };
+                
+                input.click();
+            }
+            
+            // Импорт журнала из JSON
+            function importJournalFromJson(jsonContent) {
+                try {
+                    const importData = JSON.parse(jsonContent);
+                    
+                    if (!importData.patients || !Array.isArray(importData.patients)) {
+                        showStatus('Неверный формат файла журнала', 'error');
+                        return;
+                    }
+                    
+                    if (confirm(`Импортировать ${importData.patients.length} записей из журнала? Существующие записи будут сохранены.`)) {
+                        importData.patients.forEach(newPatient => {
+                            const existingIndex = patientJournal.findIndex(entry => 
+                                entry.id === newPatient.id || 
+                                entry.patientFio.toLowerCase() === newPatient.patientFio.toLowerCase()
+                            );
+                            
+                            if (existingIndex !== -1) {
+                                patientJournal[existingIndex] = newPatient;
+                            } else {
+                                patientJournal.push(newPatient);
+                            }
+                        });
+                        
+                        localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                        updateJournalDisplay();
+                        showStatus(`Импортировано ${importData.patients.length} записей пациентов', 'success`);
+                    }
+                } catch (error) {
+                    showStatus('Ошибка при чтении JSON файла: ' + error.message, 'error');
+                }
+            }
+            
+            // Импорт журнала из Excel
+            function importJournalFromExcel(arrayBuffer) {
+                try {
+                    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    if (data.length < 2) {
+                        showStatus('Файл Excel пуст или имеет неверный формат', 'error');
+                        return;
+                    }
+                    
+                    const headers = data[0];
+                    const patients = [];
+                    
+                    for (let i = 1; i < data.length; i++) {
+                        const row = data[i];
+                        if (row.length === 0) continue;
+                        
+                        const patient = {
+                            id: row[0] || 'P' + Date.now().toString().slice(-8) + i,
+                            patientFio: row[1] || '',
+                            patientAge: row[2] || '',
+                            patientGender: row[3] || '',
+                            patientBmi: typeof row[4] === 'string' ? row[4].replace(' кг/м²', '') : row[4] || '',
+                            riskCategory: row[5] || '',
+                            randomizationGroup: row[6] || '',
+                            attachmentsCount: row[9] || 0,
+                            createdDate: new Date().toISOString(),
+                            updatedDate: new Date().toISOString()
+                        };
+                        
+                        patients.push(patient);
+                    }
+                    
+                    if (confirm(`Импортировать ${patients.length} записей из Excel файла? Существующие записи будут сохранены.`)) {
+                        patients.forEach(newPatient => {
+                            const existingIndex = patientJournal.findIndex(entry => 
+                                entry.id === newPatient.id || 
+                                entry.patientFio.toLowerCase() === newPatient.patientFio.toLowerCase()
+                            );
+                            
+                            if (existingIndex !== -1) {
+                                patientJournal[existingIndex] = {
+                                    ...patientJournal[existingIndex],
+                                    ...newPatient,
+                                    createdDate: patientJournal[existingIndex].createdDate
+                                };
+                            } else {
+                                patientJournal.push(newPatient);
+                            }
+                        });
+                        
+                        localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                        updateJournalDisplay();
+                        showStatus(`Импортировано ${patients.length} записей пациентов из Excel`, 'success');
+                    }
+                } catch (error) {
+                    showStatus('Ошибка при чтении Excel файла: ' + error.message, 'error');
+                }
+            }
+            
+            // Импорт журнала из TXT
+            function importJournalFromTxt(txtContent) {
+                try {
+                    const lines = txtContent.split('\n');
+                    const patients = [];
+                    let currentPatient = null;
+                    
+                    lines.forEach(line => {
+                        line = line.trim();
+                        
+                        if (line.startsWith('ПАЦИЕНТ')) {
+                            if (currentPatient) {
+                                patients.push(currentPatient);
+                            }
+                            currentPatient = {
+                                id: 'P' + Date.now().toString().slice(-8) + patients.length,
+                                createdDate: new Date().toISOString(),
+                                updatedDate: new Date().toISOString(),
+                                attachmentsCount: 0
+                            };
+                        } else if (line.startsWith('ID:') && currentPatient) {
+                            currentPatient.id = line.substring(3).trim();
+                        } else if (line.startsWith('ФИО:') && currentPatient) {
+                            currentPatient.patientFio = line.substring(4).trim();
+                        } else if (line.startsWith('Возраст:') && currentPatient) {
+                            currentPatient.patientAge = line.substring(8).trim();
+                        } else if (line.startsWith('Пол:') && currentPatient) {
+                            currentPatient.patientGender = line.substring(4).trim();
+                        } else if (line.startsWith('ИМТ:') && currentPatient) {
+                            const bmiText = line.substring(4).trim();
+                            currentPatient.patientBmi = bmiText.replace(' кг/м²', '');
+                        } else if (line.startsWith('Категория риска:') && currentPatient) {
+                            currentPatient.riskCategory = line.substring(16).trim();
+                        } else if (line.startsWith('Группа рандомизации:') && currentPatient) {
+                            currentPatient.randomizationGroup = line.substring(20).trim();
+                        } else if (line.startsWith('Количество прикрепленных файлов:') && currentPatient) {
+                            currentPatient.attachmentsCount = parseInt(line.substring(31).trim()) || 0;
+                        }
+                    });
+                    
+                    if (currentPatient) {
+                        patients.push(currentPatient);
+                    }
+                    
+                    if (patients.length === 0) {
+                        showStatus('Не найдено данных пациентов в TXT файле', 'error');
+                        return;
+                    }
+                    
+                    if (confirm(`Импортировать ${patients.length} записей из TXT файла? Существующие записи будут сохранены.`)) {
+                        patients.forEach(newPatient => {
+                            const existingIndex = patientJournal.findIndex(entry => 
+                                entry.patientFio.toLowerCase() === newPatient.patientFio.toLowerCase()
+                            );
+                            
+                            if (existingIndex !== -1) {
+                                patientJournal[existingIndex] = {
+                                    ...patientJournal[existingIndex],
+                                    ...newPatient,
+                                    createdDate: patientJournal[existingIndex].createdDate
+                                };
+                            } else {
+                                patientJournal.push(newPatient);
+                            }
+                        });
+                        
+                        localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                        updateJournalDisplay();
+                        showStatus(`Импортировано ${patients.length} записей пациентов из TXT`, 'success');
+                    }
+                } catch (error) {
+                    showStatus('Ошибка при чтении TXT файла: ' + error.message, 'error');
+                }
+            }
+            
+            // Очистка журнала
+            function clearJournal() {
+                if (patientJournal.length === 0) {
+                    showStatus('Журнал уже пуст', 'info');
+                    return;
+                }
+                
+                if (confirm('Вы уверены, что хотите полностью очистить журнал пациентов? Это действие нельзя отменить.')) {
+                    patientJournal.length = 0;
+                    localStorage.setItem('patientJournal', JSON.stringify(patientJournal));
+                    updateJournalDisplay();
+                    showStatus('Журнал пациентов очищен', 'success');
+                }
+            }
+            
+            // Инициализация списка прикрепленных файлов и журнала
+            updateAttachmentsList();
+            updateJournalDisplay();
+        });
+    </script>
+</body>
+</html>
