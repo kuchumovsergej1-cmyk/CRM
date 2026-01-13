@@ -265,6 +265,44 @@
         .attachments-section:last-child {
             border-bottom: none;
         }
+        
+        .patient-id-display {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 18px;
+            text-align: center;
+            font-weight: bold;
+            color: #208081;
+        }
+        
+        .success-message {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            border: 1px solid #86efac;
+        }
+        
+        .btn-generate-id {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+        
+        .btn-generate-id:hover {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
     </style>
 </head>
 <body>
@@ -330,6 +368,12 @@
                                 <input type="text" id="patientName" placeholder="Введите ФИО">
                             </div>
                             
+                            <div id="patientIdDisplay" class="patient-id-display" style="display: none;">
+                                ID пациента: <span id="patientID">Не сгенерирован</span>
+                            </div>
+                            
+                            <button id="generateIdBtn" class="btn btn-generate-id" onclick="generatePatientID()" style="display: inline-block; margin-bottom: 10px;">🎲 СГЕНЕРИРОВАТЬ ID</button>
+                            
                             <div class="input-row">
                                 <div class="input-group">
                                     <label for="age">Возраст:</label>
@@ -339,9 +383,9 @@
                                 <div class="input-group">
                                     <label for="sex">Пол:</label>
                                     <select id="sex">
-                                        <option value="">Выберите пол</option>
-                                        <option value="male">Мужской</option>
-                                        <option value="female">Женский</option>
+                                        <option value="">-- Выберите пол --</option>
+                                        <option value="woman">Женщина</option>
+                                        <option value="man">Мужчина</option>
                                     </select>
                                 </div>
                             </div>
@@ -350,23 +394,22 @@
                         <div class="symptoms-section">
                             <h3>Симптомы</h3>
                             <div class="input-group">
-                                <label for="chestPain">Тип боли в груди:</label>
+                                <label for="chestPain">Тип боли/дискомфорта:</label>
                                 <select id="chestPain">
-                                    <option value="">Выберите тип</option>
-                                    <option value="typical">Типичная стенокардия</option>
-                                    <option value="atypical">Атипичная боль</option>
-                                    <option value="nonCardiac">Не.cardiac боль</option>
-                                    <option value="asymptomatic">Бессимптомно</option>
+                                    <option value="">-- Выберите характер боли --</option>
+                                    <option value="0">Не подходит ни один вариант (0 баллов)</option>
+                                    <option value="1">Атипичная боль - 1 из 3 признаков типичной стенокардии (1 балл)</option>
+                                    <option value="2">Атипичная боль - 2 из 3 признаков типичной стенокардии (2 балла)</option>
+                                    <option value="3">Типичная стенокардия - сжимающий дискомфорт ретростернально, усиливается при нагрузке/стрессе, облегчается отдыхом/нитратами (3 балла)</option>
                                 </select>
                             </div>
                             
                             <div class="input-group">
-                                <label for="dyspnea">Одышка:</label>
+                                <label for="dyspnea">Одышка при физической нагрузке:</label>
                                 <select id="dyspnea">
-                                    <option value="">Выберите тип</option>
-                                    <option value="none">Нет</option>
-                                    <option value="exertional">При физической нагрузке</option>
-                                    <option value="rest">В покое</option>
+                                    <option value="">-- Выберите статус --</option>
+                                    <option value="0">Отсутствует (0 баллов)</option>
+                                    <option value="2">Да, затруднение дыхания при нагрузке (2 балла)</option>
                                 </select>
                             </div>
                         </div>
@@ -578,9 +621,9 @@
                                 <div class="input-group">
                                     <label for="sexESC">Пол:</label>
                                     <select id="sexESC">
-                                        <option value="">Выберите пол</option>
-                                        <option value="male">Мужской</option>
-                                        <option value="female">Женский</option>
+                                        <option value="">-- Выберите пол --</option>
+                                        <option value="woman">Женщина</option>
+                                        <option value="man">Мужчина</option>
                                     </select>
                                 </div>
                             </div>
@@ -589,23 +632,22 @@
                         <div class="symptoms-section">
                             <h3>Симптомы</h3>
                             <div class="input-group">
-                                <label for="chestPainESC">Тип боли в груди:</label>
+                                <label for="chestPainESC">Тип боли/дискомфорта:</label>
                                 <select id="chestPainESC">
-                                    <option value="">Выберите тип</option>
-                                    <option value="typical">Типичная стенокардия</option>
-                                    <option value="atypical">Атипичная боль</option>
-                                    <option value="nonCardiac">Не.cardiac боль</option>
-                                    <option value="asymptomatic">Бессимптомно</option>
+                                    <option value="">-- Выберите характер боли --</option>
+                                    <option value="0">Не подходит ни один вариант (0 баллов)</option>
+                                    <option value="1">Атипичная боль - 1 из 3 признаков типичной стенокардии (1 балл)</option>
+                                    <option value="2">Атипичная боль - 2 из 3 признаков типичной стенокардии (2 балла)</option>
+                                    <option value="3">Типичная стенокардия - сжимающий дискомфорт ретростернально, усиливается при нагрузке/стрессе, облегчается отдыхом/нитратами (3 балла)</option>
                                 </select>
                             </div>
                             
                             <div class="input-group">
-                                <label for="dyspneaESC">Одышка:</label>
+                                <label for="dyspneaESC">Одышка при физической нагрузке:</label>
                                 <select id="dyspneaESC">
-                                    <option value="">Выберите тип</option>
-                                    <option value="none">Нет</option>
-                                    <option value="exertional">При физической нагрузке</option>
-                                    <option value="rest">В покое</option>
+                                    <option value="">-- Выберите статус --</option>
+                                    <option value="0">Отсутствует (0 баллов)</option>
+                                    <option value="2">Да, затруднение дыхания при нагрузке (2 балла)</option>
                                 </select>
                             </div>
                         </div>
@@ -628,9 +670,9 @@
                             <div class="input-group">
                                 <label for="functionalStatus">Физическая активность:</label>
                                 <select id="functionalStatus">
-                                    <option value="">Выберите статус</option>
-                                    <option value="good">Хорошая (способен к нагрузке >10 МЕТ)</option>
-                                    <option value="limited">Ограниченная (способен к нагрузке 4-10 МЕТ)</option>
+                                    <option value="">-- Выберите статус --</option>
+                                    <option value="good">Хорошая (может подняться на 2-3 этажа)</option>
+                                    <option value="limited">Ограниченная (медленная ходьба)</option>
                                     <option value="unable">Не может выполнять нагрузку</option>
                                 </select>
                             </div>
@@ -1878,6 +1920,175 @@ ${patientData.treatment || 'Не указано'}
             }
         }
         
+        // Global patient data object to share between tabs
+        let globalPatientData = {
+            patientName: '',
+            age: '',
+            sex: '',
+            chestPain: '',
+            dyspnea: '',
+            diabetes: false,
+            hypertension: false,
+            dyslipidemia: false,
+            smoking: false,
+            familyHistory: false,
+            obesity: false,
+            height: '',
+            weight: '',
+            bmi: '',
+            patientID: '',
+            functionalStatus: ''
+        };
+
+        // Generate patient ID function
+        function generatePatientID() {
+            const now = new Date();
+            const year = now.getFullYear().toString().slice(-2);
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+            const patientID = `PA-${year}${month}${day}-${hour}${minute}-${randomNum}`;
+
+            // Update global data
+            globalPatientData.patientID = patientID;
+
+            // Update UI
+            document.getElementById('patientID').textContent = patientID;
+            document.getElementById('patientIdDisplay').style.display = 'block';
+
+            // Show success message
+            showSuccessMessage('ID пациента успешно сгенерирован!');
+
+            return patientID;
+        }
+
+        // Function to show success message
+        function showSuccessMessage(message) {
+            // Create a temporary success message element if it doesn't exist
+            let successMsg = document.querySelector('.success-message');
+            if (!successMsg) {
+                successMsg = document.createElement('div');
+                successMsg.className = 'success-message';
+                document.querySelector('.form-container').prepend(successMsg);
+            }
+            successMsg.textContent = message;
+            successMsg.style.display = 'block';
+
+            // Hide after 3 seconds
+            setTimeout(() => {
+                successMsg.style.display = 'none';
+            }, 3000);
+        }
+
+        // Function to sync data from calculator to other tabs
+        function syncCalculatorData() {
+            // Get values from calculator tab
+            globalPatientData.patientName = document.getElementById('patientName')?.value || '';
+            globalPatientData.age = document.getElementById('age')?.value || '';
+            globalPatientData.sex = document.getElementById('sex')?.value || '';
+            globalPatientData.chestPain = document.getElementById('chestPain')?.value || '';
+            globalPatientData.dyspnea = document.getElementById('dyspnea')?.value || '';
+            globalPatientData.diabetes = document.getElementById('diabetes')?.checked || false;
+            globalPatientData.hypertension = document.getElementById('hypertension')?.checked || false;
+            globalPatientData.dyslipidemia = document.getElementById('dyslipidemia')?.checked || false;
+            globalPatientData.smoking = document.getElementById('smoking')?.checked || false;
+            globalPatientData.familyHistory = document.getElementById('familyHistory')?.checked || false;
+            globalPatientData.obesity = document.getElementById('obesity')?.checked || false;
+            globalPatientData.height = document.getElementById('height')?.value || '';
+            globalPatientData.weight = document.getElementById('weight')?.value || '';
+            globalPatientData.bmi = document.getElementById('bmi')?.value || '';
+            globalPatientData.functionalStatus = document.getElementById('functionalStatus')?.value || '';
+
+            // Sync to ESC calculator tab if visible
+            if (document.getElementById('esc-calculator').classList.contains('active')) {
+                syncToESCCalculator();
+            }
+        }
+
+        // Function to sync data to ESC calculator
+        function syncToESCCalculator() {
+            if (globalPatientData.patientName) document.getElementById('patientNameESC').value = globalPatientData.patientName;
+            if (globalPatientData.age) document.getElementById('ageESC').value = globalPatientData.age;
+            if (globalPatientData.sex) document.getElementById('sexESC').value = globalPatientData.sex;
+            if (globalPatientData.chestPain) document.getElementById('chestPainESC').value = globalPatientData.chestPain;
+            if (globalPatientData.dyspnea) document.getElementById('dyspneaESC').value = globalPatientData.dyspnea;
+            if (globalPatientData.diabetes !== undefined) document.getElementById('diabetesESC').checked = globalPatientData.diabetes;
+            if (globalPatientData.hypertension !== undefined) document.getElementById('hypertensionESC').checked = globalPatientData.hypertension;
+            if (globalPatientData.dyslipidemia !== undefined) document.getElementById('dyslipidemiaESC').checked = globalPatientData.dyslipidemia;
+            if (globalPatientData.smoking !== undefined) document.getElementById('smokingESC').checked = globalPatientData.smoking;
+            if (globalPatientData.familyHistory !== undefined) document.getElementById('familyHistoryESC').checked = globalPatientData.familyHistory;
+            if (globalPatientData.obesity !== undefined) document.getElementById('obesityESC').checked = globalPatientData.obesity;
+            if (globalPatientData.height) document.getElementById('heightESC').value = globalPatientData.height;
+            if (globalPatientData.weight) document.getElementById('weightESC').value = globalPatientData.weight;
+            if (globalPatientData.bmi) document.getElementById('bmiESC').value = globalPatientData.bmi;
+            if (globalPatientData.functionalStatus) document.getElementById('functionalStatus').value = globalPatientData.functionalStatus;
+        }
+
+        // Function to sync data from ESC calculator to others
+        function syncESCCalculatorData() {
+            // Get values from ESC calculator tab
+            globalPatientData.patientName = document.getElementById('patientNameESC')?.value || '';
+            globalPatientData.age = document.getElementById('ageESC')?.value || '';
+            globalPatientData.sex = document.getElementById('sexESC')?.value || '';
+            globalPatientData.chestPain = document.getElementById('chestPainESC')?.value || '';
+            globalPatientData.dyspnea = document.getElementById('dyspneaESC')?.value || '';
+            globalPatientData.diabetes = document.getElementById('diabetesESC')?.checked || false;
+            globalPatientData.hypertension = document.getElementById('hypertensionESC')?.checked || false;
+            globalPatientData.dyslipidemia = document.getElementById('dyslipidemiaESC')?.checked || false;
+            globalPatientData.smoking = document.getElementById('smokingESC')?.checked || false;
+            globalPatientData.familyHistory = document.getElementById('familyHistoryESC')?.checked || false;
+            globalPatientData.obesity = document.getElementById('obesityESC')?.checked || false;
+            globalPatientData.height = document.getElementById('heightESC')?.value || '';
+            globalPatientData.weight = document.getElementById('weightESC')?.value || '';
+            globalPatientData.bmi = document.getElementById('bmiESC')?.value || '';
+            globalPatientData.functionalStatus = document.getElementById('functionalStatus')?.value || '';
+        }
+
+        // Event listeners for data synchronization
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listeners to calculator inputs
+            const calculatorInputs = document.querySelectorAll('#calculator input, #calculator select, #calculator textarea');
+            calculatorInputs.forEach(input => {
+                input.addEventListener('change', syncCalculatorData);
+                input.addEventListener('input', syncCalculatorData);
+            });
+
+            // Add event listeners to ESC calculator inputs
+            const escInputs = document.querySelectorAll('#esc-calculator input, #esc-calculator select, #esc-calculator textarea');
+            escInputs.forEach(input => {
+                input.addEventListener('change', syncESCCalculatorData);
+                input.addEventListener('input', syncESCCalculatorData);
+            });
+
+            // Tab switching logic
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+
+                    // Remove active class from all tabs and buttons
+                    document.querySelectorAll('.tab-content').forEach(tab => {
+                        tab.classList.remove('active');
+                    });
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // Add active class to clicked tab and button
+                    document.getElementById(tabId).classList.add('active');
+                    this.classList.add('active');
+
+                    // Sync data when switching to ESC calculator tab
+                    if (tabId === 'esc-calculator') {
+                        syncToESCCalculator();
+                    }
+                });
+            });
+        });
+
         // Привязываем функции к глобальному объекту
         window.exportToHtmlECRF = exportToHtmlECRF;
         window.exportToTextECRF = exportToTextECRF;
@@ -1886,6 +2097,7 @@ ${patientData.treatment || 'Не указано'}
         window.exportJournalToJsonECRF = exportJournalToJsonECRF;
         window.importJournalECRF = importJournalECRF;
         window.clearJournalECRF = clearJournalECRF;
+        window.generatePatientID = generatePatientID;
     </script>
 </body>
 </html>
