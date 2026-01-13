@@ -1,0 +1,1891 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PASS-Echo-PILOT All-in-One v3.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --color-primary: #208081;
+            --color-success: #22c55e;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-info: #3b82f6;
+            --color-bg: #f9fafb;
+            --color-text: #1f2937;
+            --color-journal: #7c3aed;
+            --color-standard: #3b82f6;
+            --color-personal: #8b5cf6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 12px 20px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            background: #f1f5f9;
+        }
+
+        .tab-button.active {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .input-row .input-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+        
+        .buttons {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .buttons button {
+            padding: 10px 20px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .buttons button:hover {
+            background: #1a6a6a;
+        }
+        
+        .result-section,
+        .journal-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        }
+        
+        .journal-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .journal-table th,
+        .journal-table td {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            text-align: left;
+        }
+        
+        .journal-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        
+        .journal-table tr:nth-child(even) {
+            background-color: #f9fafb;
+        }
+        
+        .journal-buttons {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .recommendations ul {
+            list-style-type: disc;
+            margin-left: 20px;
+        }
+        
+        .upload-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            cursor: pointer;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--color-primary);
+            background-color: #f0fdf4;
+        }
+        
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .patient-info-section,
+        .symptoms-section,
+        .risk-factors-section,
+        .functional-status-section,
+        .physical-data-section,
+        .medical-data-section,
+        .attachments-section {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .patient-info-section:last-child,
+        .symptoms-section:last-child,
+        .risk-factors-section:last-child,
+        .functional-status-section:last-child,
+        .physical-data-section:last-child,
+        .medical-data-section:last-child,
+        .attachments-section:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-heartbeat"></i> PASS-Echo-PILOT All-in-One v3.0</h1>
+            <p>Объединенный комплекс для медицинских исследований ишемической болезни сердца</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" data-tab="calculator">Калькулятор отбора пациентов</button>
+            <button class="tab-button" data-tab="randomizer">Рандомизатор с журналом</button>
+            <button class="tab-button" data-tab="esc-calculator">ESC Калькулятор Риска ИБС</button>
+            <button class="tab-button" data-tab="ecrf">eCRF Creator</button>
+        </div>
+
+        <!-- Tab 1: Калькулятор отбора пациентов -->
+        <div id="calculator" class="tab-content active">
+            <h2>Калькулятор отбора пациентов v2.2</h2>
+            <div id="calculator-content">
+                <div id="calculator-app">
+                    <!-- Контент калькулятора отбора пациентов будет вставлен сюда -->
+                    <style>
+                        /* Стили калькулятора отбора пациентов */
+                        #calculator-app {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+                            background: #f9fafb;
+                            color: #1f2937;
+                            line-height: 1.6;
+                        }
+                        
+                        #calculator-app .container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        
+                        #calculator-app .header {
+                            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+                            color: white;
+                            padding: 30px;
+                            border-radius: 12px;
+                            margin-bottom: 30px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        #calculator-app .header h1 {
+                            font-size: 28px;
+                            margin-bottom: 10px;
+                            font-weight: 600;
+                        }
+                    </style>
+                    <div class="header">
+                        <h1>Калькулятор отбора пациентов_v2.2</h1>
+                        <p>Оценка риска ИБС и проверка соответствия критериям исследования</p>
+                    </div>
+                    
+                    <div class="form-container">
+                        <div class="patient-info-section">
+                            <h3>Информация о пациенте</h3>
+                            <div class="input-group">
+                                <label for="patientName">ФИО пациента:</label>
+                                <input type="text" id="patientName" placeholder="Введите ФИО">
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="age">Возраст:</label>
+                                    <input type="number" id="age" min="18" max="120">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="sex">Пол:</label>
+                                    <select id="sex">
+                                        <option value="">Выберите пол</option>
+                                        <option value="male">Мужской</option>
+                                        <option value="female">Женский</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="symptoms-section">
+                            <h3>Симптомы</h3>
+                            <div class="input-group">
+                                <label for="chestPain">Тип боли в груди:</label>
+                                <select id="chestPain">
+                                    <option value="">Выберите тип</option>
+                                    <option value="typical">Типичная стенокардия</option>
+                                    <option value="atypical">Атипичная боль</option>
+                                    <option value="nonCardiac">Не.cardiac боль</option>
+                                    <option value="asymptomatic">Бессимптомно</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="dyspnea">Одышка:</label>
+                                <select id="dyspnea">
+                                    <option value="">Выберите тип</option>
+                                    <option value="none">Нет</option>
+                                    <option value="exertional">При физической нагрузке</option>
+                                    <option value="rest">В покое</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="risk-factors-section">
+                            <h3>Факторы риска</h3>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="diabetes"> Диабет</label>
+                                <label><input type="checkbox" id="hypertension"> Артериальная гипертензия</label>
+                                <label><input type="checkbox" id="dyslipidemia"> Дислипидемия</label>
+                                <label><input type="checkbox" id="smoking"> Курение</label>
+                                <label><input type="checkbox" id="familyHistory"> Семейный анамнез ИБС</label>
+                                <label><input type="checkbox" id="obesity"> Ожирение</label>
+                            </div>
+                            <div id="riskFactorCount">Количество факторов риска: <span id="factorCount">0</span></div>
+                        </div>
+                        
+                        <div class="physical-data-section">
+                            <h3>Физические данные</h3>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="height">Рост (см):</label>
+                                    <input type="number" id="height" min="100" max="250" placeholder="например, 175">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="weight">Вес (кг):</label>
+                                    <input type="number" id="weight" min="30" max="300" placeholder="например, 70">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="bmi">ИМТ:</label>
+                                    <input type="text" id="bmi" readonly placeholder="рассчитается автоматически">
+                                    <button type="button" onclick="calculateBMI()">Рассчитать ИМТ</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button type="button" onclick="calculateRisk()">Рассчитать риск</button>
+                            <button type="button" onclick="resetForm()">Сбросить</button>
+                            <button type="button" onclick="saveCurrentToJournal()">Сохранить в журнал</button>
+                            <button type="button" onclick="toggleJournal()">Показать/скрыть журнал</button>
+                        </div>
+                        
+                        <div id="resultSection" class="result-section">
+                            <h3>Результаты</h3>
+                            <div id="resultsContent"></div>
+                        </div>
+                        
+                        <div id="journalSection" class="journal-section" style="display: none;">
+                            <h3>Журнал пациентов</h3>
+                            <div id="journalContent"></div>
+                            <div class="journal-buttons">
+                                <button type="button" onclick="exportJournalToJson()">Экспорт журнала</button>
+                                <button type="button" onclick="importJournal()">Импорт журнала</button>
+                                <button type="button" onclick="clearJournal()">Очистить журнал</button>
+                            </div>
+                        </div>
+                        
+                        <div id="exportButtons" class="export-buttons" style="display: none;">
+                            <button type="button" onclick="exportAllToJSON()">Экспорт всех данных</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Рандомизатор -->
+        <div id="randomizer" class="tab-content">
+            <h2>Рандомизатор с журналом пациентов v2.6</h2>
+            <div id="randomizer-content">
+                <div id="randomizer-app">
+                    <!-- Контент рандомизатора будет вставлен сюда -->
+                    <style>
+                        /* Стили рандомизатора */
+                        #randomizer-app {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+                            background: #f9fafb;
+                            color: #1f2937;
+                            line-height: 1.6;
+                        }
+                        
+                        #randomizer-app .container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        
+                        #randomizer-app .header {
+                            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+                            color: white;
+                            padding: 25px;
+                            border-radius: 12px;
+                            margin-bottom: 30px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        #randomizer-app .header h1 {
+                            font-size: 28px;
+                            font-weight: 600;
+                        }
+                    </style>
+                    <div class="header">
+                        <h1>PASS-Echo-PILOT v2.6: Рандомизатор с журналом пациентов</h1>
+                        <p>Система рандомизации пациентов в исследование</p>
+                    </div>
+                    
+                    <div class="form-container">
+                        <div class="upload-section">
+                            <h3>Загрузка данных пациента</h3>
+                            <div class="upload-zone" id="uploadZone">
+                                <p>Перетащите сюда файл с данными пациента или нажмите для выбора</p>
+                                <input type="file" id="fileInput" accept=".json" style="display: none;">
+                                <button type="button" onclick="document.getElementById('fileInput').click()">Выбрать файл</button>
+                            </div>
+                        </div>
+                        
+                        <div class="patient-info-section">
+                            <h3>Информация о пациенте</h3>
+                            <div id="patientInfoDisplay">
+                                <p>Данные пациента будут отображены здесь после загрузки</p>
+                            </div>
+                        </div>
+                        
+                        <div class="randomization-section" id="randomizationSection" style="display: none;">
+                            <h3>Рандомизация</h3>
+                            <div class="group-selection" id="groupSelection" style="display: none;">
+                                <button type="button" onclick="randomizeGroup()">Рандомизировать в группу</button>
+                            </div>
+                            <div id="randomizationResult" class="result-display"></div>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button type="button" onclick="savePatientToJournal()">Сохранить в журнал</button>
+                            <button type="button" onclick="toggleJournal()">Показать/скрыть журнал</button>
+                        </div>
+                        
+                        <div id="journalSection" class="journal-section" style="display: none;">
+                            <h3>Журнал пациентов</h3>
+                            <div id="journalContent"></div>
+                            <div class="journal-stats" id="journalStats"></div>
+                            <div class="journal-buttons">
+                                <button type="button" onclick="exportJournalToJson()">Экспорт журнала</button>
+                                <button type="button" onclick="importJournal()">Импорт журнала</button>
+                                <button type="button" onclick="clearJournal()">Очистить журнал</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: ESC Калькулятор -->
+        <div id="esc-calculator" class="tab-content">
+            <h2>ESC Калькулятор Риска ИБС vDS2.7.6</h2>
+            <div id="esc-calculator-content">
+                <div id="esc-app">
+                    <!-- Контент ESC калькулятора будет вставлен сюда -->
+                    <style>
+                        /* Стили ESC калькулятора */
+                        #esc-app {
+                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+                            background: #f9fafb;
+                            color: #1f2937;
+                            line-height: 1.6;
+                        }
+                        
+                        #esc-app .container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        
+                        #esc-app .header {
+                            background: linear-gradient(135deg, #208081 0%, #106b6c 100%);
+                            color: white;
+                            padding: 30px;
+                            border-radius: 12px;
+                            margin-bottom: 30px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        }
+                        
+                        #esc-app .header h1 {
+                            font-size: 28px;
+                            margin-bottom: 10px;
+                            font-weight: 600;
+                        }
+                    </style>
+                    <div class="header">
+                        <h1>Калькулятор риска обструктивной ИБС с рекомендациями по стресс-эхокардиографии</h1>
+                        <p>Расчет риска и рекомендации по методам стресс-ЭхоКГ</p>
+                    </div>
+                    
+                    <div class="form-container">
+                        <div class="patient-info-section">
+                            <h3>Информация о пациенте</h3>
+                            <div class="input-group">
+                                <label for="patientNameESC">ФИО пациента:</label>
+                                <input type="text" id="patientNameESC" placeholder="Введите ФИО">
+                            </div>
+                            
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="ageESC">Возраст:</label>
+                                    <input type="number" id="ageESC" min="18" max="120">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="sexESC">Пол:</label>
+                                    <select id="sexESC">
+                                        <option value="">Выберите пол</option>
+                                        <option value="male">Мужской</option>
+                                        <option value="female">Женский</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="symptoms-section">
+                            <h3>Симптомы</h3>
+                            <div class="input-group">
+                                <label for="chestPainESC">Тип боли в груди:</label>
+                                <select id="chestPainESC">
+                                    <option value="">Выберите тип</option>
+                                    <option value="typical">Типичная стенокардия</option>
+                                    <option value="atypical">Атипичная боль</option>
+                                    <option value="nonCardiac">Не.cardiac боль</option>
+                                    <option value="asymptomatic">Бессимптомно</option>
+                                </select>
+                            </div>
+                            
+                            <div class="input-group">
+                                <label for="dyspneaESC">Одышка:</label>
+                                <select id="dyspneaESC">
+                                    <option value="">Выберите тип</option>
+                                    <option value="none">Нет</option>
+                                    <option value="exertional">При физической нагрузке</option>
+                                    <option value="rest">В покое</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="risk-factors-section">
+                            <h3>Факторы риска</h3>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" id="diabetesESC"> Диабет</label>
+                                <label><input type="checkbox" id="hypertensionESC"> Артериальная гипертензия</label>
+                                <label><input type="checkbox" id="dyslipidemiaESC"> Дислипидемия</label>
+                                <label><input type="checkbox" id="smokingESC"> Курение</label>
+                                <label><input type="checkbox" id="familyHistoryESC"> Семейный анамнез ИБС</label>
+                                <label><input type="checkbox" id="obesityESC"> Ожирение</label>
+                            </div>
+                            <div id="riskFactorCountESC">Количество факторов риска: <span id="factorCountESC">0</span></div>
+                        </div>
+                        
+                        <div class="functional-status-section">
+                            <h3>Функциональный статус</h3>
+                            <div class="input-group">
+                                <label for="functionalStatus">Физическая активность:</label>
+                                <select id="functionalStatus">
+                                    <option value="">Выберите статус</option>
+                                    <option value="good">Хорошая (способен к нагрузке >10 МЕТ)</option>
+                                    <option value="limited">Ограниченная (способен к нагрузке 4-10 МЕТ)</option>
+                                    <option value="unable">Не может выполнять нагрузку</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="physical-data-section">
+                            <h3>Физические данные</h3>
+                            <div class="input-row">
+                                <div class="input-group">
+                                    <label for="heightESC">Рост (см):</label>
+                                    <input type="number" id="heightESC" min="100" max="250" placeholder="например, 175">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="weightESC">Вес (кг):</label>
+                                    <input type="number" id="weightESC" min="30" max="300" placeholder="например, 70">
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="bmiESC">ИМТ:</label>
+                                    <input type="text" id="bmiESC" readonly placeholder="рассчитается автоматически">
+                                    <button type="button" onclick="calculateBMIESC()">Рассчитать ИМТ</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="buttons">
+                            <button type="button" onclick="calculateRiskESC()">Рассчитать риск</button>
+                            <button type="button" onclick="resetFormESC()">Сбросить</button>
+                            <button type="button" onclick="exportToExcelESC()">Экспортировать</button>
+                        </div>
+                        
+                        <div id="resultSectionESC" class="result-section">
+                            <h3>Результаты</h3>
+                            <div id="resultsContentESC"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: eCRF Creator -->
+        <div id="ecrf" class="tab-content">
+            <h2>eCRF Creator v2.3</h2>
+            <div id="ecrf-content">
+                <div id="ecrf-app">
+                    <!-- Контент eCRF Creator будет вставлен сюда -->
+                    <style>
+                        /* Стили eCRF Creator */
+                        #ecrf-app {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            background-color: #f5f7fa;
+                            color: #333;
+                            line-height: 1.6;
+                            padding: 20px;
+                        }
+                        
+                        #ecrf-app .container {
+                            max-width: 1200px;
+                            margin: 0 auto;
+                            background-color: #fff;
+                            border-radius: 10px;
+                            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+                            padding: 30px;
+                            position: relative;
+                        }
+                        
+                        #ecrf-app .header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 30px;
+                            padding-bottom: 20px;
+                            border-bottom: 2px solid #eaeaea;
+                        }
+                        
+                        #ecrf-app h1 {
+                            color: #2c3e50;
+                            font-size: 28px;
+                            font-weight: 600;
+                        }
+                        
+                        #ecrf-app .patient-name {
+                            font-size: 22px;
+                            color: #34495e;
+                            margin-bottom: 10px;
+                        }
+                    </style>
+                    <div class="container">
+                        <div class="header">
+                            <h1>eCRF-creator v2.0 - Формирование карты пациента</h1>
+                        </div>
+                        
+                        <div class="form-container">
+                            <div class="patient-info-section">
+                                <h3>Информация о пациенте</h3>
+                                <div class="input-group">
+                                    <label for="patientNameECRF">ФИО пациента:</label>
+                                    <input type="text" id="patientNameECRF" placeholder="Введите ФИО">
+                                </div>
+                                
+                                <div class="input-row">
+                                    <div class="input-group">
+                                        <label for="ageECRF">Возраст:</label>
+                                        <input type="number" id="ageECRF" min="18" max="120">
+                                    </div>
+                                    
+                                    <div class="input-group">
+                                        <label for="sexECRF">Пол:</label>
+                                        <select id="sexECRF">
+                                            <option value="">Выберите пол</option>
+                                            <option value="male">Мужской</option>
+                                            <option value="female">Женский</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="phoneECRF">Телефон:</label>
+                                    <input type="tel" id="phoneECRF" placeholder="+7 (XXX) XXX-XX-XX">
+                                </div>
+                            </div>
+                            
+                            <div class="medical-data-section">
+                                <h3>Медицинские данные</h3>
+                                <div class="input-group">
+                                    <label for="diagnosisECRF">Диагноз:</label>
+                                    <textarea id="diagnosisECRF" placeholder="Введите диагноз"></textarea>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="complaintsECRF">Жалобы:</label>
+                                    <textarea id="complaintsECRF" placeholder="Введите жалобы"></textarea>
+                                </div>
+                                
+                                <div class="input-group">
+                                    <label for="treatmentECRF">Лечение:</label>
+                                    <textarea id="treatmentECRF" placeholder="Введите данные о лечении"></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="attachments-section">
+                                <h3>Прикрепленные файлы</h3>
+                                <div class="upload-zone">
+                                    <input type="file" id="attachmentInput" multiple style="display: none;">
+                                    <button type="button" onclick="document.getElementById('attachmentInput').click()">Прикрепить файлы</button>
+                                </div>
+                                <div id="attachmentsList"></div>
+                            </div>
+                            
+                            <div class="buttons">
+                                <button type="button" onclick="exportToHtmlECRF()">Экспорт в HTML</button>
+                                <button type="button" onclick="exportToTextECRF()">Экспорт в текст</button>
+                                <button type="button" onclick="resetFormECRF()">Сбросить</button>
+                                <button type="button" onclick="saveToJournalECRF()">Сохранить в журнал</button>
+                            </div>
+                            
+                            <div id="journalSectionECRF" class="journal-section" style="display: none;">
+                                <h3>Журнал пациентов</h3>
+                                <div id="journalContentECRF"></div>
+                                <div class="journal-buttons">
+                                    <button type="button" onclick="exportJournalToJsonECRF()">Экспорт журнала</button>
+                                    <button type="button" onclick="importJournalECRF()">Импорт журнала</button>
+                                    <button type="button" onclick="clearJournalECRF()">Очистить журнал</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Общие функции для всего приложения
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons and contents
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding content
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+
+        // ========================================
+        // ФУНКЦИИ ДЛЯ КАЛЬКУЛЯТОРА ОТБОРА ПАЦИЕНТОВ
+        // ========================================
+        
+        let patientJournal = JSON.parse(localStorage.getItem('patientRiskJournal')) || [];
+        
+        function updateRiskFactorCount() {
+            const checkboxes = document.querySelectorAll('#calculator-app input[type="checkbox"]');
+            let count = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) count++;
+            });
+            document.getElementById('factorCount').textContent = count;
+        }
+        
+        // Добавляем обработчики для чекбоксов факторов риска
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('#calculator-app input[type="checkbox"]')) {
+                updateRiskFactorCount();
+            }
+        });
+        
+        function calculateBMI() {
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            
+            if (height > 0 && weight > 0) {
+                const bmi = weight / ((height/100) ** 2);
+                document.getElementById('bmi').value = bmi.toFixed(2);
+            } else {
+                document.getElementById('bmi').value = '';
+            }
+        }
+        
+        function validateInput() {
+            const patientName = document.getElementById('patientName').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+            const sex = document.getElementById('sex').value;
+            const chestPain = document.getElementById('chestPain').value;
+            const dyspnea = document.getElementById('dyspnea').value;
+            
+            if (!patientName) {
+                alert('Пожалуйста, введите ФИО пациента');
+                return false;
+            }
+            
+            if (!age || age < 18 || age > 120) {
+                alert('Пожалуйста, введите корректный возраст (18-120)');
+                return false;
+            }
+            
+            if (!sex) {
+                alert('Пожалуйста, выберите пол пациента');
+                return false;
+            }
+            
+            if (!chestPain) {
+                alert('Пожалуйста, выберите тип боли в груди');
+                return false;
+            }
+            
+            if (!dyspnea) {
+                alert('Пожалуйста, выберите наличие одышки');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function getAgeGroup(age) {
+            if (age >= 18 && age <= 39) return 'young';
+            if (age >= 40 && age <= 64) return 'middle';
+            if (age >= 65) return 'elderly';
+            return 'unknown';
+        }
+        
+        function getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount) {
+            // Упрощенная таблица рисков - в реальном приложении использовались бы точные значения из клинических рекомендаций
+            const baseRisks = {
+                'male': {
+                    'young': 5,
+                    'middle': 15,
+                    'elderly': 25
+                },
+                'female': {
+                    'young': 2,
+                    'middle': 8,
+                    'elderly': 15
+                }
+            };
+            
+            let risk = baseRisks[sex][ageGroup] || 10;
+            
+            // Модификация риска на основе симптомов
+            if (chestPain === 'typical') risk += 20;
+            else if (chestPain === 'atypical') risk += 10;
+            else if (chestPain === 'nonCardiac') risk += 5;
+            
+            if (dyspnea === 'exertional') risk += 10;
+            else if (dyspnea === 'rest') risk += 15;
+            
+            // Добавление риска за каждый фактор
+            risk += riskFactorCount * 5;
+            
+            return Math.min(risk, 100);
+        }
+        
+        function checkEligibility(percentage, riskFactorCount, age, hasDiabetes) {
+            // Простая логика проверки соответствия критериям - в реальном приложении были бы точные критерии
+            const isHighRisk = percentage >= 15;
+            const hasSignificantRiskFactors = riskFactorCount >= 2;
+            const isOlder = age >= 65;
+            const hasDiabetesBool = document.getElementById('diabetes').checked;
+            
+            if (isHighRisk || hasSignificantRiskFactors || isOlder || hasDiabetesBool) {
+                return {
+                    eligible: true,
+                    reason: 'Соответствует критериям исследования',
+                    category: percentage >= 60 ? 'high' : percentage >= 30 ? 'moderate' : 'low'
+                };
+            } else {
+                return {
+                    eligible: false,
+                    reason: 'Не соответствует критериям исследования',
+                    category: 'ineligible'
+                };
+            }
+        }
+        
+        function displayResults(percentage, category, patientName, sex, age, chestPain, dyspnea, symptomScore, riskFactorCount, ageGroup, eligibilityResult) {
+            const resultsDiv = document.getElementById('resultsContent');
+            
+            let categoryText = '';
+            switch(category) {
+                case 'high':
+                    categoryText = 'Высокий риск';
+                    break;
+                case 'moderate':
+                    categoryText = 'Умеренный риск';
+                    break;
+                case 'low':
+                    categoryText = 'Низкий риск';
+                    break;
+                case 'ineligible':
+                    categoryText = 'Не соответствует критериям';
+                    break;
+                default:
+                    categoryText = 'Неопределенный';
+            }
+            
+            resultsDiv.innerHTML = `
+                <div class="result-card">
+                    <h4>Результаты для ${patientName}</h4>
+                    <p><strong>Процент риска ИБС:</strong> ${percentage.toFixed(2)}%</p>
+                    <p><strong>Категория риска:</strong> ${categoryText}</p>
+                    <p><strong>Соответствие критериям:</strong> ${eligibilityResult.eligible ? 'Да' : 'Нет'}</p>
+                    <p><strong>Причина:</strong> ${eligibilityResult.reason}</p>
+                    <div class="export-options">
+                        <button onclick="exportAllToJSON()">Экспортировать результаты</button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('exportButtons').style.display = 'block';
+        }
+        
+        function calculateRisk() {
+            if (!validateInput()) return;
+            
+            const patientName = document.getElementById('patientName').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+            const sex = document.getElementById('sex').value;
+            const chestPain = document.getElementById('chestPain').value;
+            const dyspnea = document.getElementById('dyspnea').value;
+            
+            const checkboxes = document.querySelectorAll('#calculator-app input[type="checkbox"]');
+            let riskFactorCount = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) riskFactorCount++;
+            });
+            
+            const ageGroup = getAgeGroup(age);
+            const percentage = getRiskPercentage(sex, ageGroup, chestPain, dyspnea, riskFactorCount);
+            
+            // Простой подсчет симптомов для демонстрации
+            const symptomScore = (chestPain === 'typical' ? 3 : chestPain === 'atypical' ? 2 : chestPain === 'nonCardiac' ? 1 : 0) +
+                                (dyspnea === 'rest' ? 3 : dyspnea === 'exertional' ? 2 : 0);
+            
+            const eligibilityResult = checkEligibility(percentage, riskFactorCount, age, document.getElementById('diabetes').checked);
+            
+            displayResults(percentage, eligibilityResult.category, patientName, sex, age, chestPain, dyspnea, symptomScore, riskFactorCount, ageGroup, eligibilityResult);
+        }
+        
+        function resetForm() {
+            document.getElementById('patientName').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('sex').value = '';
+            document.getElementById('chestPain').value = '';
+            document.getElementById('dyspnea').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('weight').value = '';
+            document.getElementById('bmi').value = '';
+            
+            const checkboxes = document.querySelectorAll('#calculator-app input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            document.getElementById('resultsContent').innerHTML = '';
+            document.getElementById('factorCount').textContent = '0';
+            document.getElementById('exportButtons').style.display = 'none';
+        }
+        
+        function saveCurrentToJournal() {
+            if (!validateInput()) return;
+            
+            const patientData = {
+                patientName: document.getElementById('patientName').value.trim(),
+                age: parseInt(document.getElementById('age').value),
+                sex: document.getElementById('sex').value,
+                chestPain: document.getElementById('chestPain').value,
+                dyspnea: document.getElementById('dyspnea').value,
+                height: parseFloat(document.getElementById('height').value),
+                weight: parseFloat(document.getElementById('weight').value),
+                bmi: parseFloat(document.getElementById('bmi').value),
+                diabetes: document.getElementById('diabetes').checked,
+                hypertension: document.getElementById('hypertension').checked,
+                dyslipidemia: document.getElementById('dyslipidemia').checked,
+                smoking: document.getElementById('smoking').checked,
+                familyHistory: document.getElementById('familyHistory').checked,
+                obesity: document.getElementById('obesity').checked,
+                timestamp: new Date().toISOString()
+            };
+            
+            patientJournal.push(patientData);
+            saveToLocalStorage();
+            updateJournalDisplay();
+            alert('Данные пациента успешно сохранены в журнал');
+        }
+        
+        function saveToLocalStorage() {
+            try {
+                localStorage.setItem('patientRiskJournal', JSON.stringify(patientJournal));
+            } catch (e) {
+                console.error('Ошибка при сохранении в localStorage:', e);
+                alert('Ошибка при сохранении данных');
+            }
+        }
+        
+        function loadFromLocalStorage() {
+            try {
+                const savedJournal = localStorage.getItem('patientRiskJournal');
+                if (savedJournal) {
+                    patientJournal = JSON.parse(savedJournal);
+                }
+            } catch (e) {
+                console.error('Ошибка при загрузке из localStorage:', e);
+            }
+        }
+        
+        function toggleJournal() {
+            const journalSection = document.getElementById('journalSection');
+            if (journalSection.style.display === 'none') {
+                updateJournalDisplay();
+                journalSection.style.display = 'block';
+            } else {
+                journalSection.style.display = 'none';
+            }
+        }
+        
+        function updateJournalDisplay() {
+            const journalContent = document.getElementById('journalContent');
+            if (patientJournal.length === 0) {
+                journalContent.innerHTML = '<p>Журнал пуст</p>';
+                return;
+            }
+            
+            let html = '<table class="journal-table"><thead><tr><th>ФИО</th><th>Возраст</th><th>Пол</th><th>Дата</th><th>Действия</th></tr></thead><tbody>';
+            patientJournal.forEach((entry, index) => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                html += `<tr>
+                    <td>${entry.patientName}</td>
+                    <td>${entry.age}</td>
+                    <td>${entry.sex === 'male' ? 'М' : 'Ж'}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button onclick="loadPatientFromJournal(${index})">Загрузить</button>
+                        <button onclick="editJournalEntry(${index})">Редактировать</button>
+                        <button onclick="deleteJournalEntry(${index})">Удалить</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            journalContent.innerHTML = html;
+        }
+        
+        window.loadPatientFromJournal = function(index) {
+            const entry = patientJournal[index];
+            document.getElementById('patientName').value = entry.patientName;
+            document.getElementById('age').value = entry.age;
+            document.getElementById('sex').value = entry.sex;
+            document.getElementById('chestPain').value = entry.chestPain;
+            document.getElementById('dyspnea').value = entry.dyspnea;
+            document.getElementById('height').value = entry.height;
+            document.getElementById('weight').value = entry.weight;
+            document.getElementById('bmi').value = entry.bmi;
+            
+            document.getElementById('diabetes').checked = entry.diabetes;
+            document.getElementById('hypertension').checked = entry.hypertension;
+            document.getElementById('dyslipidemia').checked = entry.dyslipidemia;
+            document.getElementById('smoking').checked = entry.smoking;
+            document.getElementById('familyHistory').checked = entry.familyHistory;
+            document.getElementById('obesity').checked = entry.obesity;
+            
+            updateRiskFactorCount();
+            
+            // Прокрутка к форме
+            document.querySelector('.form-container').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        window.editJournalEntry = function(index) {
+            // В реальном приложении была бы форма редактирования
+            alert('Функция редактирования записи в журнале временно недоступна');
+        };
+        
+        window.deleteJournalEntry = function(index) {
+            if (confirm('Вы уверены, что хотите удалить эту запись из журнала?')) {
+                patientJournal.splice(index, 1);
+                saveToLocalStorage();
+                updateJournalDisplay();
+            }
+        };
+        
+        function exportJournalToJson() {
+            if (patientJournal.length === 0) {
+                alert('Журнал пуст, нечего экспортировать');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(patientJournal, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `patient_journal_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        function importJournal() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (Array.isArray(importedData)) {
+                            patientJournal = patientJournal.concat(importedData);
+                            saveToLocalStorage();
+                            updateJournalDisplay();
+                            alert(`Импортировано ${importedData.length} записей`);
+                        } else {
+                            alert('Неверный формат файла. Ожидается массив записей.');
+                        }
+                    } catch (error) {
+                        alert('Ошибка при чтении файла: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+        
+        function clearJournal() {
+            if (patientJournal.length === 0) {
+                alert('Журнал уже пуст');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите полностью очистить журнал пациентов? Это действие нельзя отменить.')) {
+                patientJournal = [];
+                saveToLocalStorage();
+                updateJournalDisplay();
+                alert('Журнал пациентов очищен');
+            }
+        }
+        
+        function exportAllToJSON() {
+            const formData = {
+                patientName: document.getElementById('patientName').value.trim(),
+                age: parseInt(document.getElementById('age').value),
+                sex: document.getElementById('sex').value,
+                chestPain: document.getElementById('chestPain').value,
+                dyspnea: document.getElementById('dyspnea').value,
+                height: parseFloat(document.getElementById('height').value),
+                weight: parseFloat(document.getElementById('weight').value),
+                bmi: parseFloat(document.getElementById('bmi').value),
+                riskFactors: {
+                    diabetes: document.getElementById('diabetes').checked,
+                    hypertension: document.getElementById('hypertension').checked,
+                    dyslipidemia: document.getElementById('dyslipidemia').checked,
+                    smoking: document.getElementById('smoking').checked,
+                    familyHistory: document.getElementById('familyHistory').checked,
+                    obesity: document.getElementById('obesity').checked
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(formData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `patient_data_${formData.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // ========================================
+        // ФУНКЦИИ ДЛЯ РАНДОМИЗАТОРА
+        // ========================================
+        
+        let randomizerJournal = JSON.parse(localStorage.getItem('passEchoPilotJournal')) || [];
+        
+        function randomizeGroup() {
+            // Простая рандомизация - в реальном приложении была бы более сложная логика
+            const groups = ['Стандартная группа', 'Персонализированная группа'];
+            const selectedGroup = groups[Math.floor(Math.random() * groups.length)];
+            
+            // Сохраняем результат в данные пациента
+            const patientData = getCurrentPatientData();
+            patientData.group = selectedGroup;
+            patientData.randomizationDate = new Date().toISOString();
+            
+            displayRandomizationResult(selectedGroup);
+        }
+        
+        function getCurrentPatientData() {
+            // В реальном приложении это будет объект с данными пациента
+            return {
+                patientName: document.getElementById('patientName')?.value || 'Неизвестный пациент',
+                age: document.getElementById('age')?.value || 'Неизвестен',
+                sex: document.getElementById('sex')?.value || 'Неизвестен'
+            };
+        }
+        
+        function displayRandomizationResult(group) {
+            const resultDiv = document.getElementById('randomizationResult');
+            resultDiv.innerHTML = `
+                <div class="result-card">
+                    <h4>Результат рандомизации</h4>
+                    <p><strong>Назначенная группа:</strong> ${group}</p>
+                    <p><strong>Дата рандомизации:</strong> ${new Date().toLocaleString()}</p>
+                </div>
+            `;
+        }
+        
+        function savePatientToJournal() {
+            const patientData = getCurrentPatientData();
+            if (!patientData.patientName || patientData.patientName === 'Неизвестный пациент') {
+                alert('Нет данных пациента для сохранения');
+                return;
+            }
+            
+            // Если у пациента уже есть назначена группа, сохраняем вместе с ней
+            const group = document.querySelector('#randomizationResult .result-card')?.textContent.includes('Стандартная') ? 'Стандартная группа' : 
+                         document.querySelector('#randomizationResult .result-card')?.textContent.includes('Персонализированная') ? 'Персонализированная группа' : null;
+            
+            if (group) {
+                patientData.group = group;
+                patientData.randomizationDate = new Date().toISOString();
+            }
+            
+            patientData.timestamp = new Date().toISOString();
+            randomizerJournal.push(patientData);
+            saveRandomizerToLocalStorage();
+            updateRandomizerJournalDisplay();
+            alert('Данные пациента успешно сохранены в журнал');
+        }
+        
+        function saveRandomizerToLocalStorage() {
+            try {
+                localStorage.setItem('passEchoPilotJournal', JSON.stringify(randomizerJournal));
+            } catch (e) {
+                console.error('Ошибка при сохранении в localStorage (рандомизатор):', e);
+                alert('Ошибка при сохранении данных');
+            }
+        }
+        
+        function updateRandomizerJournalDisplay() {
+            const journalContent = document.getElementById('journalContent');
+            if (randomizerJournal.length === 0) {
+                journalContent.innerHTML = '<p>Журнал пуст</p>';
+                return;
+            }
+            
+            let html = '<table class="journal-table"><thead><tr><th>ФИО</th><th>Возраст</th><th>Пол</th><th>Группа</th><th>Дата</th><th>Действия</th></tr></thead><tbody>';
+            randomizerJournal.forEach((entry, index) => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                const groupName = entry.group || 'Не назначена';
+                html += `<tr>
+                    <td>${entry.patientName}</td>
+                    <td>${entry.age}</td>
+                    <td>${entry.sex}</td>
+                    <td>${groupName}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button onclick="loadRandomizerPatientFromJournal(${index})">Загрузить</button>
+                        <button onclick="deleteRandomizerJournalEntry(${index})">Удалить</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            journalContent.innerHTML = html;
+            
+            // Обновляем статистику
+            updateRandomizerJournalStats();
+        }
+        
+        function updateRandomizerJournalStats() {
+            const statsDiv = document.getElementById('journalStats');
+            if (!statsDiv) return;
+            
+            const standardCount = randomizerJournal.filter(p => p.group === 'Стандартная группа').length;
+            const personalizedCount = randomizerJournal.filter(p => p.group === 'Персонализированная группа').length;
+            const noGroupCount = randomizerJournal.filter(p => !p.group).length;
+            
+            statsDiv.innerHTML = `
+                <div class="journal-stats">
+                    <p><strong>Статистика журнала:</strong></p>
+                    <p>Стандартная группа: ${standardCount} пациентов</p>
+                    <p>Персонализированная группа: ${personalizedCount} пациентов</p>
+                    <p>Без группы: ${noGroupCount} пациентов</p>
+                    <p>Всего: ${randomizerJournal.length} пациентов</p>
+                </div>
+            `;
+        }
+        
+        window.loadRandomizerPatientFromJournal = function(index) {
+            const entry = randomizerJournal[index];
+            // В реальном приложении загружались бы данные в форму
+            alert(`Загружены данные пациента: ${entry.patientName}`);
+        };
+        
+        window.deleteRandomizerJournalEntry = function(index) {
+            if (confirm('Вы уверены, что хотите удалить эту запись из журнала?')) {
+                randomizerJournal.splice(index, 1);
+                saveRandomizerToLocalStorage();
+                updateRandomizerJournalDisplay();
+            }
+        };
+        
+        function toggleRandomizerJournal() {
+            const journalSection = document.getElementById('journalSection');
+            if (journalSection.style.display === 'none') {
+                updateRandomizerJournalDisplay();
+                journalSection.style.display = 'block';
+            } else {
+                journalSection.style.display = 'none';
+            }
+        }
+        
+        // Привязываем функции к кнопкам рандомизатора
+        window.randomizeGroup = randomizeGroup;
+        window.savePatientToJournal = savePatientToJournal;
+        window.toggleJournal = toggleRandomizerJournal;
+        window.exportJournalToJson = function() {
+            if (randomizerJournal.length === 0) {
+                alert('Журнал пуст, нечего экспортировать');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(randomizerJournal, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `randomizer_journal_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        };
+        window.importJournal = function() {
+            alert('Функция импорта для рандомизатора временно недоступна');
+        };
+        window.clearJournal = function() {
+            if (randomizerJournal.length === 0) {
+                alert('Журнал уже пуст');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите полностью очистить журнал пациентов? Это действие нельзя отменить.')) {
+                randomizerJournal = [];
+                saveRandomizerToLocalStorage();
+                updateRandomizerJournalDisplay();
+                alert('Журнал пациентов очищен');
+            }
+        };
+        
+        // ========================================
+        // ФУНКЦИИ ДЛЯ ESC КАЛЬКУЛЯТОРА
+        // ========================================
+        
+        function calculateBMIESC() {
+            const height = parseFloat(document.getElementById('heightESC').value);
+            const weight = parseFloat(document.getElementById('weightESC').value);
+            
+            if (height > 0 && weight > 0) {
+                const bmi = weight / ((height/100) ** 2);
+                document.getElementById('bmiESC').value = bmi.toFixed(2);
+            } else {
+                document.getElementById('bmiESC').value = '';
+            }
+        }
+        
+        function calculateRiskESC() {
+            // Простая реализация для демонстрации
+            const patientName = document.getElementById('patientNameESC').value.trim();
+            const age = parseInt(document.getElementById('ageESC').value);
+            const sex = document.getElementById('sexESC').value;
+            const chestPain = document.getElementById('chestPainESC').value;
+            const dyspnea = document.getElementById('dyspneaESC').value;
+            const functionalStatus = document.getElementById('functionalStatus').value;
+            
+            if (!patientName) {
+                alert('Пожалуйста, введите ФИО пациента');
+                return;
+            }
+            
+            if (!age || age < 18 || age > 120) {
+                alert('Пожалуйста, введите корректный возраст (18-120)');
+                return;
+            }
+            
+            if (!sex) {
+                alert('Пожалуйста, выберите пол пациента');
+                return;
+            }
+            
+            // Подсчет факторов риска
+            const riskFactors = [
+                document.getElementById('diabetesESC').checked,
+                document.getElementById('hypertensionESC').checked,
+                document.getElementById('dyslipidemiaESC').checked,
+                document.getElementById('smokingESC').checked,
+                document.getElementById('familyHistoryESC').checked,
+                document.getElementById('obesityESC').checked
+            ];
+            const riskFactorCount = riskFactors.filter(Boolean).length;
+            
+            // Простой расчет риска (в реальном приложении использовалась бы клиническая модель)
+            let riskPercentage = 5; // базовый риск
+            
+            // Модификация риска на основе параметров
+            if (age > 65) riskPercentage += 15;
+            else if (age > 50) riskPercentage += 8;
+            
+            if (sex === 'male') riskPercentage += 5;
+            
+            if (chestPain === 'typical') riskPercentage += 20;
+            else if (chestPain === 'atypical') riskPercentage += 10;
+            
+            if (dyspnea === 'rest') riskPercentage += 15;
+            else if (dyspnea === 'exertional') riskPercentage += 8;
+            
+            riskPercentage += riskFactorCount * 4;
+            
+            // Ограничение максимального риска
+            riskPercentage = Math.min(riskPercentage, 100);
+            
+            // Определение категории риска
+            let category;
+            if (riskPercentage >= 60) category = 'high';
+            else if (riskPercentage >= 30) category = 'moderate';
+            else if (riskPercentage >= 10) category = 'low';
+            else category = 'very_low';
+            
+            // Генерация рекомендаций
+            let recommendations = [];
+            if (functionalStatus === 'unable') {
+                recommendations.push('Рекомендована фармакологическая стресс-ЭхоКГ (добутамин или дипиридамол/аденозин)');
+            } else if (functionalStatus === 'limited') {
+                recommendations.push('Рассмотреть возможность фармакологической стресс-ЭхоКГ при недостаточной толерантности к физической нагрузке');
+            } else {
+                recommendations.push('Рекомендована стресс-ЭхоКГ с физической нагрузкой');
+            }
+            
+            if (riskPercentage > 60) {
+                recommendations.push('Высокий риск обструктивной ИБС, рекомендована скорая госпитализация и коронароангиография');
+            } else if (riskPercentage > 30) {
+                recommendations.push('Умеренный риск, рекомендована плановая госпитализация и коронароангиография');
+            } else {
+                recommendations.push('Низкий риск, возможно амбулаторное обследование');
+            }
+            
+            // Отображение результатов
+            const resultsDiv = document.getElementById('resultsContentESC');
+            resultsDiv.innerHTML = `
+                <div class="result-card">
+                    <h4>Результаты для ${patientName}</h4>
+                    <p><strong>Процент риска обструктивной ИБС:</strong> ${riskPercentage.toFixed(2)}%</p>
+                    <p><strong>Категория риска:</strong> ${
+                        category === 'high' ? 'Высокий' :
+                        category === 'moderate' ? 'Умеренный' :
+                        category === 'low' ? 'Низкий' : 'Очень низкий'
+                    }</p>
+                    <p><strong>Количество факторов риска:</strong> ${riskFactorCount}</p>
+                    <div class="recommendations">
+                        <h5>Рекомендации по стресс-ЭхоКГ:</h5>
+                        <ul>
+                            ${recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div class="export-options">
+                        <button onclick="exportToExcelESC()">Экспортировать результаты</button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function resetFormESC() {
+            document.getElementById('patientNameESC').value = '';
+            document.getElementById('ageESC').value = '';
+            document.getElementById('sexESC').value = '';
+            document.getElementById('chestPainESC').value = '';
+            document.getElementById('dyspneaESC').value = '';
+            document.getElementById('functionalStatus').value = '';
+            document.getElementById('heightESC').value = '';
+            document.getElementById('weightESC').value = '';
+            document.getElementById('bmiESC').value = '';
+            
+            const checkboxes = document.querySelectorAll('#esc-app input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            document.getElementById('resultsContentESC').innerHTML = '';
+            document.getElementById('factorCountESC').textContent = '0';
+        }
+        
+        function exportToExcelESC() {
+            alert('Функция экспорта в Excel временно недоступна. Вместо этого вы можете экспортировать в JSON.');
+            
+            // Альтернативный экспорт в JSON
+            const formData = {
+                patientName: document.getElementById('patientNameESC').value.trim(),
+                age: parseInt(document.getElementById('ageESC').value),
+                sex: document.getElementById('sexESC').value,
+                chestPain: document.getElementById('chestPainESC').value,
+                dyspnea: document.getElementById('dyspneaESC').value,
+                functionalStatus: document.getElementById('functionalStatus').value,
+                height: parseFloat(document.getElementById('heightESC').value),
+                weight: parseFloat(document.getElementById('weightESC').value),
+                bmi: parseFloat(document.getElementById('bmiESC').value),
+                riskFactors: {
+                    diabetes: document.getElementById('diabetesESC').checked,
+                    hypertension: document.getElementById('hypertensionESC').checked,
+                    dyslipidemia: document.getElementById('dyslipidemiaESC').checked,
+                    smoking: document.getElementById('smokingESC').checked,
+                    familyHistory: document.getElementById('familyHistoryESC').checked,
+                    obesity: document.getElementById('obesityESC').checked
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(formData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `esc_patient_data_${formData.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        // Обновляем счетчик факторов риска для ESC калькулятора
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('#esc-app input[type="checkbox"]')) {
+                const checkboxes = document.querySelectorAll('#esc-app input[type="checkbox"]');
+                let count = 0;
+                checkboxes.forEach(cb => {
+                    if (cb.checked) count++;
+                });
+                document.getElementById('factorCountESC').textContent = count;
+            }
+        });
+        
+        // Привязываем функции к глобальному объекту
+        window.calculateBMIESC = calculateBMIESC;
+        window.calculateRiskESC = calculateRiskESC;
+        window.resetFormESC = resetFormESC;
+        window.exportToExcelESC = exportToExcelESC;
+        
+        // ========================================
+        // ФУНКЦИИ ДЛЯ ECRF CREATOR
+        // ========================================
+        
+        let ecrfJournal = JSON.parse(localStorage.getItem('ecrfPatientJournal')) || [];
+        
+        function exportToHtmlECRF() {
+            const patientData = {
+                patientName: document.getElementById('patientNameECRF').value.trim(),
+                age: document.getElementById('ageECRF').value,
+                sex: document.getElementById('sexECRF').value,
+                phone: document.getElementById('phoneECRF').value,
+                diagnosis: document.getElementById('diagnosisECRF').value,
+                complaints: document.getElementById('complaintsECRF').value,
+                treatment: document.getElementById('treatmentECRF').value
+            };
+            
+            if (!patientData.patientName) {
+                alert('Пожалуйста, введите ФИО пациента');
+                return;
+            }
+            
+            const htmlContent = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта пациента - ${patientData.patientName}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 10px; }
+        .section { margin: 20px 0; }
+        .section h3 { color: #333; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .field { margin: 10px 0; }
+        .field label { font-weight: bold; display: inline-block; width: 120px; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Карта пациента</h1>
+        <h2>${patientData.patientName}</h2>
+    </div>
+    
+    <div class="section">
+        <h3>Общая информация</h3>
+        <div class="field"><label>Возраст:</label> ${patientData.age || 'Не указан'}</div>
+        <div class="field"><label>Пол:</label> ${patientData.sex || 'Не указан'}</div>
+        <div class="field"><label>Телефон:</label> ${patientData.phone || 'Не указан'}</div>
+    </div>
+    
+    <div class="section">
+        <h3>Медицинская информация</h3>
+        <div class="field"><label>Диагноз:</label><br> ${patientData.diagnosis || 'Не указан'}</div>
+        <div class="field"><label>Жалобы:</label><br> ${patientData.complaints || 'Не указаны'}</div>
+        <div class="field"><label>Лечение:</label><br> ${patientData.treatment || 'Не указано'}</div>
+    </div>
+    
+    <div class="section">
+        <h3>Дата формирования:</h3>
+        <div>${new Date().toLocaleString()}</div>
+    </div>
+</body>
+</html>`;
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `patient_card_${patientData.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function exportToTextECRF() {
+            const patientData = {
+                patientName: document.getElementById('patientNameECRF').value.trim(),
+                age: document.getElementById('ageECRF').value,
+                sex: document.getElementById('sexECRF').value,
+                phone: document.getElementById('phoneECRF').value,
+                diagnosis: document.getElementById('diagnosisECRF').value,
+                complaints: document.getElementById('complaintsECRF').value,
+                treatment: document.getElementById('treatmentECRF').value
+            };
+            
+            if (!patientData.patientName) {
+                alert('Пожалуйста, введите ФИО пациента');
+                return;
+            }
+            
+            const textContent = `КАРТА ПАЦИЕНТА
+=================
+
+ФИО: ${patientData.patientName}
+Возраст: ${patientData.age || 'Не указан'}
+Пол: ${patientData.sex || 'Не указан'}
+Телефон: ${patientData.phone || 'Не указан'}
+
+ДИАГНОЗ: 
+${patientData.diagnosis || 'Не указан'}
+
+ЖАЛОБЫ: 
+${patientData.complaints || 'Не указаны'}
+
+ЛЕЧЕНИЕ: 
+${patientData.treatment || 'Не указано'}
+
+Дата формирования: ${new Date().toLocaleString()}
+`;
+            
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `patient_card_${patientData.patientName.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        
+        function resetFormECRF() {
+            document.getElementById('patientNameECRF').value = '';
+            document.getElementById('ageECRF').value = '';
+            document.getElementById('sexECRF').value = '';
+            document.getElementById('phoneECRF').value = '';
+            document.getElementById('diagnosisECRF').value = '';
+            document.getElementById('complaintsECRF').value = '';
+            document.getElementById('treatmentECRF').value = '';
+            
+            // Очистка списка прикрепленных файлов
+            document.getElementById('attachmentsList').innerHTML = '';
+        }
+        
+        function saveToJournalECRF() {
+            const patientData = {
+                patientName: document.getElementById('patientNameECRF').value.trim(),
+                age: document.getElementById('ageECRF').value,
+                sex: document.getElementById('sexECRF').value,
+                phone: document.getElementById('phoneECRF').value,
+                diagnosis: document.getElementById('diagnosisECRF').value,
+                complaints: document.getElementById('complaintsECRF').value,
+                treatment: document.getElementById('treatmentECRF').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            if (!patientData.patientName) {
+                alert('Пожалуйста, введите ФИО пациента');
+                return;
+            }
+            
+            ecrfJournal.push(patientData);
+            saveEcrfToLocalStorage();
+            updateEcrfJournalDisplay();
+            alert('Данные пациента успешно сохранены в журнал');
+        }
+        
+        function saveEcrfToLocalStorage() {
+            try {
+                localStorage.setItem('ecrfPatientJournal', JSON.stringify(ecrfJournal));
+            } catch (e) {
+                console.error('Ошибка при сохранении в localStorage (eCRF):', e);
+                alert('Ошибка при сохранении данных');
+            }
+        }
+        
+        function updateEcrfJournalDisplay() {
+            const journalContent = document.getElementById('journalContentECRF');
+            if (ecrfJournal.length === 0) {
+                journalContent.innerHTML = '<p>Журнал пуст</p>';
+                return;
+            }
+            
+            let html = '<table class="journal-table"><thead><tr><th>ФИО</th><th>Возраст</th><th>Пол</th><th>Диагноз</th><th>Дата</th><th>Действия</th></tr></thead><tbody>';
+            ecrfJournal.forEach((entry, index) => {
+                const date = new Date(entry.timestamp).toLocaleDateString();
+                const diagnosis = entry.diagnosis ? entry.diagnosis.substring(0, 30) + (entry.diagnosis.length > 30 ? '...' : '') : 'Не указан';
+                html += `<tr>
+                    <td>${entry.patientName}</td>
+                    <td>${entry.age || 'Не указан'}</td>
+                    <td>${entry.sex || 'Не указан'}</td>
+                    <td>${diagnosis}</td>
+                    <td>${date}</td>
+                    <td>
+                        <button onclick="loadEcrfPatientFromJournal(${index})">Загрузить</button>
+                        <button onclick="deleteEcrfJournalEntry(${index})">Удалить</button>
+                    </td>
+                </tr>`;
+            });
+            html += '</tbody></table>';
+            journalContent.innerHTML = html;
+        }
+        
+        window.loadEcrfPatientFromJournal = function(index) {
+            const entry = ecrfJournal[index];
+            document.getElementById('patientNameECRF').value = entry.patientName;
+            document.getElementById('ageECRF').value = entry.age;
+            document.getElementById('sexECRF').value = entry.sex;
+            document.getElementById('phoneECRF').value = entry.phone;
+            document.getElementById('diagnosisECRF').value = entry.diagnosis;
+            document.getElementById('complaintsECRF').value = entry.complaints;
+            document.getElementById('treatmentECRF').value = entry.treatment;
+            
+            // Прокрутка к форме
+            document.querySelector('#ecrf-app .form-container').scrollIntoView({ behavior: 'smooth' });
+        };
+        
+        window.deleteEcrfJournalEntry = function(index) {
+            if (confirm('Вы уверены, что хотите удалить эту запись из журнала?')) {
+                ecrfJournal.splice(index, 1);
+                saveEcrfToLocalStorage();
+                updateEcrfJournalDisplay();
+            }
+        };
+        
+        function exportJournalToJsonECRF() {
+            if (ecrfJournal.length === 0) {
+                alert('Журнал пуст, нечего экспортировать');
+                return;
+            }
+            
+            const dataStr = JSON.stringify(ecrfJournal, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `ecrf_journal_${new Date().toISOString().slice(0, 10)}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        function importJournalECRF() {
+            alert('Функция импорта для eCRF Creator временно недоступна');
+        }
+        
+        function clearJournalECRF() {
+            if (ecrfJournal.length === 0) {
+                alert('Журнал уже пуст');
+                return;
+            }
+            
+            if (confirm('Вы уверены, что хотите полностью очистить журнал пациентов? Это действие нельзя отменить.')) {
+                ecrfJournal = [];
+                saveEcrfToLocalStorage();
+                updateEcrfJournalDisplay();
+                alert('Журнал пациентов очищен');
+            }
+        }
+        
+        // Привязываем функции к глобальному объекту
+        window.exportToHtmlECRF = exportToHtmlECRF;
+        window.exportToTextECRF = exportToTextECRF;
+        window.resetFormECRF = resetFormECRF;
+        window.saveToJournalECRF = saveToJournalECRF;
+        window.exportJournalToJsonECRF = exportJournalToJsonECRF;
+        window.importJournalECRF = importJournalECRF;
+        window.clearJournalECRF = clearJournalECRF;
+    </script>
+</body>
+</html>
